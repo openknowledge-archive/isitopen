@@ -37,3 +37,12 @@ def load_environment(global_conf, app_conf):
     engine = engine_from_config(config, 'sqlalchemy.')
     config['pylons.g'].sa_engine = engine
 
+    # redo template setup to use genshi.search_path
+    # This requires path notation in calls to render rather than dotted notation
+    # e.g. render('index.html') not render('index') etc
+    genshi = config['buffet.template_engines'].pop()
+    # set None for template_root as not using dotted (python package) notation
+    config.add_template_engine('genshi', None)
+    tmpl_options = config['buffet.template_options']
+    tmpl_options['genshi.search_path'] = paths['templates'][0]
+

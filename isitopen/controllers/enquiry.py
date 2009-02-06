@@ -5,18 +5,18 @@ import ckan.lib.gmail
 class EnquiryController(BaseController):
 
     def index(self):
-        return render('enquiry/index')
+        return render('enquiry/index.html')
     
     def guide(self):
-        return render('enquiry/guide')
+        return render('enquiry/guide.html')
 
     def choose(self):
-        return render('enquiry/choose')
+        return render('enquiry/choose.html')
 
     def create(self, template=''):
         c.email_template = template_2
         if not ('preview' in request.params or 'commit' in request.params):
-            return render('enquiry/create')
+            return render('enquiry/create.html')
 
         c.to = request.params['to']
         c.subject = request.params['subject']
@@ -38,18 +38,18 @@ class EnquiryController(BaseController):
                 )
             gmail.send(msg)
             c.enquiry = enq
-            return render('enquiry/sent')
+            return render('enquiry/sent.html')
 
     def list(self):
         c.enquiries = model.Enquiry.query.all()
-        return render('enquiry/list')
+        return render('enquiry/list.html')
 
     def view(self, id=''):
         enq = model.Enquiry.query.get(id)
         if enq is None:
             abort(404)
         c.enquiry = enq
-        return render('enquiry/view')
+        return render('enquiry/view.html')
 
 follow_up_email = '''It might also be good to apply a specific 'open data' licence --
 you can find examples of such licenses at: ...
