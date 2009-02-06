@@ -1,0 +1,3 @@
+syntax: glob
+development.ini
+isitopen.egg-info/*
