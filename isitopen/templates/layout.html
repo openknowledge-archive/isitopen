@@ -109,7 +109,7 @@
     <div class="box">
       <h2>Using This Service</h2>
       <p>For information on using this service check out the
-      ${XML(h.link_to('guide.', h.url_for(controller='enquiry', action='guide', id=None)))}</p>
+      ${XML(h.link_to('guide', h.url_for('guide', id=None)))}.</p>
       <p>If you have a question or have found a bug please post to the <a href="http://lists.okfn.org/mailman/listinfo/okfn-help">okfn-help</a> mailing list.
       </p>
     </div>
@@ -140,7 +140,7 @@
       </p>
       <p>
         (c) Open Knowledge Foundation
-        | All material available under an <a href="/license/">open license</a>
+        | All material available under <a href="http://www.opendefinition.org/">open licenses</a> (CC by-sa or MIT)
         | <a href="http://www.opendefinition.org/1.0/"><img
             style="border: none; margin-bottom: -4px;"
             src="http://m.okfn.org/images/ok_buttons/ok_90x15_blue.png"

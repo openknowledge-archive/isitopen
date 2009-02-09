@@ -7,9 +7,6 @@ class EnquiryController(BaseController):
     def index(self):
         return self.list()
     
-    def guide(self):
-        return render('enquiry/guide.html')
-
     def choose(self):
         return render('enquiry/choose.html')
 
