@@ -1,6 +1,6 @@
 from ckan.lib.base import *
 
-class EnquiryController(Controller):
+class HomeController(BaseController):
 
     def index(self):
         return render('index.html')
