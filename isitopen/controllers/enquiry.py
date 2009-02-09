@@ -5,7 +5,7 @@ import ckan.lib.gmail
 class EnquiryController(BaseController):
 
     def index(self):
-        return render('enquiry/index.html')
+        return self.list()
     
     def guide(self):
         return render('enquiry/guide.html')
