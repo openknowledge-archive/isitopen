@@ -12,3 +12,6 @@ def setup_config(command, filename, section, vars):
     """Place any commands to setup isitopen here"""
     conf = appconfig('config:' + filename)
     load_environment(conf.global_conf, conf.local_conf)
+    import isitopen.model as model
+    model.create_db()
+
