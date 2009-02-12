@@ -14,7 +14,7 @@ class Command(paste.script.command.Command):
 
     def _load_config(self):
         from paste.deploy import appconfig
-        from ckan.config.environment import load_environment
+        from isitopen.config.environment import load_environment
         if not self.options.config:
             msg = 'No config file supplied'
             raise self.BadCommand(msg)
@@ -40,7 +40,7 @@ class ManageDb(Command):
 
     def command(self):
         self._load_config()
-        from ckan import model
+        from isitopen import model
 
         cmd = self.args[0]
         if cmd == 'create':
@@ -49,4 +49,36 @@ class ManageDb(Command):
             model.repo.clean_db()
         else:
             print 'Command %s not recognized' % cmd
+
+class Fixtures(Command):
+    '''Create some fixture data.
+    
+    '''
+    summary = __doc__.split('\n')[0]
+    usage = __doc__
+    max_args = None
+    min_args = 1
+
+    to = u'testing@enquiries.com'
+
+    def command(self):
+        self._load_config()
+
+    @classmethod
+    def create(self):
+        from isitopen import model
+        subj = u'testing email'
+        enq = model.Enquiry(
+                to=self.to,
+                subject=subj)
+        model.Session.commit()
+        model.Session.clear()
+
+    @classmethod
+    def remove(self):
+        from isitopen import model
+        for enq in model.Enquiry.query.filter_by(to=self.to).all():
+            model.Session.delete(enq)
+            model.Session.commit()
+            model.Session.remove()
 

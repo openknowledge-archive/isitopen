@@ -1,4 +1,4 @@
-from ckan.lib.base import *
+from isitopen.lib.base import *
 
 class HomeController(BaseController):
 
