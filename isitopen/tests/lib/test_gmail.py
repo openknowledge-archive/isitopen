@@ -1,9 +1,12 @@
 import isitopen.lib.gmail as G
 
-
 class TestGmail:
     gmail = G.Gmail.default()
     __test__  = gmail is not None
+
+    @classmethod
+    def setup_class(self):
+        self.out = self.gmail.unread()
 
     def _test_send():
         msg = create_msg('testing python api',
@@ -12,7 +15,6 @@ class TestGmail:
         self.gmail.send(msg)
 
     def test_unread(self):
-        out = gmail.unread()
         m1 = self.out[0]
         assert len(self.out) == 2
         assert m1.is_multipart()
@@ -26,7 +28,6 @@ class TestGmail:
         assert msgid == '<b9df8f3e0901090812k69ed71b0x@mail.gmail.com>', msgid
 
     def test_unread_2(self):
-        out = gmail.unread()
         m2 = self.out[1]
         assert not m2.is_multipart()
         ctype = m2.get_content_type()

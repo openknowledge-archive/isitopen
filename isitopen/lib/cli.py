@@ -30,8 +30,7 @@ class Command(paste.script.command.Command):
 class ManageDb(Command):
     '''Perform various tasks on the database.
     
-    db create # create
-    db init # create and put in default data
+    db create # create tables
     db clean
     '''
     summary = __doc__.split('\n')[0]
@@ -45,13 +44,9 @@ class ManageDb(Command):
 
         cmd = self.args[0]
         if cmd == 'create':
-            model.create_db()
-        elif cmd == 'init':
-            self._setup_app()
+            model.repo.create_db()
         elif cmd == 'clean':
-            model.metadata.drop_all()
-            if self.verbose:
-                print 'Cleaning DB: SUCCESS' 
+            model.repo.clean_db()
         else:
             print 'Command %s not recognized' % cmd
 
