@@ -17,7 +17,12 @@ import paste.script.appinstall
 from paste.deploy import loadapp
 from routes import url_for
 
-__all__ = ['url_for', 'TestController']
+from isitopen.lib.cli import Fixtures
+
+__all__ = ['url_for', 'TestController',
+        'Fixtures',
+        'model'
+        ]
 
 here_dir = os.path.dirname(os.path.abspath(__file__))
 conf_dir = os.path.dirname(os.path.dirname(here_dir))
@@ -30,6 +35,9 @@ pkg_resources.require('PasteScript')
 test_file = os.path.join(conf_dir, 'test.ini')
 cmd = paste.script.appinstall.SetupCommand('setup-app')
 cmd.run([test_file])
+
+# cannot import to here because db config not set up until here
+import isitopen.model as model
 
 class TestController(object):
 

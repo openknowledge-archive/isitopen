@@ -1,6 +1,6 @@
-from ckan.lib.base import *
+from isitopen.lib.base import *
 
-import ckan.lib.gmail
+import isitopen.lib.gmail
 
 class EnquiryController(BaseController):
 
@@ -42,8 +42,8 @@ class EnquiryController(BaseController):
 
     def send_pending(self):
         # need to get back the gmail id
-        gmail = ckan.lib.gmail.Gmail.default()
-        msg = ckan.lib.gmail.create_msg(c.body,
+        gmail = isitopen.lib.gmail.Gmail.default()
+        msg = isitopen.lib.gmail.create_msg(c.body,
             to=c.to,
             subject=c.subject
             )
