@@ -32,6 +32,7 @@ class ManageDb(Command):
     
     db create # create tables
     db clean
+    db rebuild # clean + create
     '''
     summary = __doc__.split('\n')[0]
     usage = __doc__
@@ -47,6 +48,9 @@ class ManageDb(Command):
             model.repo.create_db()
         elif cmd == 'clean':
             model.repo.clean_db()
+        elif cmd == 'rebuild':
+            model.repo.clean_db()
+            model.repo.create_db()
         else:
             print 'Command %s not recognized' % cmd
 
@@ -57,12 +61,13 @@ class Fixtures(Command):
     summary = __doc__.split('\n')[0]
     usage = __doc__
     max_args = None
-    min_args = 1
+    min_args = 0
 
     to = u'testing@enquiries.com'
 
     def command(self):
         self._load_config()
+        self.create()
 
     @classmethod
     def create(self):

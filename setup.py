@@ -40,5 +40,6 @@ setup(
 
     [paste.paster_command]
     db = isitopen.lib.cli:ManageDb
+    fixtures = isitopen.lib.cli:Fixtures
     """,
 )
