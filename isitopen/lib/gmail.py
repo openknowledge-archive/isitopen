@@ -44,7 +44,6 @@ class Gmail(object):
         s.ehlo()
         s.login(self.user, self.pwd)
         s.sendmail(msg['From'], msg['To'], msg.as_string())
-        s.close()
         # Should be s.quit(), but that crashes...
         s.close()
 

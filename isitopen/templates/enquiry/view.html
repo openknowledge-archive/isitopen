@@ -9,8 +9,9 @@
   <div py:match="content">
     <h2>View</h2>
     <ul>
-      <li><strong>Status:</strong> ${c.enquiry.status}</li>
-      <li><strong>ID:</strong></li>
+      <li><strong>Status: ${c.enquiry.status}</strong></li>
+      <li><strong>Started:</strong> ${c.enquiry.timestamp.isoformat()}</li>
+      <li><strong>ID:</strong> ${c.enquiry.id}</li>
     </ul>
     <xi:include href="view_core.html" />
 	</div>

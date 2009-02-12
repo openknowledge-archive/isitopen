@@ -22,9 +22,9 @@ class EnquiryController(BaseController):
             return render('enquiry/create.html')
 
         # must be a commit
-        return self.send()
+        return self.save()
 
-    def send(self):
+    def save(self):
         c.error = ''
         if not c.to:
             c.error = 'You have not specified to whom the enquiry should ' + \
@@ -41,13 +41,28 @@ class EnquiryController(BaseController):
         return render('enquiry/sent.html')
 
     def send_pending(self):
-        # need to get back the gmail id
-        gmail = isitopen.lib.gmail.Gmail.default()
-        msg = isitopen.lib.gmail.create_msg(c.body,
-            to=c.to,
-            subject=c.subject
-            )
-        gmail.send(msg)
+        pending = model.Enquiry.query.filter_by(
+                status=model.EnquiryStatus.not_yet_sent
+                ).all()
+        results = []
+        for enq in pending:
+            try:
+                # TODO: need to get back the gmail id
+                # TODO: bcc sender ... 
+                gmail = isitopen.lib.gmail.Gmail.default()
+                msg = isitopen.lib.gmail.create_msg(
+                    enq.body,
+                    to=enq.to,
+                    subject=enq.subject
+                    )
+                gmail.send(msg)
+                enq.status = model.EnquiryStatus.sent
+                model.Session.commit()
+                results.append([enq.id, 'OK'])
+            except:
+                results.append('ERROR')
+                break
+        return '%s' % results
 
     def list(self):
         c.enquiries = model.Enquiry.query.all()
