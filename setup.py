@@ -21,8 +21,9 @@ setup(
     author_email='',
     url='http://isitopen.ckan.net/',
     install_requires=[
-        'Pylons>=0.9.6.2',
+        'Pylons>=0.9.6.2,<0.9.7',
         'SQLAlchemy>=0.4,<=0.4.99',
+        'Genshi>=0.4,<0.6'
         ],
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
