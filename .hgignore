@@ -1,3 +1,6 @@
 syntax: glob
 development.ini
+config.ini
 isitopen.egg-info/*
+*.pyc
+build
