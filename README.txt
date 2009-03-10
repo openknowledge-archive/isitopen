@@ -3,9 +3,11 @@ This file is for you to describe the isitopen application.
 Installation and Setup
 ======================
 
+Make sure you are in the same directory as this file.
+
 Install ``isitopen`` using easy_install::
 
-    easy_install isitopen
+    easy_install .
 
 Make a config file as follows::
 
@@ -15,7 +17,9 @@ Tweak the config file as appropriate and then setup the application::
 
     paster setup-app config.ini
 
-Then you are ready to go.
+Then you are ready to go. Run the application with (for example):
+
+		paster serve config.ini
 
 Contributors
 ============
