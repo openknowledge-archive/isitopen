@@ -1,6 +1,8 @@
 syntax: glob
-development.ini
-config.ini
+*.ini
 isitopen.egg-info/*
 *.pyc
+*.db
+*.tmproj
+**/.DS_Store
 build
