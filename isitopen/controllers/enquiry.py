@@ -47,6 +47,7 @@ class EnquiryController(BaseController):
         results = []
         for enq in pending:
             try:
+                
                 # TODO: need to get back the gmail id
                 # TODO: bcc sender ... 
                 gmail = isitopen.lib.gmail.Gmail.default()
