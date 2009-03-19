@@ -16,26 +16,62 @@ def create_msg(text, **kwargs):
 
 class Gmail(object):
     '''Inteface to gmail via imap and smtp.'''
-    def __init__(self, user, pwd):
+    def __init__(self, conn, user, pwd):
+        self.thread_mailbox = 'thread'
+        
+        self.logged_in = False
+        self.conn = conn
         self.user = user
         self.pwd = pwd
+        self.login()
+    
+    def login(self):
+        if self.logged_in:
+            return True
+        else:
+            try:
+                stat, msg = self.conn.login(self.user, self.pwd)
+                if stat == "OK":
+                    self.logged_in = True
+                    return True
+            except imaplib.IMAP4.error:
+                return False
+    
+    def threads(self):
+        assert self.logged_in
+        stat, boxes = self.conn.list(self.thread_mailbox)
+        assert stat == 'OK'
+        
+        threads = []
+        for box in boxes:
+            # TODO don't assume the hierarchy delimiter has length 1
+            thread = box.split(' ')[-1].strip("\"")[len(self.thread_mailbox) + 1:]
+            if thread != "": threads.append(thread)
+        
+        return threads
+    
+    def unread(self):         
+        return self.messages_for_mailbox('INBOX', 'UNSEEN')
+    
+    def messages_for_mailbox(self, mailbox, condition = 'ALL'):
+        self.conn.select(mailbox)
+        
+        stat, indices = self.conn.search(None, condition)
+        assert stat == 'OK'
 
-    def unread(self):
-        mail = imaplib.IMAP4_SSL('imap.gmail.com', 993)
-        mail.login(self.user, self.pwd)
-        mail.select('Inbox')
-        typ, data = mail.search(None, 'UNSEEN')
-
-        results = []
-        for num in data[0].split():
-            typ, data = mail.fetch(num, '(RFC822)')
-            if typ == 'OK':
-                msg = email.message_from_string(data[0][1])
-                results.append(msg)
-            # print 'Message %s\n%s\n' % (num, data[0][1])
-        mail.close()
-        mail.logout()
+        results = {}
+        for index in indices[0].split():
+            stat, data = self.conn.fetch(index, '(RFC822)')
+            assert stat == 'OK'
+            
+            msg = email.message_from_string(data[0][1])
+            results[index] = msg
+            
         return results
+    
+    def logout(self):
+        self.conn.close()
+        self.conn.logout()
 
     def send(self, msg):
         s = smtplib.SMTP('smtp.gmail.com', 587)

@@ -4,5 +4,7 @@ isitopen.egg-info/*
 *.pyc
 *.db
 *.tmproj
-**/.DS_Store
-build
+.DS_Store
+
+syntax: regexp
+^build$
