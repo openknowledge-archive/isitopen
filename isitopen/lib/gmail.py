@@ -1,24 +1,20 @@
 import imaplib
-import smtplib
 import email
-from email.mime.text import MIMEText
 
 from pylons import config
 
-def create_msg(text, **kwargs):
-    msg = MIMEText(text)
-    from_email = 'data-enquire@okfn.org'
-    msg['From'] = from_email
-    msg['Reply-To'] = from_email
-    for k,v in kwargs.items():
-        msg[k.capitalize()] = v
-    return msg
-
 class Gmail(object):
-    '''Inteface to gmail via imap and smtp.'''
+    '''Inteface to gmail via IMAP and SMTP.'''
+    
     def __init__(self, conn, user, pwd):
-        self.thread_mailbox = 'thread'
+        """
+        Create a new Gmail instance based on an IMAP connection and login
+        credentials.
         
+        conn should be an instance of imaplib.{IMAP4,IMAP4_SSL} or an object
+        that behaves similarly.
+        """
+        self.thread_mailbox = 'thread'
         self.logged_in = False
         self.conn = conn
         self.user = user
@@ -26,19 +22,24 @@ class Gmail(object):
         self.login()
     
     def login(self):
-        if self.logged_in:
-            return True
-        else:
-            try:
-                stat, msg = self.conn.login(self.user, self.pwd)
-                if stat == "OK":
-                    self.logged_in = True
-                    return True
-            except imaplib.IMAP4.error:
-                return False
+        """Login to the server. This is called by default on instantiation."""
+        if not self.logged_in:
+            # The following raises on failure.
+            self.conn.login(self.user, self.pwd) 
+            self.logged_in = True
+            
+        return self.logged_in
     
     def threads(self):
-        assert self.logged_in
+        """
+        Return a list of threads.
+        
+        In this context, threads are children of the mailbox with a name equal
+        to self.thread_mailbox, which is "thread" by default. This does not in
+        any way correspond to Gmail's "conversation" feature.
+        """
+        assert self.logged_in, "Not logged in."
+        
         stat, boxes = self.conn.list(self.thread_mailbox)
         assert stat == 'OK'
         
@@ -50,10 +51,14 @@ class Gmail(object):
         
         return threads
     
-    def unread(self):         
+    def inbox_unread(self):
+        """Return a dict {msgId: email, ...} of unread messages in the INBOX."""
+        assert self.logged_in, "Not logged in."
         return self.messages_for_mailbox('INBOX', 'UNSEEN')
     
-    def messages_for_mailbox(self, mailbox, condition = 'ALL'):
+    def messages_for_mailbox(self, mailbox, condition='ALL'):
+        """Return a dict {msgId: email, ...} of messages in `mailbox` matching `condition`."""
+        assert self.logged_in, "Not logged in."
         self.conn.select(mailbox)
         
         stat, indices = self.conn.search(None, condition)
@@ -70,25 +75,17 @@ class Gmail(object):
         return results
     
     def logout(self):
+        """Logout from the server. The connection cannot be reopened."""
         self.conn.close()
         self.conn.logout()
-
-    def send(self, msg):
-        s = smtplib.SMTP('smtp.gmail.com', 587)
-        s.ehlo()
-        s.starttls()
-        s.ehlo()
-        s.login(self.user, self.pwd)
-        s.sendmail(msg['From'], msg['To'], msg.as_string())
-        # Should be s.quit(), but that crashes...
-        s.close()
+        self.logged_in = False
 
     @classmethod
-    def default(self):
+    def default(cls):
         '''Return a default Gmail instance based on config in your ini file.'''
         if config.get('enquiry.email_user', ''):
             USER = config['enquiry.email_user']
             PWD = config['enquiry.email_pwd']
-            return Gmail(USER, PWD)
+            return cls(imaplib.IMAP4_SSL('imap.gmail.com', 993), USER, PWD)
         else:
             return None
