@@ -12,6 +12,7 @@ class Mailer(object):
         
     def send(self, msg):
         self.conn.sendmail(msg['From'], msg['To'], msg.as_string())
+        return self
         
     def quit(self):
         self.conn.quit()
