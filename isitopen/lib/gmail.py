@@ -86,6 +86,10 @@ class Gmail(object):
         if config.get('enquiry.email_user', ''):
             USER = config['enquiry.email_user']
             PWD = config['enquiry.email_pwd']
-            return cls(imaplib.IMAP4_SSL('imap.gmail.com', 993), USER, PWD)
+            if config['debug']:
+                conn = imaplib.IMAP4('localhost')
+            else:
+                conn = imaplib.IMAP4_SSL('imap.gmail.com', 993)
+            return cls(conn, USER, PWD)
         else:
             return None

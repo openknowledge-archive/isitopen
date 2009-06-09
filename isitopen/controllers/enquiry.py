@@ -1,6 +1,6 @@
 from isitopen.lib.base import *
 
-import isitopen.lib.gmail
+import isitopen.lib.mailer as mailer
 
 class EnquiryController(BaseController):
 
@@ -47,16 +47,15 @@ class EnquiryController(BaseController):
         results = []
         for enq in pending:
             try:
-                
                 # TODO: need to get back the gmail id
                 # TODO: bcc sender ... 
-                gmail = isitopen.lib.gmail.Gmail.default()
-                msg = isitopen.lib.gmail.create_msg(
+                m = mailer.Mailer.default()
+                msg = mailer.Mailer.message_from_default(
                     enq.body,
                     to=enq.to,
                     subject=enq.subject
-                    )
-                gmail.send(msg)
+                )
+                m.send(msg)
                 enq.status = model.EnquiryStatus.sent
                 model.Session.commit()
                 results.append([enq.id, 'OK'])
