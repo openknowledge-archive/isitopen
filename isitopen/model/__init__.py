@@ -1,5 +1,6 @@
 from meta import *
 from enquiry import *
+from user import *
 
 class Repository(object):
     def __init__(self, ourmetadata, oursession):

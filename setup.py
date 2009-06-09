@@ -21,7 +21,7 @@ setup(
     author_email='',
     url='http://isitopen.ckan.net/',
     install_requires=[
-        'Pylons>=0.9.6.2,<0.9.8',
+        'Pylons>=0.9.7,<0.9.8',
         'SQLAlchemy>=0.4,<0.5',
         'Genshi>=0.4,<0.6'
         ],

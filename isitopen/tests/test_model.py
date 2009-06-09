@@ -15,14 +15,14 @@ class TestModel(object):
         # by using the same 'to' value ensure it is removed in teardown
         to = Fixtures.to
         subj = u'testing email'
-        enq = model.Enquiry(
+        enq = model.Message(
                 to=to,
                 subject=subj)
         model.Session.commit()
         id = enq.id
         model.Session.clear()
-        out = model.Enquiry.query.get(id)
+        out = model.Message.query.get(id)
         assert out.subject == subj
         assert out.to == to
-        assert out.status == model.EnquiryStatus.not_yet_sent
+        assert out.status == model.MessageStatus.not_yet_sent
 
