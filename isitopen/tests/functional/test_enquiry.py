@@ -4,7 +4,7 @@ class TestHomeController(TestController):
     @classmethod
     def setup_class(self):
         Fixtures.create()
-        self.enquiry = model.Enquiry.query.filter_by(to=Fixtures.to).first()
+        self.enquiry = model.Message.query.filter_by(to=Fixtures.to).first()
 
     @classmethod
     def teardown_class(self):

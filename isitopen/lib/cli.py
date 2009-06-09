@@ -72,18 +72,18 @@ class Fixtures(Command):
     @classmethod
     def create(self):
         from isitopen import model
+        enq = model.Enquiry()
         subj = u'testing email'
-        enq = model.Enquiry(
+        mess = model.Message(
                 to=self.to,
-                subject=subj)
+                subject=subj,
+                enquiry=enq
+                )
         model.Session.commit()
         model.Session.clear()
 
     @classmethod
     def remove(self):
         from isitopen import model
-        for enq in model.Enquiry.query.filter_by(to=self.to).all():
-            model.Session.delete(enq)
-            model.Session.commit()
-            model.Session.remove()
+        model.repo.rebuild_db()
 

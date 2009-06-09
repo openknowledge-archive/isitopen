@@ -30,53 +30,50 @@ class EnquiryController(BaseController):
             c.error = 'You have not specified to whom the enquiry should ' + \
                     'be sent.'
             return render('enquiry/sent.html')
-
-        enq = model.Enquiry(
+        enq = model.Enquiry()
+        message = model.Message(
                 to=c.to,
                 subject=c.subject,
-                body=c.body
+                body=c.body,
+                enquiry=enq
                 )
         model.Session.commit()
-        c.enquiry = enq
+        c.message = message
         return render('enquiry/sent.html')
 
     def send_pending(self):
-        pending = model.Enquiry.query.filter_by(
-                status=model.EnquiryStatus.not_yet_sent
+        pending = model.Message.query.filter_by(
+                status=model.MessageStatus.not_yet_sent
                 ).all()
         results = []
-        for enq in pending:
+        for message in pending:
             try:
                 # TODO: need to get back the gmail id
                 # TODO: bcc sender ... 
                 m = mailer.Mailer.default()
                 msg = mailer.Mailer.message_from_default(
-                    enq.body,
-                    to=enq.to,
-                    subject=enq.subject
-                )
+                    message.body,
+                    to=message.to,
+                    subject=message.subject
+                    )
                 m.send(msg)
-                enq.status = model.EnquiryStatus.sent
+                message.status = model.MessageStatus.sent
                 model.Session.commit()
-                results.append([enq.id, 'OK'])
+                results.append([message.id, 'OK'])
             except:
                 results.append('ERROR')
                 break
         return '%s' % results
 
     def list(self):
-        c.enquiries = model.Enquiry.query.all()
+        c.messages = model.Message.query.all()
         return render('enquiry/list.html')
 
     def view(self, id=''):
-        enq = model.Enquiry.query.get(id)
+        enq = model.Message.query.get(id)
         if enq is None:
             abort(404)
         c.enquiry = enq
-        # annoying but needed for the template
-        c.to = c.enquiry.to
-        c.subject = c.enquiry.subject
-        c.body = c.enquiry.body
         return render('enquiry/view.html')
 
 follow_up_email = '''It might also be good to apply a specific 'open data' licence --
