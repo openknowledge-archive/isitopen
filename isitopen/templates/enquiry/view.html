@@ -1,0 +1,21 @@
+<html
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip=""
+  >
+  
+  <py:def function="page_title">View</py:def>
+
+  <div py:match="content">
+    <h2>View</h2>
+    <ul>
+      <li><strong>Status: ${c.enquiry.status}</strong></li>
+      <li><strong>Started:</strong> ${c.enquiry.timestamp.isoformat()}</li>
+      <li><strong>ID:</strong> ${c.enquiry.id}</li>
+    </ul>
+    <!-- <xi:include href="view_core.html" /> -->
+	</div>
+
+  <xi:include href="../layout.html" />
+</html>
+
