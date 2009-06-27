@@ -40,7 +40,7 @@ class TestHomeController(TestController):
         assert 'Sent' in res
         model.Session.remove()
         assert model.Enquiry.query.count() == 2
-        assert model.Message.query.count() == 2
+        assert model.Message.query.count() == 3
 
         # TODO: test bad entry (e.g. no to address)
 
