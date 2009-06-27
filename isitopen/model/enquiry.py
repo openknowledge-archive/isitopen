@@ -64,6 +64,9 @@ class Message(object):
     #    self.save_email()
 
     email = property(_get_email)
+    to = property(lambda self: self.email['To'])
+    subject = property(lambda self: self.email['Subject'])
+    body = property(lambda self: self.email.get_payload())
 
 
 class Enquiry(object):

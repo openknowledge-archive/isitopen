@@ -3,6 +3,7 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
   py:strip=""
   >
+  <xi:include href="../message/view_core.html" />
   
   <py:def function="page_title">View</py:def>
 
@@ -13,7 +14,11 @@
       <li><strong>Started:</strong> ${c.enquiry.timestamp.isoformat()}</li>
       <li><strong>ID:</strong> ${c.enquiry.id}</li>
     </ul>
-    <!-- <xi:include href="view_core.html" /> -->
+    <py:for each="message in c.enquiry.messages">
+      <hr />
+      ${render_message(message)}
+    </py:for>
+      
 	</div>
 
   <xi:include href="../layout.html" />
