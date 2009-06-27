@@ -7,7 +7,7 @@
   <py:def function="page_title">View</py:def>
 
   <div py:match="content">
-    <h2>View</h2>
+    <h2>Enquiry: ${c.enquiry.id}</h2>
     <ul>
       <li><strong>Status: ${c.enquiry.status}</strong></li>
       <li><strong>Started:</strong> ${c.enquiry.timestamp.isoformat()}</li>

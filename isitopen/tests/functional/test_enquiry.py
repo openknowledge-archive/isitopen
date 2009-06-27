@@ -3,8 +3,8 @@ from isitopen.tests import *
 class TestHomeController(TestController):
     @classmethod
     def setup_class(self):
-        enq_id, msg_id = Fixtures.create()
-        self.message = model.Message.query.get(msg_id)
+        self.enq_id, self.msg_id = Fixtures.create()
+        self.message = model.Message.query.get(self.msg_id)
 
     @classmethod
     def teardown_class(self):
@@ -12,11 +12,16 @@ class TestHomeController(TestController):
 
     def test_view(self):
         offset = url_for(controller='enquiry', action='view',
-                id=self.message.id)
+                id=self.enq_id)
         res = self.app.get(offset)
         print str(res)
         assert 'Is It Open Data?' in res
         assert 'Status:' in res
+
+    def test_list(self):
+        offset = url_for(controller='enquiry', action='list')
+        res = self.app.get(offset)
+        assert self.enq_id  in res
 
     def test_create(self):
         offset = url_for(controller='enquiry', action='create')
