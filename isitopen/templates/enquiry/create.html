@@ -10,17 +10,17 @@
     <h2>Step 1: Specify Your Enquiry</h2>
     <form action="#preview" method="post">
       <label for="email">To: (email address)</label>
-      ${XML(h.text_field('to', size=40, value=c.to))} <br />
+      ${XML(h.text('to', size=40, value=c.to))} <br />
       <label for="subject">Subject: (modify as required)</label>
-      ${XML(h.text_field('subject', size=60, value=c.subject))} <br />
+      ${XML(h.text('subject', size=60, value=c.subject))} <br />
       <label for="sender">Your Email: (optional &ndash; if supplied we can keep you
         updated)</label>
-      ${XML(h.text_field('sender', size=60, value=c.sender))} <br />
+      ${XML(h.text('sender', size=60, value=c.sender))} <br />
 
       <label for="notes">Email Body: (customize this)</label>
-      ${XML(h.text_area('body', content=h.escape_once(c.body), size="72x25"))} <br />
-      ${XML(h.submit('Preview &raquo;', name='preview', id='preview'))}
-      ${XML(h.submit(value='Send &raquo;', name='send', id='send'))}
+      ${XML(h.textarea('body', content=h.escape(c.body), size="72x25"))} <br />
+      ${XML(h.submit('preview', value='Preview &raquo;', id='preview'))}
+      ${XML(h.submit('send', value='Send &raquo;', id='send'))}
     </form>
 
     <py:if test="c.preview">
