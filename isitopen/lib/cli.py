@@ -12,6 +12,7 @@ class Command(paste.script.command.Command):
         dest='file_path',
         help="File to dump results to (if needed)")
     default_verbosity = 1
+    group_name = 'isitopen'
 
     def _load_config(self):
         from paste.deploy import appconfig
@@ -71,6 +72,7 @@ class Fixtures(Command):
     def command(self):
         self._load_config()
         self.create()
+        print 'Created fixtures'
 
     @classmethod
     def create(self):

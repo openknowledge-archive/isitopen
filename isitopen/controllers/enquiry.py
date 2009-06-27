@@ -64,11 +64,11 @@ class EnquiryController(BaseController):
         return '%s' % results
 
     def list(self):
-        c.messages = model.Message.query.all()
+        c.enquiries = model.Enquiry.query.all()
         return render('enquiry/list.html')
 
-    def view(self, id=''):
-        enq = model.Message.query.get(id)
+    def view(self, id):
+        enq = model.Enquiry.query.get(id)
         if enq is None:
             abort(404)
         c.enquiry = enq
