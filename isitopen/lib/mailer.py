@@ -28,6 +28,7 @@ class Mailer(object):
     @classmethod
     def default(cls):
         '''Return a default Mailer instance based on config in your ini file.'''
+        from pylons import config
         if config.get('enquiry.email_user', ''):
             USER = config['enquiry.email_user']
             PWD = config['enquiry.email_pwd']
