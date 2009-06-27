@@ -36,8 +36,10 @@ test_file = os.path.join(conf_dir, 'test.ini')
 cmd = paste.script.appinstall.SetupCommand('setup-app')
 cmd.run([test_file])
 
-# cannot import to here because db config not set up until here
+# cannot import until here because db config not set up until here
 import isitopen.model as model
+model.repo.rebuild_db()
+
 
 class TestController(object):
 
