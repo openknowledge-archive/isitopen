@@ -1,0 +1,18 @@
+<div
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip=""
+  >
+
+  <py:def function="render_message(message)">
+  <div class="message">
+		<p><strong>To:</strong> ${message.to}</p>
+		<p><strong>Subject:</strong> <em>${message.subject}</em></p>
+    <div>
+      ${HTML(h.markdown(message.body))}
+    </div>
+  </div>
+  </py:def>
+
+</div>
+
