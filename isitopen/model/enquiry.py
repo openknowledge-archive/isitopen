@@ -82,7 +82,9 @@ mapper(Enquiry, enquiry_table, properties={
     )
 
 mapper(Message, message_table, properties={
-    'enquiry': relation(Enquiry, backref='messages'),
+    'enquiry': relation(Enquiry,
+        backref=backref('messages', order_by=message_table.c.timestamp),
+        ),
     },
     order_by=message_table.c.id,
 )
