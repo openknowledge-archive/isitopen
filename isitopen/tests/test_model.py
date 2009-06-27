@@ -1,5 +1,3 @@
-import email as E
-
 from isitopen.tests import *
 
 import isitopen.model as model
@@ -16,10 +14,12 @@ class TestModel(object):
     def test_fixtures(self):
         mess = model.Message.query.get(self.mess_id)
         enq = model.Enquiry.query.get(self.enq_id)
-        assert mess.enquiry.id == self.enq_id
-        tmp = E.message_from_string(mess.mimetext)
-        subj = mess.email['Subject']
-        assert subj == u'testing email', subj
 
         assert enq.owner.email == Fixtures.user_email
+        assert mess.enquiry == enq
+
+        subj = mess.email['Subject']
+        assert subj == u'testing email', subj
+        assert mess.subject == subj, mess.subject
+        assert mess.to == Fixtures.to, mess.to
 

@@ -11,10 +11,13 @@ class EnquiryController(BaseController):
         return render('enquiry/choose.html')
 
     def create(self, template=''):
-        c.to = request.params.get('to', '')
-        c.subject = request.params.get('subject', 'Data Openness Enquiry')
+        class MockMessage:
+            pass
+        c.message = MockMessage()
+        c.message.to = request.params.get('to', '')
+        c.message.subject = request.params.get('subject', 'Data Openness Enquiry')
+        c.message.body = request.params.get('body', template_2)
         c.sender = request.params.get('sender', '')
-        c.body = request.params.get('body', template_2)
 
         if 'preview' in request.params:
             c.preview = True
@@ -26,15 +29,15 @@ class EnquiryController(BaseController):
 
     def save(self):
         c.error = ''
-        if not c.to:
+        if not c.message.to:
             c.error = 'You have not specified to whom the enquiry should ' + \
                     'be sent.'
             return render('enquiry/sent.html')
         enq = model.Enquiry()
         email_msg = mailer.Mailer.message_from_default(
-            c.body,
-            to=c.to,
-            subject=c.subject
+            c.message.body,
+            to=c.message.to,
+            subject=c.message.subject
             )
         message = model.Message(enquiry=enq, mimetext=email_msg.as_string())
         model.Session.commit()

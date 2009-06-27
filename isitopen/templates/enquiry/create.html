@@ -10,25 +10,26 @@
     <h2>Step 1: Specify Your Enquiry</h2>
     <form action="#preview" method="post">
       <label for="email">To: (email address)</label>
-      ${XML(h.text('to', size=40, value=c.to))} <br />
+      ${XML(h.text('to', size=40, value=c.message.to))} <br />
       <label for="subject">Subject: (modify as required)</label>
-      ${XML(h.text('subject', size=60, value=c.subject))} <br />
+      ${XML(h.text('subject', size=60, value=c.message.subject))} <br />
       <label for="sender">Your Email: (optional &ndash; if supplied we can keep you
         updated)</label>
       ${XML(h.text('sender', size=60, value=c.sender))} <br />
 
       <label for="notes">Email Body: (customize this)</label>
-      ${XML(h.textarea('body', content=h.escape(c.body), size="72x25"))} <br />
+      ${XML(h.textarea('body', content=h.escape(c.message.body), cols=72, rows=25))} <br />
       ${XML(h.submit('preview', value='Preview &raquo;', id='preview'))}
       ${XML(h.submit('send', value='Send &raquo;', id='send'))}
     </form>
 
     <py:if test="c.preview">
     <div id="preview" style="border: 2px dashed #d2d2d2; margin: 1em; padding: 1em;">
-    <h3>Preview</h3>
-    <p><strong>NB: the email will be sent in plain text but this preview has been
-      'prettified' using markdown.</strong></p>
-    <xi:include href="view_core.html" />
+      <h3>Preview</h3>
+      <p><strong>NB: the email will be sent in plain text but this preview has been
+        'prettified' using markdown.</strong></p>
+      <xi:include href="../message/view_core.html" />
+      ${render_message(c.message)}
     </div>
     </py:if>
 
