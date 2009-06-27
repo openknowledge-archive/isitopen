@@ -6,12 +6,9 @@ available to Controllers. This module is available to both as 'h'.
 from webhelpers.html import escape, HTML, literal, url_escape
 from webhelpers.html.tags import *
 
-# TODO: remove the deprecated calls and replace with functionality from
-# webhelpers.html, etc.
-from webhelpers.rails.wrapped import *
-
 from webhelpers.markdown import markdown
 from routes import url_for
+from routes import redirect_to
 
 # redo markdown to deal with None values
 old_markdown = markdown
