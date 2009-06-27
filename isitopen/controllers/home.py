@@ -7,4 +7,3 @@ class HomeController(BaseController):
 
     def guide(self):
         return render('guide.html')
-

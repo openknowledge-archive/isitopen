@@ -14,28 +14,17 @@ class TestGmailLogin:
     def test_login_fail(self):
         gm = Gmail(MockGmailIMAP(), 'mockuser', 'notthepassword')
         
-    def test_methods_raise_when_not_logged_in(self):
-        gm = Gmail(MockGmailIMAP(), 'mockuser', 'mockpasswd')
-        gm.logout()
-        assert_raises(AssertionError, gm.threads)
-        assert_raises(AssertionError, gm.inbox_unread)
-        assert_raises(AssertionError, gm.messages_for_mailbox, 'INBOX')
-        
-        
 class TestGmail:
     
     def setup(self):
         self.gmail = Gmail(MockGmailIMAP(), 'mockuser', 'mockpasswd')
         assert self.gmail.logged_in, "Not logged in!"
-        
-    def teardown(self):
-        self.gmail.logout()
     
     def test_threads(self):
         assert_equal( self.gmail.threads(), ['1234', '2345', '3456', '4567'] )
     
-    def test_inbox_unread(self):
-        assert_equal( self.gmail.inbox_unread(), {} )
+    def test_unread(self):
+        assert_equal( self.gmail.unread(), {} )
         
     def test_messages_for_mailbox(self):
         assert_equal( len(self.gmail.messages_for_mailbox('thread/1234')), 2 )
@@ -55,6 +44,16 @@ class TestGmail:
             "Message 1 doesn't start with the right string!"
         assert msgs['2'].get_payload().startswith("The body of message 2"), \
             "Message 2 doesn't start with the right string!"
+    
+    def test_get_message(self):
+        n1, msg1 = self.gmail.get_message("<6AE15752-B604-712D-8A42-13782DBC2FF9@gmail.com>")
+        n2, msg2 = self.gmail.get_message("<83D15878-C804-428D-9D2B-28416DA22F5C@gmail.com>")
+        assert_equal( msg1['Message-Id'], '<6AE15752-B604-712D-8A42-13782DBC2FF9@gmail.com>' )
+        assert_equal( msg2['Message-Id'], '<83D15878-C804-428D-9D2B-28416DA22F5C@gmail.com>' )
+        
+        assert_equal( self.gmail.get_message("nonexistent"), None )
+    
+         
 
 class MockGmailIMAP(object):
     # Make me as messy as you like. It really doesn't matter.
@@ -81,30 +80,44 @@ class MockGmailIMAP(object):
                             '(\\HasNoChildren) "/" "thread/1234"',
                             '(\\HasNoChildren) "/" "thread/2345"',
                             '(\\HasNoChildren) "/" "thread/3456"',
-                            '(\\HasNoChildren) "/" "thread/4567"'])
+                            '(\\HasNoChildren) "/" "thread/4567"',
+                            '(\\Noselect \\HasChildren) "/" "[Google Mail]"',
+                            '(\\HasNoChildren) "/" "[Google Mail]/All Mail"'])
         else:
             return ('OK', [None])
 
     def select(self, box="INBOX"):
         """Select a mailbox"""
         self.mailbox = box
-        if box == "thread/1234":
+        if box in ["thread/1234", "[Google Mail]/All Mail"]:
             return ('OK', ['2'])
         else:
             return ('OK', ['0'])
 
     def search(self, charset, criteria):
         """Search for messages matching criteria"""
-        if self.mailbox == 'thread/1234':
+        
+        import re
+        
+        if self.mailbox in ["thread/1234", "[Google Mail]/All Mail"]:
             if criteria.upper() == "ALL":
                 return ('OK', ['1 2'])
             elif criteria.upper() == "UNSEEN":
                 return ('OK', ['2'])
+            elif re.match('\(?(ALL )?HEADER MESSAGE-ID ("|\')<6AE15752-B604-712D-8A42-13782DBC2FF9@GMAIL.COM>("|\')\)?',  
+                          ' '.join(criteria.upper().split())):
+                return ('OK', ['1'])
+            elif re.match('\(?(ALL )?HEADER MESSAGE-ID ("|\')<83D15878-C804-428D-9D2B-28416DA22F5C@GMAIL.COM>("|\')\)?',  
+                          ' '.join(criteria.upper().split())):
+                return ('OK', ['2'])
+            else:
+                return ('OK', [''])
+                          
         else:
             return ('OK', [''])
 
     def fetch(self, number, what):
-        if self.mailbox == 'thread/1234':
+        if self.mailbox in ["thread/1234", "[Google Mail]/All Mail"]:
             msgs = {
                 '1': ('OK', [('1 (RFC822 {426}', "Delivered-To: mockuser@gmail.com\r\nSender: Jane Doe <jane.doe@example.com>\r\nMessage-Id: <6AE15752-B604-712D-8A42-13782DBC2FF9@gmail.com>\r\nFrom: Jane Doe <jane.doe@example.com>\r\nTo: 'Mock User' <mockuser@gmail.com>\r\nContent-Type: text/plain;\r\n\tcharset=us-ascii;\r\n\tformat=flowed\r\nContent-Transfer-Encoding: 7bit\r\nX-Mailer: A Mail Client v1.0\r\nMime-Version: 1.0\r\nSubject: Message 1 subject line\r\nDate: Thu, 19 Mar 2009 10:58:21 +0000\r\n\r\nThe body of message 1\r\n"), ')']),
                 '2': ('OK', [('2 (RFC822 {426}', "Delivered-To: mockuser@gmail.com\r\nSender: John Doe <john.doe@example.com>\r\nMessage-Id: <83D15878-C804-428D-9D2B-28416DA22F5C@gmail.com>\r\nFrom: John Doe <john.doe@example.com>\r\nTo: 'Mock User' <mockuser@gmail.com>\r\nContent-Type: text/plain;\r\n\tcharset=us-ascii;\r\n\tformat=flowed\r\nContent-Transfer-Encoding: 7bit\r\nX-Mailer: A Mail Client v1.0\r\nMime-Version: 1.0\r\nSubject: Message 2 subject line\r\nDate: Thu, 19 Mar 2009 10:58:21 +0000\r\n\r\nThe body of message 2\r\n"), ')'])
