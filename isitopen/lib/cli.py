@@ -1,4 +1,5 @@
 import os
+import email as E
 
 import paste.script
 
@@ -63,7 +64,9 @@ class Fixtures(Command):
     max_args = None
     min_args = 0
 
+    user_email = u'testing@isitopen.org'
     to = u'testing@enquiries.com'
+    email = E.message_from_string(u'')
 
     def command(self):
         self._load_config()
@@ -72,15 +75,17 @@ class Fixtures(Command):
     @classmethod
     def create(self):
         from isitopen import model
-        enq = model.Enquiry()
-        subj = u'testing email'
-        mess = model.Message(
-                to=self.to,
-                subject=subj,
-                enquiry=enq
-                )
+        user = model.User(email=self.user_email)
+        enq = model.Enquiry(owner=user)
+        self.email['To'] = self.to
+        self.email['Subject'] = u'testing email'
+        mess = model.Message(enquiry=enq)
+        mess.mimetext = self.email.as_string()
         model.Session.commit()
-        model.Session.clear()
+        enq_id = enq.id
+        mess_id = mess.id
+        model.Session.remove()
+        return (enq_id, mess_id)
 
     @classmethod
     def remove(self):

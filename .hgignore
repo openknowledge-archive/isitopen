@@ -5,6 +5,8 @@ isitopen.egg-info/*
 *.db
 *.tmproj
 .DS_Store
+# pylons cache
+data/*
 
 syntax: regexp
 ^build$

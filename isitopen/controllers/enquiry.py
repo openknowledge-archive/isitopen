@@ -18,7 +18,7 @@ class EnquiryController(BaseController):
 
         if 'preview' in request.params:
             c.preview = True
-        if not 'commit' in request.params:
+        if not 'send' in request.params:
             return render('enquiry/create.html')
 
         # must be a commit
@@ -31,14 +31,17 @@ class EnquiryController(BaseController):
                     'be sent.'
             return render('enquiry/sent.html')
         enq = model.Enquiry()
-        message = model.Message(
-                to=c.to,
-                subject=c.subject,
-                body=c.body,
-                enquiry=enq
-                )
+        email_msg = mailer.Mailer.message_from_default(
+            c.body,
+            to=c.to,
+            subject=c.subject
+            )
+        message = model.Message(enquiry=enq, mimetext=email_msg.as_string())
         model.Session.commit()
-        c.message = message
+        h.redirect_to(controller='enquiry', action='sent', id=enq.id)
+    
+    def sent(self, id):
+        c.enquiry = model.Enquiry.query.get(id)
         return render('enquiry/sent.html')
 
     def send_pending(self):
@@ -51,12 +54,7 @@ class EnquiryController(BaseController):
                 # TODO: need to get back the gmail id
                 # TODO: bcc sender ... 
                 m = mailer.Mailer.default()
-                msg = mailer.Mailer.message_from_default(
-                    message.body,
-                    to=message.to,
-                    subject=message.subject
-                    )
-                m.send(msg)
+                m.send(message.email)
                 message.status = model.MessageStatus.sent
                 model.Session.commit()
                 results.append([message.id, 'OK'])
