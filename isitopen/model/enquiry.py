@@ -27,7 +27,7 @@ enquiry_table = Table('enquiry', metadata,
         Column('status', types.UnicodeText, default=EnquiryStatus.unresolved),
         Column('timestamp', types.DateTime, default=datetime.datetime.now),
         Column('last_updated', types.DateTime, default=datetime.datetime.now),
-        Column('owner_id', types.String(36), ForeignKey('user.id'),
+        Column('owner_id', types.String(36), ForeignKey('user.id')),
         )
 
 message_table = Table('message', metadata,
