@@ -39,7 +39,9 @@ class MessageController(BaseController):
             to=c.message.to,
             subject=c.message.subject
             )
-        message = model.Message(mimetext=email_msg.as_string())
+        message = model.Message(mimetext=email_msg.as_string(),
+                status=model.MessageStatus.not_yet_sent)
+
         model.Session.commit()
         h.redirect_to(controller='enquiry', action='sent', id=c.enquiry_id,
                 message_id=message.id)
