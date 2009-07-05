@@ -10,6 +10,7 @@
   <div py:match="content">
     <h2>Enquiry: ${c.enquiry.id}</h2>
     <ul>
+      <li><strong>Summary: ${c.enquiry.messages[0].email['Subject']}</strong></li>
       <li><strong>Status: ${c.enquiry.status}</strong></li>
       <li><strong>Started:</strong> ${c.enquiry.timestamp.isoformat()}</li>
       <li><strong>ID:</strong> ${c.enquiry.id}</li>
@@ -18,7 +19,15 @@
       <hr />
       ${render_message(message)}
     </py:for>
-      
+
+    <py:with vars="lastmsg=c.enquiry.messages[-1]">
+    <a class="send-response" href="${h.url_for(controller='message',
+      action='create', id=None, enquiry_id=c.enquiry.id,
+      to=lastmsg.email['From'],
+      sender=c.enquiry.messages[0].sender,
+      subject=lastmsg.email['Subject'])}">
+      Write a response &raquo;</a>
+    </py:with>
 	</div>
 
   <xi:include href="../layout.html" />

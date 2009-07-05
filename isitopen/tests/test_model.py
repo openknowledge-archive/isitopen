@@ -23,4 +23,5 @@ class TestModel(object):
         assert mess.subject == subj, mess.subject
         assert mess.to == Fixtures.to, mess.to
         assert mess.sender == Fixtures.sender, mess.sender
+        assert mess.status == model.MessageStatus.sent
 

@@ -17,6 +17,7 @@ class MessageStatus(object):
     not_yet_sent = u'Not Yet Sent'
     sent_not_synced = u'Sent But Not Synced'
     sent = u'Sent'
+    response = u'Response'
 
 
 user_table = Table('user', metadata,
@@ -39,7 +40,7 @@ message_table = Table('message', metadata,
     Column('sender', types.UnicodeText()),
     # would prefer UnicodeText but it seems simple str is needed for emails
     Column('mimetext', types.Text()),
-    Column('status', types.UnicodeText, default=MessageStatus.not_yet_sent),
+    Column('status', types.UnicodeText),
     Column('timestamp', types.DateTime, default=datetime.datetime.now),
     )
 
