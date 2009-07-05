@@ -20,10 +20,10 @@ class Gmail(object):
         self.user = user
         self.pwd = pwd
         self.login()
+        self.delim = self._delimiter()
         
     def __del__(self):
         """Logout from the server. The connection cannot be reopened."""
-        # self.conn.close()
         self.conn.logout()
         self.logged_in = False
     
@@ -64,17 +64,19 @@ class Gmail(object):
     
     def messages_for_mailbox(self, mailbox, condition='ALL'):
         """Return a dict {msgId: email, ...} of messages in `mailbox` matching `condition`."""
-        self.conn.select(mailbox)
+        mailbox = self.delim.join(mailbox.split('/'))
+        self._check("select mailbox '" + mailbox + "'", *self.conn.select(mailbox))
         
-        stat, indices =  self.conn.search(None, condition) 
+        stat, indices = self.conn.search(None, condition) 
         
         results = {}
         
         if indices[0]:
             for index in indices[0].split():
                 stat, data = self.conn.fetch(index, '(RFC822)')
-                assert stat == 'OK'
-            
+                self._check('fetch message ' + index + ' from mailbox ' + mailbox,
+                            stat, data)
+                                
                 msg = email.message_from_string(data[0][1])
                 results[index] = msg
             
@@ -83,15 +85,20 @@ class Gmail(object):
     def _messages_for_message_id(self, message_id):
         # TODO sanitize message_id?        
         return 
+        
+    def _delimiter(self):
+        stat, data = self.conn.list()
+        self._check('determine mailbox delimeter', stat, data)
+        return data[0].split()[1].strip("\"")
                                          
     def get_message(self, message_id):
         """Return a message object corresponding to the given `message_id`. Searches
-           Gmail's 'All Mail' folder."""
-        msgs = self.messages_for_mailbox(self.allmail, "(ALL HEADER MESSAGE-ID '" + message_id + "')")
+           Gmail's 'All Mail' folder."""        
+        msgs = self.messages_for_mailbox(self.allmail, "(HEADER Message-Id " + message_id + ")")
         ids = msgs.keys()
-        
+
         if len(ids) > 1:
-            raise "Expected at most one message returned. Non-unique message ids?"
+            raise Exception, "Expected at most one message returned. Non-unique message ids?"
         elif len(ids) == 1:
             return ids[0], msgs[ids[0]]
             
@@ -106,6 +113,9 @@ class Gmail(object):
         # num, msg = self.get_message(message['Message-Id'])
         # # check for mailbox corresponding to label and create if necessary
         # self.conn.copy(num, mbox_for_label)
+    
+    def _check(self, attempting_to, stat, data):
+        assert stat == 'OK', "Could not " + attempting_to + ": " + ', '.join(data); 
     
     @classmethod
     def default(cls):        
