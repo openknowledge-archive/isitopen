@@ -32,22 +32,9 @@ class EnquiryController(BaseController):
         return render('enquiry/sent.html')
 
     def send_pending(self):
-        pending = model.Message.query.filter_by(
-                status=model.MessageStatus.not_yet_sent
-                ).all()
-        results = []
-        for message in pending:
-            try:
-                # TODO: need to get back the gmail id
-                # TODO: bcc sender ... 
-                m = mailer.Mailer.default()
-                m.send(message.email)
-                message.status = model.MessageStatus.sent
-                model.Session.commit()
-                results.append([message.id, 'OK'])
-            except Exception, inst:
-                results.append('ERROR: %s' % inst)
-                break
+        import isitopen.lib.mailsync as sync
+        send_results = sync.send_pending()
+        sync_results = sync.sync_sent_mail()
         return '%s' % results
 
     def list(self):
