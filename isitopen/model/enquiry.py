@@ -15,6 +15,7 @@ class EnquiryStatus(object):
 
 class MessageStatus(object):
     not_yet_sent = u'Not Yet Sent'
+    sent_not_synced = u'Sent But Not Synced'
     sent = u'Sent'
 
 
@@ -35,6 +36,8 @@ enquiry_table = Table('enquiry', metadata,
 message_table = Table('message', metadata,
     Column('id', types.String(36), default=make_uuid, primary_key=True),
     Column('enquiry_id', types.String(36), ForeignKey('enquiry.id')),
+    Column('sender', types.UnicodeText()),
+    # would prefer UnicodeText but it seems simple str is needed for emails
     Column('mimetext', types.Text()),
     Column('status', types.UnicodeText, default=MessageStatus.not_yet_sent),
     Column('timestamp', types.DateTime, default=datetime.datetime.now),
