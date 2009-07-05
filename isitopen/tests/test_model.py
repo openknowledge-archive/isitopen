@@ -22,4 +22,5 @@ class TestModel(object):
         assert subj == u'testing email', subj
         assert mess.subject == subj, mess.subject
         assert mess.to == Fixtures.to, mess.to
+        assert mess.sender == Fixtures.sender, mess.sender
 
