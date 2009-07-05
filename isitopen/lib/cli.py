@@ -67,7 +67,9 @@ class Fixtures(Command):
 
     user_email = u'testing@isitopen.org'
     to = u'testing@enquiries.com'
+    sender = u'me@iwantopendata.org'
     email = E.message_from_string(u'')
+    email2 = E.message_from_string(u'A second message')
 
     def command(self):
         self._load_config()
@@ -82,7 +84,12 @@ class Fixtures(Command):
         self.email['To'] = self.to
         self.email['Subject'] = u'testing email'
         mess = model.Message(enquiry=enq)
+        mess.sender = self.sender
         mess.mimetext = self.email.as_string()
+
+        self.email2['To'] = self.user_email
+        self.email2['Subject'] = u'testing email response'
+        mess2 = model.Message(enquiry=enq, mimetext=self.email2.as_string())
         model.Session.commit()
         enq_id = enq.id
         mess_id = mess.id

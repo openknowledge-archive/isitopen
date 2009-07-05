@@ -11,7 +11,13 @@ class Mailer(object):
         self.conn.login(self.user, self.pwd)
         
     def send(self, msg):
-        self.conn.sendmail(msg['From'], msg['To'], msg.as_string())
+        recipients = msg['To']
+        for field in ['cc', 'bcc']:
+            # TODO:? Use get_all and email.util.get_addresses?
+            extras = msg.get(field, '')
+            if extras:
+                recipients += '; ' + extras
+        self.conn.sendmail(msg['From'], recipients, msg.as_string())
         return self
         
     def quit(self):
@@ -28,6 +34,7 @@ class Mailer(object):
     @classmethod
     def default(cls):
         '''Return a default Mailer instance based on config in your ini file.'''
+        from pylons import config
         if config.get('enquiry.email_user', ''):
             USER = config['enquiry.email_user']
             PWD = config['enquiry.email_pwd']
