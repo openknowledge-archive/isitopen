@@ -26,6 +26,8 @@ class TestHomeController(TestController):
     def test_create(self):
         offset = url_for(controller='enquiry', action='create')
         res = self.app.get(offset)
+        # redirect to message/create
+        res = res.follow()
         assert 'Create' in res
         to = 'xyz@journal.org'
         sender = 'enquirer@okfn.org'
@@ -35,9 +37,10 @@ class TestHomeController(TestController):
         res = form.submit('preview')
         assert 'Preview' in res
         res = form.submit('send')
+
         # 302 redirect
         res = res.follow()
-        assert 'Sent' in res
+        assert 'Enquiry - Sent' in res
         model.Session.remove()
         assert model.Enquiry.query.count() == 2
         assert model.Message.query.count() == 3
