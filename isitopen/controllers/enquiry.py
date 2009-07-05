@@ -1,6 +1,9 @@
-from isitopen.lib.base import *
+import logging
 
+from isitopen.lib.base import *
 import isitopen.lib.mailer as mailer
+
+log = logging.getLogger(__name__)
 
 class EnquiryController(BaseController):
 
@@ -10,41 +13,22 @@ class EnquiryController(BaseController):
     def choose(self):
         return render('enquiry/choose.html')
 
-    def create(self, template=''):
-        class MockMessage:
-            pass
-        c.message = MockMessage()
-        c.message.to = request.params.get('to', '')
-        c.message.subject = request.params.get('subject', 'Data Openness Enquiry')
-        c.message.body = request.params.get('body', template_2)
-        c.sender = request.params.get('sender', '')
+    def create(self, id=None):
+        h.redirect_to(controller='message', action='create', enquiry_id='new')
 
-        if 'preview' in request.params:
-            c.preview = True
-        if not 'send' in request.params:
-            return render('enquiry/create.html')
-
-        # must be a commit
-        return self.save()
-
-    def save(self):
-        c.error = ''
-        if not c.message.to:
-            c.error = 'You have not specified to whom the enquiry should ' + \
-                    'be sent.'
-            return render('enquiry/sent.html')
-        enq = model.Enquiry()
-        email_msg = mailer.Mailer.message_from_default(
-            c.message.body,
-            to=c.message.to,
-            subject=c.message.subject
-            )
-        message = model.Message(enquiry=enq, mimetext=email_msg.as_string())
-        model.Session.commit()
-        h.redirect_to(controller='enquiry', action='sent', id=enq.id)
-    
     def sent(self, id):
-        c.enquiry = model.Enquiry.query.get(id)
+        msgid = request.params.get('message_id', '')
+        # if not msgid:
+        #    log.warn('No message id in sent! Enquiry id: %s' % id)
+        #    msg = None
+        # else:
+        msg = model.Message.query.get(msgid)
+        if id == 'new':
+            c.enquiry = model.Enquiry()
+        else:
+            c.enquiry = model.Enquiry.query.get(id)
+        msg.enquiry = c.enquiry
+        model.Session.commit()
         return render('enquiry/sent.html')
 
     def send_pending(self):
@@ -61,8 +45,8 @@ class EnquiryController(BaseController):
                 message.status = model.MessageStatus.sent
                 model.Session.commit()
                 results.append([message.id, 'OK'])
-            except:
-                results.append('ERROR')
+            except Exception, inst:
+                results.append('ERROR: %s' % inst)
                 break
         return '%s' % results
 

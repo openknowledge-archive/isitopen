@@ -9,18 +9,23 @@
   <div py:match="content">
     <h2>Step 1: Specify Your Enquiry</h2>
     <form action="#preview" method="post">
+      ${h.hidden('enquiry_id', c.enquiry_id)}
+
       <label for="email">To: (email address)</label>
-      ${XML(h.text('to', size=40, value=c.message.to))} <br />
+      ${h.text('to', size=40, value=c.message.to)} <br />
+
       <label for="subject">Subject: (modify as required)</label>
-      ${XML(h.text('subject', size=60, value=c.message.subject))} <br />
+      ${h.text('subject', size=60, value=c.message.subject)} <br />
+
       <label for="sender">Your Email: (optional &ndash; if supplied we can keep you
         updated)</label>
-      ${XML(h.text('sender', size=60, value=c.sender))} <br />
+      ${h.text('sender', size=60, value=c.sender)} <br />
 
       <label for="notes">Email Body: (customize this)</label>
-      ${XML(h.textarea('body', content=h.escape(c.message.body), cols=72, rows=25))} <br />
-      ${XML(h.submit('preview', value='Preview &raquo;', id='preview'))}
-      ${XML(h.submit('send', value='Send &raquo;', id='send'))}
+      ${XML(h.textarea('body', content=h.escape(c.message.body), cols=72, rows=25))}
+      <br />
+      ${h.submit('preview', value='Preview &raquo;', id='preview')}
+      ${h.submit('send', value='Send &raquo;', id='send')}
     </form>
 
     <py:if test="c.preview">
