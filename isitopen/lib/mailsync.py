@@ -17,8 +17,8 @@ def send_pending():
             e[ISITOPEN_HEADER_ID] = message.id
             if message.sender:
                 # use bcc to ensure recipient replies to isitopen not sender
-                e['BCC'] = message.sender
-            
+                e['Bcc'] = message.sender
+                
             m.send(message.email)
             message.status = model.MessageStatus.sent_not_synced
             model.Session.commit()
@@ -57,7 +57,7 @@ def check_mail():
         m.mimetext = message.as_string()
         m.enquiry = _enquiry_for_message(message)
         model.Session.commit()
-        g.mark_read(message)
+        # g.mark_read(message)
         # g.gmail_label(message, 'enquiry/' + m.enquiry.id) # get message from imap via MIME Message-Id, copy to "enquiry/<enq_id>"
         
 def _enquiry_for_message(message):
