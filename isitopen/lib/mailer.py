@@ -7,16 +7,14 @@ class Mailer(object):
         self.conn = conn
         self.user = user
         self.pwd = pwd
-        self.conn.starttls()
-        self.conn.login(self.user, self.pwd)
+        print user, pwd
+        if user and pwd:
+            self.conn.starttls()
+            self.conn.login(self.user, self.pwd)
         
     def send(self, msg):
-        recipients = msg['To']
-        for field in ['cc', 'bcc']:
-            # TODO:? Use get_all and email.util.get_addresses?
-            extras = msg.get(field, '')
-            if extras:
-                recipients += '; ' + extras
+        to_hdrs = ['To', 'Cc', 'Bcc']
+        recipients = [msg.get(hdr, False) for hdr in to_hdrs if msg.get(hdr, False)]
         self.conn.sendmail(msg['From'], recipients, msg.as_string())
         return self
         
@@ -33,11 +31,17 @@ class Mailer(object):
         
     @classmethod
     def default(cls):
-        '''Return a default Mailer instance based on config in your ini file.'''
+        '''Return a default Mailer instance based on config in your ini file.'''        
         from pylons import config
-        if config.get('enquiry.email_user', ''):
-            USER = config['enquiry.email_user']
-            PWD = config['enquiry.email_pwd']
-            return cls(smtplib.SMTP('smtp.gmail.com', 587), USER, PWD)
-        else:
-            return None
+
+        host = config['enquiry.smtp_host']
+        port = config['enquiry.smtp_port']
+        usr = config['enquiry.smtp_user']
+        pwd = config['enquiry.smtp_pwd']
+                
+        if not host:
+            raise Exception, "Need SMTP host to be specified in config."
+        
+        conn = smtplib.SMTP(host, port or 587)        
+        instance = cls(conn, usr, pwd)
+        return instance

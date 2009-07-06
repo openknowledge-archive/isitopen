@@ -12,9 +12,13 @@ class Gmail(object):
         conn should be an instance of imaplib.{IMAP4,IMAP4_SSL} or an object
         that behaves similarly.
         """
+        
         self.thread_mailbox = 'thread'
+        
         self.inbox = 'INBOX'
         self.allmail = '[Google Mail]/All Mail'
+        self.sent = '[Google Mail]/Sent'
+        
         self.logged_in = False
         self.conn = conn
         self.user = user
@@ -50,6 +54,7 @@ class Gmail(object):
         threads = []
         for box in boxes:
             # TODO don't assume the hierarchy delimiter has length 1
+            print box
             thread = box.split(' ')[-1].strip("\"")[len(self.thread_mailbox) + 1:]
             if thread != "": threads.append(thread)
         
@@ -81,15 +86,6 @@ class Gmail(object):
                 results[index] = msg
             
         return results
-        
-    def _messages_for_message_id(self, message_id):
-        # TODO sanitize message_id?        
-        return 
-        
-    def _delimiter(self):
-        stat, data = self.conn.list()
-        self._check('determine mailbox delimeter', stat, data)
-        return data[0].split()[1].strip("\"")
                                          
     def get_message(self, message_id):
         """Return a message object corresponding to the given `message_id`. Searches
@@ -113,6 +109,11 @@ class Gmail(object):
         # num, msg = self.get_message(message['Message-Id'])
         # # check for mailbox corresponding to label and create if necessary
         # self.conn.copy(num, mbox_for_label)
+
+    def _delimiter(self):
+        stat, data = self.conn.list()
+        self._check('determine mailbox delimeter', stat, data)
+        return data[0].split()[1].strip("\"")
     
     def _check(self, attempting_to, stat, data):
         assert stat == 'OK', "Could not " + attempting_to + ": " + ', '.join(data); 
@@ -122,24 +123,22 @@ class Gmail(object):
         '''Return a default Gmail instance based on config in your ini file.'''
         
         from pylons import config
-        import os
+
+        host = config['enquiry.imap_host']
+        usr = config['enquiry.imap_user']
+        pwd = config['enquiry.imap_pwd']
+        
+        if not (host and usr and pwd):
+            raise Exception, "Need IMAP host/user/pwd to be specified in config."
+        
+        conn = imaplib.IMAP4_SSL(host, 993)
+        
+        instance = cls(conn, usr, pwd)
+        instance.thread_mailbox = 'enquiry'
         
         if config['debug']:
-            conn = imaplib.IMAP4('localhost', 8143)
-            usr = os.environ['USER']
-            pwd = "pass"
-        elif config.get('enquiry.email_user', ''):
-            usr = config['enquiry.email_user']
-            pwd = config['enquiry.email_pwd']
-            conn = imaplib.IMAP4_SSL('imap.gmail.com', 993)
+            instance.inbox = "FIXTURE"
         
-        if conn:
-            instance = cls(conn, usr, pwd)
-            instance.thread_mailbox = 'enquiry'
-            if config['debug']:
-                instance.inbox = "FIXTURE"
-            return instance
-        else:
-            return None
+        return instance
         
         

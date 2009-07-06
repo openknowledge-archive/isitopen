@@ -29,8 +29,14 @@ app_instance_uuid = ${app_instance_uuid}
 sqlalchemy.url = sqlite:///%(here)s/sqlite_isitopen.db
 
 # enquiry service uses a gmail account for email related functions
-enquiry.email_user = 
-enquiry.email_pwd = 
+enquiry.imap_host = imap.gmail.com
+enquiry.imap_user = 
+enquiry.imap_pwd = 
+
+enquiry.smtp_host = smtp.gmail.com
+enquiry.smtp_port = 587
+enquiry.smtp_user = enquiry.imap_user
+enquiry.smtp_pwd = enquiry.imap_pwd
 
 # WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
 # Debug mode will enable the interactive debugging tool, allowing ANYONE to
