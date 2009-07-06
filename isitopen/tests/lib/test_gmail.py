@@ -9,9 +9,10 @@ class TestGmailLogin:
     def setup(self):
         from pylons import config
         
-        self.usr = config['enquiry.email_user']
-        self.pwd = config['enquiry.email_pwd']
-        self.imap = imaplib.IMAP4('localhost', 143)
+        self.host = config['enquiry.imap_host']
+        self.usr = config['enquiry.imap_user']
+        self.pwd = config['enquiry.imap_pwd']
+        self.imap = imaplib.IMAP4_SSL(self.host)
     
     def teardown(self):
         self.imap.logout()
@@ -52,9 +53,9 @@ class TestGmail:
         # (for example, dovecot) as running the tests directly against Gmail is
         # a) dog slow and b) prone to failure if another developer tries to run
         # against the same account.
-        host = config['enquiry.email_host']
-        usr =  config['enquiry.email_user']
-        pwd =  config['enquiry.email_pwd']
+        host = config['enquiry.imap_host']
+        usr =  config['enquiry.imap_user']
+        pwd =  config['enquiry.imap_pwd']
 
         self.imap = imaplib.IMAP4_SSL(host)
         self.imap.login(usr, pwd)

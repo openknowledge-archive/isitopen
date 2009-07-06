@@ -14,13 +14,15 @@ def send_pending():
     for message in pending:
         try:
             e = message.email
-            e[ISITOPEN_HEADER_ID] = m.id
-            if e.sender:
+            e[ISITOPEN_HEADER_ID] = message.id
+            if message.sender:
                 # use bcc to ensure recipient replies to isitopen not sender
-                e['bcc'] = e.sender
+                e['BCC'] = message.sender
+            
             m.send(message.email)
             message.status = model.MessageStatus.sent_not_synced
             model.Session.commit()
+            
             results.append([message.id, message.status])
         except Exception, inst:
             results.append('ERROR: %s' % inst)
@@ -51,7 +53,6 @@ def sync_sent_mail():
 def check_mail():
     g = Gmail.default()
     for mboxid, message in g.unread().items():
-        print message['Subject']
         m = model.Message()
         m.mimetext = message.as_string()
         m.enquiry = _enquiry_for_message(message)
