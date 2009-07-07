@@ -65,8 +65,8 @@ class Fixtures(Command):
     max_args = None
     min_args = 0
 
-    user_email = u'testing@isitopen.org'
-    to = u'testing@enquiries.com'
+    user_email = u'testing@isitopen.ckan.net'
+    to = u'testing@enquiries.isitopen.ckan.net'
     sender = u'me@iwantopendata.org'
     email = E.message_from_string(u'')
     email2 = E.message_from_string(u'A second message')

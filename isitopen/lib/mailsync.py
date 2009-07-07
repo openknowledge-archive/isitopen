@@ -10,7 +10,7 @@ def send_pending():
             status=model.MessageStatus.not_yet_sent
             ).all()
     results = []
-    m = mailer.Mailer.default()
+    ourmailer = mailer.Mailer.default()
     for message in pending:
         try:
             e = message.email
@@ -19,7 +19,7 @@ def send_pending():
                 # use bcc to ensure recipient replies to isitopen not sender
                 e['Bcc'] = message.sender
                 
-            m.send(message.email)
+            ourmailer.send(message.email)
             message.status = model.MessageStatus.sent_not_synced
             model.Session.commit()
             
@@ -38,15 +38,26 @@ def sync_sent_mail():
     g = Gmail.default()
     for message in tosync:
         try:
-            emailobj = g.messages_for_mailbox(g.sent,
-                '(HEADER %s %s)' % (ISITOPEN_HEADER_ID, m.id)
+            # TODO: improve this (we cannot go through all sent messages every
+            # time)
+            # searching with an X-* header does *not* work ...
+            # so have to do this by hand (not good ...)
+            emails = g.messages_for_mailbox(g.sent,
+                    # '(%s "%s")' % (ISITOPEN_HEADER_ID, message.id)
                 )
-            message.mimetext = emailobj.as_string()
-            message.status = model.MessageStatus.sent
-            model.Session.commit()
+            # should only be one 
+            # assert len(emails) == 1, 'Should have one (+ only one) matching email'
+            # emailobj = emails[emails.keys()[0]]
+            for emailobj in emails.values():
+                if emailobj[ISITOPEN_HEADER_ID] == message.id:
+                    message.mimetext = emailobj.as_string()
+                    message.status = model.MessageStatus.sent
+                    model.Session.commit()
             results.append([message.id, message.status])
         except Exception, inst:
-            results.append('ERROR: %s' % inst)
+            results.append([message.id, 'ERROR: %s' % inst])
+            # during testing
+            # raise
     return results
 
 
@@ -60,5 +71,6 @@ def check_mail():
         # g.mark_read(message)
         # g.gmail_label(message, 'enquiry/' + m.enquiry.id) # get message from imap via MIME Message-Id, copy to "enquiry/<enq_id>"
         
-def _enquiry_for_message(message):
+
+def enquiry_for_message(message):
     return model.Enquiry.query.first()
