@@ -34,9 +34,10 @@ enquiry.imap_user =
 enquiry.imap_pwd = 
 
 enquiry.smtp_host = smtp.gmail.com
-enquiry.smtp_port = 587
-enquiry.smtp_user = enquiry.imap_user
-enquiry.smtp_pwd = enquiry.imap_pwd
+# will default to 587 if not set
+# enquiry.smtp_port = 587
+enquiry.smtp_user = %(enquiry.imap_user)s
+enquiry.smtp_pwd = %(enquiry.imap_pwd)s
 
 # WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
 # Debug mode will enable the interactive debugging tool, allowing ANYONE to

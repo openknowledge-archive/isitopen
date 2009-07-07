@@ -23,7 +23,9 @@ setup(
     install_requires=[
         'Pylons>=0.9.7,<0.9.8',
         'SQLAlchemy>=0.4,<0.5',
-        'Genshi>=0.4,<0.6'
+        'Genshi>=0.4,<0.6',
+        # for mail tests
+        'processing',
         ],
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
@@ -32,6 +34,11 @@ setup(
     #message_extractors = {'isitopen': [
     #        ('**.py', 'python', None),
     #        ('public/**', 'ignore', None)]},
+    paster_plugins=[
+        'Pylons',
+        'WebHelpers',
+        'PasteScript',
+        ],
     entry_points="""
     [paste.app_factory]
     main = isitopen.config.middleware:make_app

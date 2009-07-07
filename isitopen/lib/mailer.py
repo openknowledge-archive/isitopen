@@ -35,13 +35,13 @@ class Mailer(object):
         from pylons import config
 
         host = config['enquiry.smtp_host']
-        port = config['enquiry.smtp_port']
+        port = config.get('enquiry.smtp_port', 587)
         usr = config['enquiry.smtp_user']
         pwd = config['enquiry.smtp_pwd']
                 
         if not host:
             raise Exception, "Need SMTP host to be specified in config."
         
-        conn = smtplib.SMTP(host, port or 587)        
+        conn = smtplib.SMTP(host, port)
         instance = cls(conn, usr, pwd)
         return instance
