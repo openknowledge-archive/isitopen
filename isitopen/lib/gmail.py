@@ -17,7 +17,7 @@ class Gmail(object):
         
         self.inbox = 'INBOX'
         self.allmail = '[Google Mail]/All Mail'
-        self.sent = '[Google Mail]/Sent'
+        self.sent = '[Google Mail]/Sent Mail'
         
         self.logged_in = False
         self.conn = conn
