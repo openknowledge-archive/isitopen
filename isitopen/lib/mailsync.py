@@ -61,14 +61,27 @@ def sync_sent_mail():
     return results
 
 
-def check_mail():
+import isitopen.lib.finder
+finder = isitopen.lib.finder.Finder()
+def check_for_responses(folder=None):
     g = Gmail.default()
-    for mboxid, message in g.unread().items():
-        m = model.Message()
+    # unread items in the inbox
+    for mboxid, message in g.unread(folder).items():
+        # print '------------------------'
+        # print mboxid
+        # print message.as_string()
+        # ignore bounces ....
+        if 'From' in message and 'mailer-daemon@googlemail.com' in message['From']:
+            print 'Skipping: %s' % mboxid
+            continue
+        # TODO: extract timestamp etc
+        m = model.Message(status=model.MessageStatus.response)
         m.mimetext = message.as_string()
-        m.enquiry = _enquiry_for_message(message)
+        m.enquiry = finder.enquiry_for_message(message)
         model.Session.commit()
-        # g.mark_read(message)
+        # print '###############'
+        # print 'XXX', message.as_string
+        g.mark_read(message)
         # g.gmail_label(message, 'enquiry/' + m.enquiry.id) # get message from imap via MIME Message-Id, copy to "enquiry/<enq_id>"
         
 
