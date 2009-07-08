@@ -68,7 +68,7 @@ class Fixtures(Command):
     user_email = u'testing@isitopen.ckan.net'
     to = u'testing@enquiries.isitopen.ckan.net'
     sender = u'me@iwantopendata.org'
-    email = E.message_from_string(u'')
+    email = E.message_from_string(u'a body')
     email2 = E.message_from_string(u'A second message')
 
     def command(self):
@@ -83,6 +83,7 @@ class Fixtures(Command):
         enq = model.Enquiry(owner=user)
         self.email['To'] = self.to
         self.email['Subject'] = u'testing email'
+        self.email['Message-Id'] = '<%s@gmail.com>' % model.make_uuid()
         mess = model.Message(enquiry=enq)
         mess.sender = self.sender
         mess.mimetext = self.email.as_string()

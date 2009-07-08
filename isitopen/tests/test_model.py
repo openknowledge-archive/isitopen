@@ -16,12 +16,13 @@ class TestModel(object):
         enq = model.Enquiry.query.get(self.enq_id)
 
         assert enq.owner.email == Fixtures.user_email
-        assert mess.enquiry == enq
 
+        assert mess.enquiry == enq
         subj = mess.email['Subject']
         assert subj == u'testing email', subj
         assert mess.subject == subj, mess.subject
         assert mess.to == Fixtures.to, mess.to
         assert mess.sender == Fixtures.sender, mess.sender
         assert mess.status == model.MessageStatus.sent
+        assert mess.email['Message-Id'] is not None, mess.mimetext
 
