@@ -72,5 +72,3 @@ def check_mail():
         # g.gmail_label(message, 'enquiry/' + m.enquiry.id) # get message from imap via MIME Message-Id, copy to "enquiry/<enq_id>"
         
 
-def enquiry_for_message(message):
-    return model.Enquiry.query.first()
