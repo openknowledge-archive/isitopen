@@ -90,7 +90,7 @@ class Gmail(object):
     def get_message(self, message_id):
         """Return a message object corresponding to the given `message_id`. Searches
            Gmail's 'All Mail' folder."""        
-        msgs = self.messages_for_mailbox(self.allmail, "(HEADER Message-Id " + message_id + ")")
+        msgs = self.messages_for_mailbox(self.allmail, '(HEADER Message-Id "%s")' % message_id)
         ids = msgs.keys()
 
         if len(ids) > 1:

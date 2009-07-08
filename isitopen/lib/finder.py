@@ -13,14 +13,12 @@ class Finder(object):
     def enquiry_for_message(self, message):
         # first check in-reply-to and references headers
         # may in future move to subject based matching
-        print message
         inreplyto = message['In-Reply-To']
         references = message['References']
         lastref = None
         if references:
             lastref = '<' + references.split('<')[-1]
         for msgid in [ inreplyto, lastref ]:
-            print msgid
             # may be more efficient to query gmail for this ...
             if msgid:
                 msgid_field = 'Message-ID: %s' % msgid
