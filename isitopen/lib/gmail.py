@@ -98,17 +98,27 @@ class Gmail(object):
         elif len(ids) == 1:
             return ids[0], msgs[ids[0]]
             
-    def mark_read(self, message):
-        self.conn.select(self.allmail)
-        num, msg = self.get_message(message['Message-Id'])
-        self.conn.store(num, '+FLAGS', '\\Seen')
-        
+    def mark_read(self, msg_num):
+        self.conn.store(msg_num, '+FLAGS', '\\Seen')
+
+    def imap_delete(self, msg_num):
+#         if isinstance(message_or_num, basestring):
+#             num = message_or_num
+#         else:
+#             # problem with this is that it leads to selection of new mailbox
+#             # (All Mail)
+#             num, msg = self.get_message(message['Message-Id'])
+        self.conn.store(msg_num, '+FLAGS', '\\Deleted') 
+
     def gmail_label(self, message, label):
         pass
         # something a little like...
         # num, msg = self.get_message(message['Message-Id'])
         # # check for mailbox corresponding to label and create if necessary
         # self.conn.copy(num, mbox_for_label)
+
+    def remove_gmail_label(self, message, label):
+        raise NotImplementedError()
 
     def _delimiter(self):
         stat, data = self.conn.list()
@@ -135,10 +145,5 @@ class Gmail(object):
         
         instance = cls(conn, usr, pwd)
         instance.thread_mailbox = 'enquiry'
-        
-        if config['debug']:
-            instance.inbox = "FIXTURE"
-        
         return instance
-        
         

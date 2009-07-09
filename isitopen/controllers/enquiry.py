@@ -33,9 +33,16 @@ class EnquiryController(BaseController):
 
     def send_pending(self):
         import isitopen.lib.mailsync as sync
-        send_results = sync.send_pending()
-        sync_results = sync.sync_sent_mail()
-        return '%s' % results
+        out = 'Sending pending\n'
+        results = sync.send_pending()
+        out += '%s\n' % results
+        results = sync.sync_sent_mail()
+        out += 'Syncing sent mail\n'
+        out += '%s\n' % results
+        responses = sync.check_for_responses()
+        out += 'Syncing responses\n'
+        out += '%s\n' % results
+        return out
 
     def list(self):
         c.enquiries = model.Enquiry.query.all()

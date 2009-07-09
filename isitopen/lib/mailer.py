@@ -22,14 +22,6 @@ class Mailer(object):
         self.conn.quit()
     
     @classmethod
-    def message_from_default(cls, text, **headers):
-        msg = MIMEText(text)
-        msg['From'] = msg['Reply-To'] = '"Is It Open enquiry service" <data-enquire@okfn.org>'
-        for k,v in headers.items():
-            msg[k.capitalize()] = v
-        return msg
-        
-    @classmethod
     def default(cls):
         '''Return a default Mailer instance based on config in your ini file.'''        
         from pylons import config
@@ -38,7 +30,6 @@ class Mailer(object):
         port = config.get('enquiry.smtp_port', 587)
         usr = config['enquiry.smtp_user']
         pwd = config['enquiry.smtp_pwd']
-                
         if not host:
             raise Exception, "Need SMTP host to be specified in config."
         
