@@ -24,6 +24,7 @@ setup(
         'Pylons>=0.9.7,<0.9.8',
         'SQLAlchemy>=0.4,<0.5',
         'Genshi>=0.4,<0.6',
+        'FormAlchemy>=1.0',
         # for mail tests
         'processing',
         ],

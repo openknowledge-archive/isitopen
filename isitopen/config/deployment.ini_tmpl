@@ -28,6 +28,8 @@ app_instance_uuid = ${app_instance_uuid}
 # set your sqlalchemy database uri here
 sqlalchemy.url = sqlite:///%(here)s/sqlite_isitopen.db
 
+enquiry.from = Is It Open Enquiry Service <your@email>
+
 # enquiry service uses a gmail account for email related functions
 enquiry.imap_host = imap.gmail.com
 enquiry.imap_user = 

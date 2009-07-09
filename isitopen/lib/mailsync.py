@@ -66,22 +66,23 @@ finder = isitopen.lib.finder.Finder()
 def check_for_responses(folder=None):
     g = Gmail.default()
     # unread items in the inbox
+    results = []
     for mboxid, message in g.unread(folder).items():
-        # print '------------------------'
-        # print mboxid
-        # print message.as_string()
         # ignore bounces ....
         if 'From' in message and 'mailer-daemon@googlemail.com' in message['From']:
-            print 'Skipping: %s' % mboxid
+            results.append([message, 'Skipping as looks like bounce'])
             continue
-        # TODO: extract timestamp etc
-        m = model.Message(status=model.MessageStatus.response)
-        m.mimetext = message.as_string()
-        m.enquiry = finder.enquiry_for_message(message)
-        model.Session.commit()
-        # print '###############'
-        # print 'XXX', message.as_string
-        g.mark_read(message)
-        # g.gmail_label(message, 'enquiry/' + m.enquiry.id) # get message from imap via MIME Message-Id, copy to "enquiry/<enq_id>"
-        
+        try:
+            # TODO: extract timestamp etc
+            m = model.Message(status=model.MessageStatus.response)
+            m.mimetext = message.as_string()
+            m.enquiry = finder.enquiry_for_message(message)
+            model.Session.commit()
+            g.mark_read(mboxid)
+            results.append([message, 'Synced'])
+            # g.gmail_label(message, 'enquiry/' + m.enquiry.id) # get message from imap via MIME Message-Id, copy to "enquiry/<enq_id>"
+        except Exception, inst:
+            results.append([message, 'ERROR: %s' % inst])
+    return results
+
 

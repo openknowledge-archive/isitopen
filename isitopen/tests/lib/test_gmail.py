@@ -25,9 +25,11 @@ class TestGmailLogin:
     def test_login_fail(self):
         gm = Gmail(self.imap, self.usr, 'notthepassword')
         
+
 class TestGmail:
     
-    def setup(self):
+    @classmethod
+    def setup_class(self):
         # [TODO]: factor this IMAP setup out of here into something a little 
         #         more reusable.
         
@@ -61,6 +63,7 @@ class TestGmail:
         self.imap.login(usr, pwd)
         
         self.gmail = Gmail(imaplib.IMAP4_SSL(host), usr, pwd)        
+        self.gmail.inbox = 'FIXTURE'
         self.gmail.allmail = 'allMail'
         
         def structure_create(imap, struct, path=''):
@@ -74,7 +77,8 @@ class TestGmail:
 
         structure_create(self.imap, self.structure)
         
-    def teardown(self):
+    @classmethod
+    def teardown_class(self):
         def structure_destroy(imap, struct, path=''):
             for f in struct:
                 imap.create(path + f)
@@ -97,7 +101,8 @@ class TestGmail:
     def test_messages_for_mailbox(self):
         assert_equal( len(self.gmail.messages_for_mailbox('thread/1234', 'Seen')), 1 )
         assert_equal( len(self.gmail.messages_for_mailbox('thread/1234')), 2 )
-        assert_equal( len(self.gmail.messages_for_mailbox('INBOX')), 0 )
+        # this need not be true when running against e.g. gmail
+        # assert_equal( len(self.gmail.messages_for_mailbox('INBOX')), 0 )
         
     def test_messages_have_email_properties(self):
         msgs = self.gmail.messages_for_mailbox('thread/1234')

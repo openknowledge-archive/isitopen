@@ -18,3 +18,10 @@ class TestMessageController(TestController):
         # this is tested in test_enquiry.py
         pass
 
+    def test__make_email(self):
+        import isitopen.controllers.message as MSG
+        out = MSG._make_email('xyx', to='me@me.com')
+        assert out['To'] == 'me@me.com'
+        assert 'xyx' in out.as_string()
+
+

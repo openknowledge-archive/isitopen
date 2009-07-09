@@ -1,5 +1,7 @@
 import logging
+import email as E
 
+from pylons import config
 from isitopen.lib.base import *
 import isitopen.lib.mailer as mailer
 
@@ -34,7 +36,7 @@ class MessageController(BaseController):
             c.error = 'You have not specified to whom the enquiry should ' + \
                     'be sent.'
             return render('message/sent.html')
-        email_msg = mailer.Mailer.message_from_default(
+        email_msg = _make_email(
             c.message.body,
             to=c.message.to,
             subject=c.message.subject
@@ -49,6 +51,17 @@ class MessageController(BaseController):
     def sent(self, id):
         c.enquiry = model.Enquiry.query.get(id)
         return render('message/sent.html')
+
+
+default_from = config['enquiry.from']
+def _make_email(text, **headers):
+    from_ = config['enquiry.from']
+    msg = E.message_from_string(text)
+    for k,v in headers.items():
+        msg[k.capitalize()] = v
+    if not 'From' in msg:
+        msg['From'] = msg['Reply-To'] = default_from
+    return msg
 
 
 follow_up_email = '''It might also be good to apply a specific 'open data' licence --

@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 
 import time
 
-class TestMailerLogin:
+class _TestMailerLogin:
     @classmethod
     def setup_class(self):
         import isitopen.tests.helpers.dummysmtp as dsmtp
