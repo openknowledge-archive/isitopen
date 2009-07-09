@@ -37,12 +37,13 @@ class MessageController(BaseController):
                     'be sent.'
             return render('message/sent.html')
         email_msg = _make_email(
-            c.message.body,
+            c.message.body.encode('utf8'),
             to=c.message.to,
             subject=c.message.subject
             )
         message = model.Message(mimetext=email_msg.as_string(),
-                status=model.MessageStatus.not_yet_sent)
+                status=model.MessageStatus.not_yet_sent,
+                sender=c.sender)
 
         model.Session.commit()
         h.redirect_to(controller='enquiry', action='sent', id=c.enquiry_id,
