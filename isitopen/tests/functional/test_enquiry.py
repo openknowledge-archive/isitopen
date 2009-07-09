@@ -30,10 +30,14 @@ class TestHomeController(TestController):
         res = res.follow()
         assert 'Create' in res
         to = 'xyz@journal.org'
-        sender = 'enquirer@okfn.org'
+        sender = u'some-random-enquirer@okfn.org'
+        body = 'afdjdakfdakjfad'
+        subject = 'any old thing'
         form = res.forms[0]
         form['to'] = to
         form['sender'] = sender
+        form['body'] = body
+        form['subject'] = subject
         res = form.submit('preview')
         assert 'Preview' in res
         res = form.submit('send')
@@ -44,6 +48,14 @@ class TestHomeController(TestController):
         model.Session.remove()
         assert model.Enquiry.query.count() == 2
         assert model.Message.query.count() == 3
+        msg = model.Message.query.filter_by(sender=sender).first()
+        assert msg
+        print msg.mimetext
+        assert msg.to == to
+        assert body in msg.mimetext
+        assert msg.subject == subject
 
-        # TODO: test bad entry (e.g. no to address)
+    # TODO: test bad entry (e.g. no to address)
+    def test_bad_entry(self):
+        pass
 
