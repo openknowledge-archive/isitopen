@@ -9,7 +9,11 @@ class Mailer(object):
         self.pwd = pwd
         print user, pwd
         if user and pwd:
+            # not required in python >= 2.6 as part of starttls
+            self.conn.ehlo()
             self.conn.starttls()
+            # not required in python >= 2.6 as part of starttls
+            self.conn.ehlo()
             self.conn.login(self.user, self.pwd)
         
     def send(self, msg):
