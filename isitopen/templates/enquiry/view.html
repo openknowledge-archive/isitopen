@@ -23,9 +23,9 @@
     <py:with vars="lastmsg=c.enquiry.messages[-1]">
     <a class="send-response" href="${h.url_for(controller='message',
       action='create', id=None, enquiry_id=c.enquiry.id,
-      to=lastmsg.email['From'],
       sender=c.enquiry.messages[0].sender,
-      subject=lastmsg.email['Subject'])}">
+      response_to=lastmsg.id,
+      )}">
       Write a response &raquo;</a>
     </py:with>
 	</div>

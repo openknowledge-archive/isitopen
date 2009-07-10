@@ -68,7 +68,8 @@ class Fixtures(Command):
     user_email = u'testing@isitopen.ckan.net'
     to = u'testing@enquiries.isitopen.ckan.net'
     sender = u'me@iwantopendata.org'
-    email = E.message_from_string(u'a body')
+    body = 'a body'
+    email = E.message_from_string(body)
     email2 = E.message_from_string(u'A second message')
 
     def command(self):

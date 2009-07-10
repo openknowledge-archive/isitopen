@@ -90,9 +90,11 @@ class Message(DomainObject):
     def _body(self):
         if self.email.is_multipart():
             # take first message
-            return self.email.get_payload(0, decode=True)
+            body = self.email.get_payload(0, decode=True)
         else:
-            return self.email.get_payload(decode=True)
+            body = self.email.get_payload(decode=True)
+        body = body.replace('\r\n', '\n')
+        return body
 
     email = property(_get_email)
     to = property(lambda self: self.email['To'])
