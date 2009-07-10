@@ -7,7 +7,6 @@ class Mailer(object):
         self.conn = conn
         self.user = user
         self.pwd = pwd
-        print user, pwd
         if user and pwd:
             # not required in python >= 2.6 as part of starttls
             self.conn.ehlo()
@@ -19,6 +18,8 @@ class Mailer(object):
     def send(self, msg):
         to_hdrs = ['To', 'Cc', 'Bcc']
         recipients = [msg.get(hdr, False) for hdr in to_hdrs if msg.get(hdr, False)]
+        # del bcc field if it exists
+        del msg['Bcc']
         self.conn.sendmail(msg['From'], recipients, msg.as_string())
         return self
         
