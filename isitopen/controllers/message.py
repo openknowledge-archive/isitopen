@@ -54,8 +54,10 @@ class MessageController(BaseController):
             c.error = 'You have not specified to whom the enquiry should ' + \
                     'be sent.'
             return render('message/sent.html')
+        body = c.message.body
+        body += enquiry_footer
         email_msg = _make_email(
-            c.message.body.encode('utf8'),
+            body.encode('utf8'),
             to=c.message.to,
             subject=c.message.subject
             )
@@ -88,20 +90,29 @@ you can find examples of such licenses at: ...
 '''
 
 template_2 = \
-'''Dear **...**,
+'''Dear Sir or Madam,
 
 I am **insert information about yourself, e.g. I am a researcher in field X**.
 
-I am writing on behalf of the Open Scientific Data Working Group of the Open Knowledge Foundation [1]. We are seeking clarification of the 'openness' of the scientific data associated with your publications such as **insert information or link here**.  
+I am writing to seek clarification of the 'openness' [1] of this data:
 
-We weren't able to find an explicit statement of this fact such as a reference to an open knowledge or data license [2] so we're writing to find out what the exact situation is. In particular we would like to know whether the material can be made available under an open license of some kind [3].
+**insert details and perhaps an example link here**.  
+
+I wasn't able to find an explicit statement that the data was open such as a reference to an open knowledge or data license [2] so I'm writing to find out what the exact situation is. In particular we would like to know whether the material can be made available under an open license of some kind.
+
+Thank you very much for your time and I look forward to receiving your response.
 
 Regards,
 
 **Put Your Name Here**
 
-[1] <http://www.okfn.org/wiki/wg/science/>  
+[1] <http://www.opendefinition.org/1.0/>  
 [2] <http://www.opendefinition.org/licenses/>  
-[3] <http://www.opendefinition.org/1.0/>  
 '''
 
+enquiry_footer = '''
+--
+Sent by "Is It Open?" (http://isitopen.ckan.net/about)
+A service which helps scholars (and others) to request information
+about the status and licensing of information.
+'''
