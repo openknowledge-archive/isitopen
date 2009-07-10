@@ -33,15 +33,18 @@ class EnquiryController(BaseController):
 
     def send_pending(self):
         import isitopen.lib.mailsync as sync
-        out = 'Sending pending\n'
+        import pprint
+        out = '<pre>'
+        out += 'Sending pending\n'
         results = sync.send_pending()
-        out += '%s\n' % results
+        out += '%s\n' % pprint.pformat(results)
         results = sync.sync_sent_mail()
         out += 'Syncing sent mail\n'
-        out += '%s\n' % results
-        responses = sync.check_for_responses()
+        out += '%s\n' % pprint.pformat(results)
+        results = sync.check_for_responses()
         out += 'Syncing responses\n'
-        out += '%s\n' % results
+        out += '%s\n' % pprint.pformat(results)
+        out += '</pre>'
         return out
 
     def list(self):
