@@ -92,7 +92,7 @@
       </div><!-- /top-bar -->
       
       <h1>
-        <a href="${h.url_for(controller='enquiry', action=None, id=None)}"
+        <a href="${h.url_for('home')}"
           title="Home">Is It Open Data?</a><sup>Alpha</sup>
       </h1>
     
@@ -103,6 +103,7 @@
 			<li><a href="${h.url_for('home')}">Home</a></li>
 			<li><a href="${h.url_for(controller='enquiry', action='create', id=None)}">Make Enquiry</a></li>
 			<li><a href="${h.url_for(controller='enquiry', action='list', id=None)}">Browse Existing</a></li>
+			<li><a href="${h.url_for('about')}">About</a></li>
     </ul>
     <h3 class="hidden">In this section:</h3>
     <ul id="subnav">

@@ -7,3 +7,7 @@ class HomeController(BaseController):
 
     def guide(self):
         return render('guide.html')
+
+    def about(self):
+        return render('guide.html')
+
