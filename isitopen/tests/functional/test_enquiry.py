@@ -1,4 +1,5 @@
 from isitopen.tests import *
+import isitopen.controllers.message as MSG
 
 class TestHomeController(TestController):
     @classmethod
@@ -53,6 +54,7 @@ class TestHomeController(TestController):
         print msg.mimetext
         assert msg.to == to
         assert body in msg.mimetext
+        assert MSG.enquiry_footer in msg.mimetext
         assert msg.subject == subject
 
     # TODO: test bad entry (e.g. no to address)
