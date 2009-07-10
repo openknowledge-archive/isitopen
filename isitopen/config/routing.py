@@ -19,6 +19,7 @@ def make_map():
 
     # CUSTOM ROUTES HERE
     map.connect('home', '', controller='home', action='index')
+    map.connect('about', 'about', controller='home', action='guide')
     map.connect('guide', 'guide', controller='home', action='guide')
     # Map the /admin url to FA's AdminController
     maps.admin_map(map, controller='admin', url='/admin')
