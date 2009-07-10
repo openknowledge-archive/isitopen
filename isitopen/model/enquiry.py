@@ -44,10 +44,30 @@ message_table = Table('message', metadata,
     Column('timestamp', types.DateTime, default=datetime.datetime.now),
     )
 
-class User(object):
+
+class DomainObject(object):
+    def __init__(self, **kwargs):
+        for k,v in kwargs.items():
+            setattr(self, k, v)
+    
+    _exclude_from___str__ = []
+    def __str__(self):
+        repr = u'{{%s' % self.__class__.__name__
+        table = orm.class_mapper(self.__class__).mapped_table
+        for col in table.c:
+            if col.name not in self._exclude_from___str__:
+                repr += u' %s=%s' % (col.name, getattr(self, col.name))
+        repr += u'}}'
+        return repr
+
+    def __repr__(self):
+        return self.__str__()
+
+class User(DomainObject):
     pass
 
-class Message(object):
+class Message(DomainObject):
+    _exclude_from___str__ = [ 'mimetext' ]
     def _get_email(self):
         '''
         @return email.Message object
@@ -67,13 +87,20 @@ class Message(object):
     #    self._email = email_message_obj
     #    self.save_email()
 
+    def _body(self):
+        if self.email.is_multipart():
+            # take first message
+            return self.email.get_payload(0, decode=True)
+        else:
+            return self.email.get_payload(decode=True)
+
     email = property(_get_email)
     to = property(lambda self: self.email['To'])
     subject = property(lambda self: self.email['Subject'])
-    body = property(lambda self: self.email.get_payload())
+    body = property(_body)
 
 
-class Enquiry(object):
+class Enquiry(DomainObject):
     pass
 
 mapper(User, user_table,
