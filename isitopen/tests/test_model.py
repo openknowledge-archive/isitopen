@@ -25,4 +25,5 @@ class TestModel(object):
         assert mess.sender == Fixtures.sender, mess.sender
         assert mess.status == model.MessageStatus.sent
         assert mess.email['Message-Id'] is not None, mess.mimetext
+        assert mess.body == Fixtures.body, mess.body
 

@@ -12,23 +12,41 @@ class MessageController(BaseController):
     def index(self):
         return render('message/index.html')
 
+    def _defaults(self):
+        response_to = request.params.get('response_to', '')
+        original = model.Message.query.get(response_to)
+        defaults = {}
+        if original:
+            defaults['to'] = original.email['From']
+            # add Re: ?
+            defaults['subject'] = original.subject
+            defaults['body'] = '\n\n\n> ' + '\n> '.join(original.body.splitlines())
+        else:
+            defaults['to'] = ''
+            defaults['subject'] = 'Data Openness Enquiry'
+            defaults['body'] = template_2
+        return defaults
+
     def create(self, template=''):
         class MockMessage:
             pass
         c.message = MockMessage()
-        c.message.to = request.params.get('to', '')
-        c.message.subject = request.params.get('subject', 'Data Openness Enquiry')
-        c.message.body = request.params.get('body', template_2)
+
         c.sender = request.params.get('sender', '')
-        c.enquiry_id = request.params.get('enquiry_id')
+        c.enquiry_id = request.params.get('enquiry_id', 'new')
+        defaults = self._defaults()
+
+        c.message.to = request.params.get('to', defaults['to'])
+        c.message.subject = request.params.get('subject', defaults['subject'])
+        c.message.body = request.params.get('body', defaults['body'])
+
         if 'preview' in request.params:
             c.preview = True
 
         if not 'send' in request.params:
             return render('message/create.html')
-
-        # must be a commit
-        return self.save()
+        else: # must be a commit
+            return self.save()
 
     def save(self):
         c.error = ''
