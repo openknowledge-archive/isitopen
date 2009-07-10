@@ -3,6 +3,10 @@ import email
 
 class Gmail(object):
     '''Interface to gmail via IMAP and SMTP.'''
+    INBOX = 'INBOX'
+    ALL_MAIL = '[Google Mail]/All Mail'
+    SENT_MAIL = '[Google Mail]/Sent Mail'
+    TRASH = '[Google Mail]/Trash'
     
     def __init__(self, conn, user, pwd):
         """
@@ -15,9 +19,9 @@ class Gmail(object):
         
         self.thread_mailbox = 'thread'
         
-        self.inbox = 'INBOX'
-        self.allmail = '[Google Mail]/All Mail'
-        self.sent = '[Google Mail]/Sent Mail'
+        self.inbox = self.INBOX
+        self.allmail = self.ALL_MAIL
+        self.sent = self.SENT_MAIL
         
         self.logged_in = False
         self.conn = conn
