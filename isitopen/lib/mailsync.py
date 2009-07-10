@@ -1,6 +1,10 @@
+import logging
+
 from isitopen.lib.gmail import Gmail
 from isitopen.lib import mailer
 import isitopen.model as model
+
+log = logging.getLogger(__name__)
 
 ISITOPEN_HEADER_ID = 'X-IsItOpen-Message-Id'
 
@@ -65,24 +69,34 @@ import isitopen.lib.finder
 finder = isitopen.lib.finder.Finder()
 def check_for_responses(folder=None):
     g = Gmail.default()
-    # unread items in the inbox
     results = []
-    for mboxid, message in g.unread(folder).items():
+    msgs_dict = g.unread()
+    # log.debug('check_for_responses: no. of items = %s' % len(msgs_dict))
+    for mboxid, message in msgs_dict.items():
+        # log.debug('check_for_responses: %s, %s, %s' % (mboxid, message['from'],
+        #    message['subject']) )
         # ignore bounces ....
         if 'From' in message and 'mailer-daemon@googlemail.com' in message['From']:
-            results.append([message, 'Skipping as looks like bounce'])
+            results.append([message['Message-Id'], 'Skip: looks like bounce'])
             continue
         try:
             # TODO: extract timestamp etc
-            m = model.Message(status=model.MessageStatus.response)
-            m.mimetext = message.as_string()
-            m.enquiry = finder.enquiry_for_message(message)
+            enquiry = finder.enquiry_for_message(message)
+            if not enquiry:
+                results.append([message['Message-Id'], 'Skip: found no related enquiry'])
+                continue
+
+            m = model.Message(
+                status=model.MessageStatus.response,
+                enquiry=enquiry,
+                mimetext = message.as_string()
+                )
             model.Session.commit()
+            results.append([message['Message-Id'], 'Synced'])
             g.mark_read(mboxid)
-            results.append([message, 'Synced'])
             # g.gmail_label(message, 'enquiry/' + m.enquiry.id) # get message from imap via MIME Message-Id, copy to "enquiry/<enq_id>"
         except Exception, inst:
-            results.append([message, 'ERROR: %s' % inst])
+            results.append([message['Message-Id'], 'ERROR: %s' % inst])
     return results
 
 
