@@ -9,6 +9,6 @@ class TestHomeController(TestController):
         assert 'Is It Open Data?' in res
 
     def test_404(self):
-        offset = '/some_nonexistent_url'
+        offset = '/some_nonexistent_url/'
         res = self.app.get(offset, status=404)
 
