@@ -25,6 +25,7 @@ class EnquiryController(BaseController):
         msg = model.Message.query.get(msgid)
         if id == 'new':
             c.enquiry = model.Enquiry()
+            c.enquiry.summary = unicode(msg.subject, 'utf8')
         else:
             c.enquiry = model.Enquiry.query.get(id)
         msg.enquiry = c.enquiry

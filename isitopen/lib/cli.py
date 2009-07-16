@@ -65,6 +65,7 @@ class Fixtures(Command):
     max_args = None
     min_args = 0
 
+    summary = u'Our first enquiry'
     user_email = u'testing@isitopen.ckan.net'
     to = u'testing@enquiries.isitopen.ckan.net'
     sender = u'me@iwantopendata.org'
@@ -81,7 +82,8 @@ class Fixtures(Command):
     def create(self):
         from isitopen import model
         user = model.User(email=self.user_email)
-        enq = model.Enquiry(owner=user)
+        enq = model.Enquiry(owner=user, summary=self.summary)
+        enq.extras = { 'ckan-package' :  u'xyz' } 
         self.email['To'] = self.to
         self.email['Subject'] = u'testing email'
         self.email['Message-Id'] = '<%s@gmail.com>' % model.make_uuid()

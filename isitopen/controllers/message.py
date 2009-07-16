@@ -56,6 +56,8 @@ class MessageController(BaseController):
             return render('message/sent.html')
         body = c.message.body
         body += enquiry_footer
+        # TODO: if response_to use existing message for references and
+        # in-reply-to stuff
         email_msg = _make_email(
             body.encode('utf8'),
             to=c.message.to,
