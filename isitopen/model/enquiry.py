@@ -1,6 +1,7 @@
 import datetime
 import email as E
 
+from types import JsonType
 from meta import *
 
 import uuid
@@ -28,10 +29,12 @@ user_table = Table('user', metadata,
 
 enquiry_table = Table('enquiry', metadata,
     Column('id', types.String(36), default=make_uuid, primary_key=True),
+    Column('summary', types.UnicodeText),
     Column('status', types.UnicodeText, default=EnquiryStatus.unresolved),
     Column('timestamp', types.DateTime, default=datetime.datetime.now),
     Column('last_updated', types.DateTime, default=datetime.datetime.now),
     Column('owner_id', types.String(36), ForeignKey('user.id')),
+    Column('extras', JsonType),
     )
 
 message_table = Table('message', metadata,

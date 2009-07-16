@@ -57,7 +57,14 @@ class TestHomeController(TestController):
         assert MSG.enquiry_footer in msg.mimetext
         assert msg.subject == subject
 
+        enq = msg.enquiry
+        assert enq.summary == subject
+
     # TODO: test bad entry (e.g. no to address)
     def test_bad_entry(self):
         pass
 
+    def test_write_response(self):
+        offset = url_for(controller='enquiry', action='view',
+                id=self.enq_id)
+        res = self.app.get(offset)

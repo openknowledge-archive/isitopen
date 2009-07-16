@@ -10,7 +10,7 @@
 		<ul>
 			<li py:for="enq in c.enquiries">
 			<a href="${h.url_for(controller='enquiry', action='view', id=enq.id)}">[${enq.messages[0].email['To']}]
-        <em>${enq.messages[0].email['Subject']}</em></a>
+        <em>${enq.summary}</em></a>
 			</li>
 		</ul>
 

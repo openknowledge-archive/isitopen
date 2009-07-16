@@ -8,9 +8,9 @@
   <py:def function="page_title">View</py:def>
 
   <div py:match="content">
-    <h2>Enquiry: ${c.enquiry.id}</h2>
+    <h2>Enquiry: ${c.summary}</h2>
     <ul>
-      <li><strong>Summary: ${c.enquiry.messages[0].email['Subject']}</strong></li>
+      <li><strong>Summary: ${c.enquiry.summary}</strong></li>
       <li><strong>Status: ${c.enquiry.status}</strong></li>
       <li><strong>Started:</strong> ${c.enquiry.timestamp.isoformat()}</li>
       <li><strong>ID:</strong> ${c.enquiry.id}</li>

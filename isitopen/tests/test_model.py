@@ -16,6 +16,8 @@ class TestModel(object):
         enq = model.Enquiry.query.get(self.enq_id)
 
         assert enq.owner.email == Fixtures.user_email
+        assert enq.summary == Fixtures.summary
+        assert enq.extras['ckan-package'] == u'xyz'
 
         assert mess.enquiry == enq
         subj = mess.email['Subject']
