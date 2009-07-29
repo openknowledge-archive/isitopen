@@ -93,7 +93,8 @@ class Message(DomainObject):
     def _body(self):
         if self.email.is_multipart():
             # take first message
-            body = self.email.get_payload(0, decode=True)
+            # TODO: could be more sophisticated (e.g. use html if it exists)
+            body = self.email.get_payload(0).get_payload(decode=True)
         else:
             body = self.email.get_payload(decode=True)
         body = body.replace('\r\n', '\n')
