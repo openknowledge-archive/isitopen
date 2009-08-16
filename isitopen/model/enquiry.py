@@ -22,30 +22,36 @@ class MessageStatus(object):
 
 
 user_table = Table('user', metadata,
-    Column('id', types.String(36), default=make_uuid, primary_key=True),
-    Column('email', types.UnicodeText),
-    Column('username', types.UnicodeText),
+    Column('id', String(36), default=make_uuid, primary_key=True),
+    Column('email', UnicodeText),
+    Column('username', UnicodeText),
     )
 
 enquiry_table = Table('enquiry', metadata,
-    Column('id', types.String(36), default=make_uuid, primary_key=True),
-    Column('summary', types.UnicodeText),
-    Column('status', types.UnicodeText, default=EnquiryStatus.unresolved),
-    Column('timestamp', types.DateTime, default=datetime.datetime.now),
-    Column('last_updated', types.DateTime, default=datetime.datetime.now),
-    Column('owner_id', types.String(36), ForeignKey('user.id')),
+    Column('id', String(36), default=make_uuid, primary_key=True),
+    Column('summary', UnicodeText),
+    Column('status', UnicodeText, default=EnquiryStatus.unresolved),
+    Column('timestamp', DateTime, default=datetime.datetime.now),
+    Column('last_updated', DateTime, default=datetime.datetime.now),
+    Column('owner_id', String(36), ForeignKey('user.id')),
     Column('extras', JsonType),
     )
 
 message_table = Table('message', metadata,
-    Column('id', types.String(36), default=make_uuid, primary_key=True),
-    Column('enquiry_id', types.String(36), ForeignKey('enquiry.id')),
-    Column('sender', types.UnicodeText()),
+    Column('id', String(36), default=make_uuid, primary_key=True),
+    Column('enquiry_id', String(36), ForeignKey('enquiry.id')),
+    Column('sender', UnicodeText()),
     # would prefer UnicodeText but it seems simple str is needed for emails
-    Column('mimetext', types.Text()),
-    Column('status', types.UnicodeText),
-    Column('timestamp', types.DateTime, default=datetime.datetime.now),
+    Column('mimetext', Text()),
+    Column('status', UnicodeText),
+    Column('timestamp', DateTime, default=datetime.datetime.now),
     )
+# sqlalchemy migrate version table
+import sqlalchemy.exceptions
+try:
+    version_table = Table('migrate_version', metadata, autoload=True)
+except sqlalchemy.exceptions.NoSuchTableError:
+    pass
 
 
 class DomainObject(object):

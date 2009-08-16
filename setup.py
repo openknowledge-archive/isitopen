@@ -25,6 +25,8 @@ setup(
         'SQLAlchemy>=0.4,<0.5',
         'Genshi>=0.4,<0.6',
         'FormAlchemy>=1.0',
+        # last version to work with SQLA < 0.5
+        'sqlalchemy-migrate==0.4.5',
         # for mail tests
         'processing',
         ],

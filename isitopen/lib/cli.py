@@ -32,7 +32,8 @@ class Command(paste.script.command.Command):
 class ManageDb(Command):
     '''Perform various tasks on the database.
     
-    db create # create tables
+    db create # create db (upgrade to latest version)
+    db upgrade version # upgrade to version
     db clean
     db rebuild # clean + create
     '''
@@ -40,6 +41,7 @@ class ManageDb(Command):
     usage = __doc__
     max_args = None
     min_args = 1
+    migrate_repository = 'isitopen/migration/'
 
     def command(self):
         self._load_config()
@@ -51,10 +53,14 @@ class ManageDb(Command):
         elif cmd == 'clean':
             model.repo.clean_db()
         elif cmd == 'rebuild':
-            model.repo.clean_db()
-            model.repo.create_db()
+            model.repo.rebuild_db()
+        elif cmd == 'upgrade':
+            version = self.args[1] if len(self.args) >= 2 else None 
+            model.repo.upgrade_db(version)
+
         else:
             print 'Command %s not recognized' % cmd
+
 
 class Fixtures(Command):
     '''Create some fixture data.
