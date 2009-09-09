@@ -113,7 +113,13 @@ class Message(DomainObject):
 
 
 class Enquiry(DomainObject):
-    pass
+    def _get_to(self):
+        if self.messages:
+            return self.messages[0].to
+        else:
+            return None
+    to = property(_get_to)
+
 
 mapper(User, user_table,
     order_by=user_table.c.id)

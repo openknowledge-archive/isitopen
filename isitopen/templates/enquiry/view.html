@@ -20,6 +20,7 @@
       ${render_message(message)}
     </py:for>
 
+		<py:if test="c.enquiry.messages">
     <py:with vars="lastmsg=c.enquiry.messages[-1]">
     <a class="send-response" href="${h.url_for(controller='message',
       action='create', id=None, enquiry_id=c.enquiry.id,
@@ -28,6 +29,7 @@
       )}">
       Write a response &raquo;</a>
     </py:with>
+		</py:if>
 	</div>
 
   <xi:include href="../layout.html" />
