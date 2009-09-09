@@ -1,0 +1,20 @@
+<html
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip="">
+  
+  <py:def function="page_title">Home</py:def>
+
+  <div py:match="content">
+    <h2>Existing Enquiries</h2>
+		<ul>
+			<li py:for="enq in c.enquiries">
+			<a href="${h.url_for(controller='enquiry', action='view', id=enq.id)}">[${enq.to}]
+        <em>${enq.summary}</em></a>
+			</li>
+		</ul>
+
+	</div>
+
+  <xi:include href="../layout.html" />
+</html>
