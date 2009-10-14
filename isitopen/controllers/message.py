@@ -88,7 +88,6 @@ class MessageController(BaseController):
 
 default_from = config['enquiry.from']
 def _make_email(text, **headers):
-    from_ = config['enquiry.from']
     msg = E.message_from_string(text)
     for k,v in headers.items():
         msg[k.capitalize()] = v

@@ -55,6 +55,10 @@ class EnquiryController(BaseController):
         out += 'Syncing responses\n'
         out += '%s\n' % pprint.pformat(results)
 
+        results = sync.send_response_notifications()
+        out += 'Sending response notifications\n'
+        out += '%s\n' % pprint.pformat(results)
+
         out += '</pre>'
         return out
 
