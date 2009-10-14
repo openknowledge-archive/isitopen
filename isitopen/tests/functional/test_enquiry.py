@@ -13,9 +13,8 @@ class TestEnquiryController(TestController):
         offset = url_for(controller='enquiry', action='view',
                 id=self.enq_id)
         res = self.app.get(offset)
-        print str(res)
-        assert 'Is It Open Data?' in res
-        assert 'Status:' in res
+        assert 'Is It Open Data?' in res, str(res)
+        assert 'Status:' in res, str(res)
 
     def test_2_list(self):
         offset = url_for(controller='enquiry', action='list')
