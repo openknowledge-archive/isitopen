@@ -10,6 +10,7 @@
     <h2>Step 1: Specify Your Enquiry</h2>
     <form action="#preview" method="post">
       ${h.hidden('enquiry_id', c.enquiry_id)}
+      ${h.hidden('response_to', c.response_to)}
 
       <label for="email">To: (email address)</label>
       ${h.text('to', size=40, value=c.message.to)} <br />
