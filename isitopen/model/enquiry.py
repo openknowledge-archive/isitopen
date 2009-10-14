@@ -18,6 +18,9 @@ class MessageStatus(object):
     not_yet_sent = u'Not Yet Sent'
     sent_not_synced = u'Sent But Not Synced'
     sent = u'Sent'
+    # a response but no notification sent to enquiry owner
+    response_no_notification = u'Response But No Notification'
+    # notification done
     response = u'Response'
 
 
@@ -135,6 +138,6 @@ mapper(Message, message_table, properties={
         backref=backref('messages', order_by=message_table.c.timestamp),
         ),
     },
-    order_by=message_table.c.id,
+    order_by=message_table.c.timestamp.desc()
 )
 
