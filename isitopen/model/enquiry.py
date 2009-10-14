@@ -127,7 +127,7 @@ mapper(User, user_table,
 mapper(Enquiry, enquiry_table, properties={
     'owner': relation(User, backref='enquiries'),
     },
-    order_by=enquiry_table.c.id
+    order_by=enquiry_table.c.timestamp.desc()
     )
 
 mapper(Message, message_table, properties={
