@@ -7,7 +7,8 @@ class TestEnquiryController(TestController):
         self.message = model.Message.query.get(self.msg_id)
 
     def teardown(self):
-        Fixtures.remove()
+        # should rebuild as create stuff
+        model.repo.rebuild_db()
 
     def test_1_view(self):
         offset = url_for(controller='enquiry', action='view',
@@ -56,6 +57,7 @@ class TestEnquiryController(TestController):
 
         enq = msg.enquiry
         assert enq.summary == subject
+        assert enq.owner.email == sender
 
     def test_4_write_response(self):
         offset = url_for(controller='enquiry', action='view',
