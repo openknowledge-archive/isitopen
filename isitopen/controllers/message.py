@@ -13,13 +13,12 @@ class MessageController(BaseController):
         return render('message/index.html')
 
     def _defaults(self):
-        response_to = request.params.get('response_to', '')
-        original = model.Message.query.get(response_to)
+        original = model.Message.query.get(c.response_to)
         defaults = {}
         if original:
             defaults['to'] = original.email['From']
             # add Re: ?
-            defaults['subject'] = original.subject
+            defaults['subject'] = 'Re: %s' % original.subject
             defaults['body'] = '\n\n\n> ' + '\n> '.join(original.body.splitlines())
         else:
             defaults['to'] = ''
@@ -34,6 +33,9 @@ class MessageController(BaseController):
 
         c.sender = request.params.get('sender', '')
         c.enquiry_id = request.params.get('enquiry_id', 'new')
+        c.response_to = request.params.get('response_to', '')
+
+        # a bit complicated here because need to support previewing
         defaults = self._defaults()
 
         c.message.to = request.params.get('to', defaults['to'])
@@ -54,15 +56,23 @@ class MessageController(BaseController):
             c.error = 'You have not specified to whom the enquiry should ' + \
                     'be sent.'
             return render('message/sent.html')
+
         body = c.message.body
         body += enquiry_footer
-        # TODO: if response_to use existing message for references and
-        # in-reply-to stuff
         email_msg = _make_email(
             body.encode('utf8'),
             to=c.message.to,
             subject=c.message.subject
             )
+        # if response_to existing message add references and in-reply-to
+        original = model.Message.query.get(c.response_to)
+        if original:
+            tmsgid = original.email['Message-Id']
+            email_msg['In-Reply-To'] = tmsgid
+            refs = original.email.get('References', '')
+            refs += ' <%s>' % tmsgid
+            email_msg['References'] = refs
+
         message = model.Message(mimetext=email_msg.as_string(),
                 status=model.MessageStatus.not_yet_sent,
                 sender=c.sender)
@@ -113,8 +123,8 @@ Regards,
 '''
 
 enquiry_footer = '''
---
-Sent by "Is It Open?" (http://isitopen.ckan.net/about)
+--  
+Sent by "Is It Open?" (<http://isitopen.ckan.net/about/>)  
 A service which helps scholars (and others) to request information
 about the status and licensing of information.
 '''
