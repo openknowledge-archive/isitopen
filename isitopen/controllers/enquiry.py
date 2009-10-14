@@ -26,6 +26,12 @@ class EnquiryController(BaseController):
         if id == 'new':
             c.enquiry = model.Enquiry()
             c.enquiry.summary = unicode(msg.subject, 'utf8')
+            sender = msg.sender.strip()
+            if sender:
+                user = model.User.query.filter_by(email=sender).first()
+                if not user:
+                    user = model.User(email=sender)
+                c.enquiry.owner = user
         else:
             c.enquiry = model.Enquiry.query.get(id)
         msg.enquiry = c.enquiry
@@ -36,15 +42,19 @@ class EnquiryController(BaseController):
         import isitopen.lib.mailsync as sync
         import pprint
         out = '<pre>'
+
         out += 'Sending pending\n'
         results = sync.send_pending()
         out += '%s\n' % pprint.pformat(results)
+
         results = sync.sync_sent_mail()
         out += 'Syncing sent mail\n'
         out += '%s\n' % pprint.pformat(results)
+
         results = sync.check_for_responses()
         out += 'Syncing responses\n'
         out += '%s\n' % pprint.pformat(results)
+
         out += '</pre>'
         return out
 
