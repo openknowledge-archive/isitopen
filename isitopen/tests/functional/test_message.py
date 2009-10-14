@@ -14,9 +14,13 @@ class TestMessageController(TestController):
         res = self.app.get(url_for(controller='message', action='index'))
         assert 'Message - Index' in res
 
-    def test_create(self):
-        # this is tested in test_enquiry.py
+    # most of this is tested in test_enquiry.py
+    def _test_create(self):
+        # TODO: test bad entry (e.g. no to address)
+
+    def test_bad_entry(self):
         pass
+
 
     def test__make_email(self):
         import isitopen.controllers.message as MSG

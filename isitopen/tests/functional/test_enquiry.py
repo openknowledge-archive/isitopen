@@ -1,17 +1,15 @@
 from isitopen.tests import *
 import isitopen.controllers.message as MSG
 
-class TestHomeController(TestController):
-    @classmethod
-    def setup_class(self):
+class TestEnquiryController(TestController):
+    def setup(self):
         self.enq_id, self.msg_id = Fixtures.create()
         self.message = model.Message.query.get(self.msg_id)
 
-    @classmethod
-    def teardown_class(self):
+    def teardown(self):
         Fixtures.remove()
 
-    def test_view(self):
+    def test_1_view(self):
         offset = url_for(controller='enquiry', action='view',
                 id=self.enq_id)
         res = self.app.get(offset)
@@ -19,12 +17,12 @@ class TestHomeController(TestController):
         assert 'Is It Open Data?' in res
         assert 'Status:' in res
 
-    def test_list(self):
+    def test_2_list(self):
         offset = url_for(controller='enquiry', action='list')
         res = self.app.get(offset)
         assert self.enq_id  in res
 
-    def test_create(self):
+    def test_3_create(self):
         offset = url_for(controller='enquiry', action='create')
         res = self.app.get(offset)
         # redirect to message/create
@@ -60,11 +58,33 @@ class TestHomeController(TestController):
         enq = msg.enquiry
         assert enq.summary == subject
 
-    # TODO: test bad entry (e.g. no to address)
-    def test_bad_entry(self):
-        pass
-
-    def test_write_response(self):
+    def test_4_write_response(self):
         offset = url_for(controller='enquiry', action='view',
                 id=self.enq_id)
         res = self.app.get(offset)
+        res = res.click('Write a response')
+        assert 'Specify Your Enquiry' in res, res
+
+        form = res.forms[0]
+        newbody = 'Response to an enquiry'
+        newsubject = 'Re: testing email response'
+        print form['to'].value
+        assert form['to'].value == Fixtures.to, form['to'].value
+        assert form['subject'].value == newsubject, form['subject'].value
+        form['body'] = newbody
+        res = form.submit('send')
+
+        res = res.follow()
+        assert 'Enquiry - Sent' in res
+        model.Session.remove()
+        enqnum = model.Enquiry.query.count()
+        assert enqnum == 1, enqnum
+        assert model.Message.query.count() == 3
+        enq = model.Enquiry.query.get(self.enq_id)
+        msg = enq.messages[-1]
+        print msg.mimetext
+        assert msg.to == Fixtures.to
+        assert newbody in msg.body
+        assert MSG.enquiry_footer in msg.mimetext
+        assert msg.subject == newsubject
+
