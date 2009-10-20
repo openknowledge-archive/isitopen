@@ -12,16 +12,16 @@
       ${h.hidden('enquiry_id', c.enquiry_id)}
       ${h.hidden('response_to', c.response_to)}
 
-      <label for="email">To: (email address)</label>
+      <label for="email">To: (email address e.g. enquiries@metoffice.gov.uk)</label>
       ${h.text('to', size=40, value=c.message.to)} <br />
 
-      <label for="subject">Subject: (modify as required)</label>
+      <label for="subject">Summary: (e.g. Rainfall statistics for the United Kingdom)</label>
       ${h.text('subject', size=60, value=c.message.subject)} <br />
 
-      <label for="sender">Your Email: (so we can send you a copy)</label>
+      <label for="sender">Your Email: (not shown &ndash; so we can send you a copy)</label>
       ${h.text('sender', size=60, value=c.sender)} <br />
 
-      <label for="notes">Email Body: (customize this)</label>
+      <label for="notes">Your Enquiry: (customize this)</label>
       ${XML(h.textarea('body', content=h.escape(c.message.body), cols=72, rows=25))}
       <br />
       ${h.submit('preview', value='Preview &raquo;', id='preview')}

@@ -56,6 +56,13 @@ class MessageController(BaseController):
             c.error = 'You have not specified to whom the enquiry should ' + \
                     'be sent.'
             return render('message/sent.html')
+        import formalchemy.validators
+        to = c.message.to
+        try:
+            formalchemy.validators.email(to)
+        except formalchemy.validators.ValidationError, inst:
+            c.error = u'Invalid email address: %s' % inst
+            return render('message/sent.html')
 
         body = c.message.body
         body += enquiry_footer
