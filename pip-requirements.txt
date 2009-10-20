@@ -1,0 +1,4 @@
+# To use this requirements file: (assumes virtualenv at ./pyenv)
+# pip -E pyenv install -r pip-requirements.txt
+
+-e hg+https://knowledgeforge.net/ckan/isitopen#egg=isitopen
