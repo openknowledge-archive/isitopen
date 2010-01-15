@@ -3,11 +3,11 @@ import email as E
 
 from types import JsonType
 from meta import *
+from types import json
 
 import uuid
 def make_uuid():
     return str(uuid.uuid4())
-
 
 class EnquiryStatus(object):
     resolved_open = u'Resolved (Open)'
@@ -26,8 +26,11 @@ class MessageStatus(object):
 
 user_table = Table('user', metadata,
     Column('id', String(36), default=make_uuid, primary_key=True),
+    Column('firstname', UnicodeText),
+    Column('lastname', UnicodeText),
     Column('email', UnicodeText),
-    Column('username', UnicodeText),
+    Column('password', UnicodeText),
+    Column('is_confirmed', Boolean, default=False),
     )
 
 enquiry_table = Table('enquiry', metadata,
@@ -49,13 +52,19 @@ message_table = Table('message', metadata,
     Column('status', UnicodeText),
     Column('timestamp', DateTime, default=datetime.datetime.now),
     )
+
+pending_action_table = Table('pending_action', metadata,
+    Column('id', String(36), default=make_uuid, primary_key=True),
+    Column('data', UnicodeText()),
+    Column('timestamp', DateTime, default=datetime.datetime.now),
+    )
+
 # sqlalchemy migrate version table
 import sqlalchemy.exceptions
 try:
     version_table = Table('migrate_version', metadata, autoload=True)
 except sqlalchemy.exceptions.NoSuchTableError:
     pass
-
 
 class DomainObject(object):
     def __init__(self, **kwargs):
@@ -124,6 +133,19 @@ class Enquiry(DomainObject):
     to = property(_get_to)
 
 
+class PendingAction(DomainObject):
+   
+    def store(self, name, **kwds):
+        kwds['__name__'] = name
+        self.data = json.dumps(kwds)
+
+    def retrieve(self):
+        kwds = json.loads(self.data)
+        name = kwds.pop('__name__')
+        return (name, kwds)
+
+             
+
 mapper(User, user_table,
     order_by=user_table.c.id)
 
@@ -139,5 +161,9 @@ mapper(Message, message_table, properties={
         ),
     },
     order_by=message_table.c.timestamp.desc()
+)
+
+mapper(PendingAction, pending_action_table,
+    order_by=pending_action_table.c.timestamp.desc()
 )
 

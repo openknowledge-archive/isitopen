@@ -29,6 +29,7 @@ setup(
         'sqlalchemy-migrate==0.4.5',
         # for mail tests
         'processing',
+        'repoze.who',
         ],
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,

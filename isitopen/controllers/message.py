@@ -9,7 +9,8 @@ log = logging.getLogger(__name__)
 
 class MessageController(BaseController):
 
-    def index(self):
+    def index(self, environ, start_response):
+        self._receive(environ)
         return render('message/index.html')
 
     def _defaults(self):
@@ -25,30 +26,6 @@ class MessageController(BaseController):
             defaults['subject'] = 'Data Openness Enquiry'
             defaults['body'] = template_2
         return defaults
-
-    def create(self, template=''):
-        class MockMessage:
-            pass
-        c.message = MockMessage()
-
-        c.sender = request.params.get('sender', '')
-        c.enquiry_id = request.params.get('enquiry_id', 'new')
-        c.response_to = request.params.get('response_to', '')
-
-        # a bit complicated here because need to support previewing
-        defaults = self._defaults()
-
-        c.message.to = request.params.get('to', defaults['to'])
-        c.message.subject = request.params.get('subject', defaults['subject'])
-        c.message.body = request.params.get('body', defaults['body'])
-
-        if 'preview' in request.params:
-            c.preview = True
-
-        if not 'send' in request.params:
-            return render('message/create.html')
-        else: # must be a commit
-            return self.save()
 
     def save(self):
         c.error = ''

@@ -3,6 +3,8 @@ from paste.cascade import Cascade
 from paste.registry import RegistryManager
 from paste.urlparser import StaticURLParser
 from paste.deploy.converters import asbool
+from paste.translogger import TransLogger
+
 
 from pylons import config
 from pylons.error import error_template
@@ -10,6 +12,7 @@ from pylons.middleware import ErrorHandler, StaticJavascripts, StatusCodeRedirec
 from pylons.wsgiapp import PylonsApp
 
 from isitopen.config.environment import load_environment
+from isitopen.lib.authentication import AuthenticationMiddleware
 
 def make_app(global_conf, full_stack=True, **app_conf):
     """Create a Pylons WSGI application and return it
@@ -36,6 +39,8 @@ def make_app(global_conf, full_stack=True, **app_conf):
     app = PylonsApp()
 
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
+    app = TransLogger(app)
+    app = AuthenticationMiddleware(app)
 
     import pylons
     if pylons.__version__ >= "0.9.7":
@@ -52,16 +57,15 @@ def make_app(global_conf, full_stack=True, **app_conf):
 
         # Display error documents for 401, 403, 404 status codes (and
         # 500 when debug is disabled)
-        if asbool(config['debug']):
-            app = StatusCodeRedirect(app)
-        else:
-            app = StatusCodeRedirect(app, [401, 403, 404, 500])
+        #if asbool(config['debug']):
+        #    app = StatusCodeRedirect(app)
+        #else:
+        #    app = StatusCodeRedirect(app, [401, 403, 404, 500])
                 
     # Establish the Registry for this application
     app = RegistryManager(app)
 
     # Static files
-    javascripts_app = StaticJavascripts()
     static_app = StaticURLParser(config['pylons.paths']['static_files'])
-    app = Cascade([static_app, javascripts_app, app])
+    app = Cascade([static_app, app])
     return app
