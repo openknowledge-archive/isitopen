@@ -22,43 +22,6 @@ class TestEnquiryController(TestController):
         res = self.app.get(offset)
         assert self.enq_id  in res
 
-    def test_3_create(self):
-        offset = url_for(controller='enquiry', action='create')
-        res = self.app.get(offset)
-        # redirect to message/create
-        res = res.follow()
-        assert 'Create' in res
-        to = 'xyz@journal.org'
-        sender = u'some-random-enquirer@okfn.org'
-        body = 'afdjdakfdakjfad'
-        subject = 'any old thing'
-        form = res.forms[0]
-        form['to'] = to
-        form['sender'] = sender
-        form['body'] = body
-        form['subject'] = subject
-        res = form.submit('preview')
-        assert 'Preview' in res
-        res = form.submit('send')
-
-        # 302 redirect
-        res = res.follow()
-        assert 'Enquiry - Sent' in res
-        model.Session.remove()
-        assert model.Enquiry.query.count() == 2
-        assert model.Message.query.count() == 3
-        msg = model.Message.query.filter_by(sender=sender).first()
-        assert msg
-        print msg.mimetext
-        assert msg.to == to
-        assert body in msg.mimetext
-        assert MSG.enquiry_footer in msg.mimetext
-        assert msg.subject == subject
-
-        enq = msg.enquiry
-        assert enq.summary == subject
-        assert enq.owner.email == sender
-
     def test_4_write_response(self):
         offset = url_for(controller='enquiry', action='view',
                 id=self.enq_id)

@@ -14,4 +14,3 @@ def setup_config(command, filename, section, vars):
     load_environment(conf.global_conf, conf.local_conf)
     import isitopen.model as model
     model.repo.create_db()
-

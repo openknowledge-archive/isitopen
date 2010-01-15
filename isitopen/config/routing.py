@@ -23,6 +23,11 @@ def make_map():
     map.connect('home', '/', controller='home', action='index')
     map.connect('about', '/about/', controller='home', action='guide')
     map.connect('guide', '/guide/', controller='home', action='guide')
+    map.connect('start', '/enquiry/start/', controller='enquiry', action='start')
+    map.connect('browse', '/enquiry/list/', controller='enquiry', action='list')
+    map.connect('register', '/account/register/', controller='account', action='register')
+    map.connect('login-handler', '/account/login/handler/')
+    map.connect('confirm-account', '/account/confirm/', controller='account', action='confirm')
     # Map the /admin url to FA's AdminController
     maps.admin_map(map, controller='admin', url='/admin')
     # standard controllers

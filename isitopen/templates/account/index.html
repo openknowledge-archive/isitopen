@@ -1,0 +1,28 @@
+<html
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip="">
+  
+  <py:def function="page_title">Home</py:def>
+
+  <div py:match="content">
+  <h2>Welcome, ${c.user.firstname}</h2>
+  <py:choose>
+  <py:when test="c.user.is_confirmed">
+  <p>Confirmed email address: <strong>${c.user.email}</strong></p>
+  <p>Would you like to <a href="/enquiry/start/">make a new data openness enquiry</a>?</p>
+  </py:when>
+  <py:otherwise>
+  <py:if test="c.pending_action_code">
+  <p><i>Your enquiry will be resumed after you have confirmed your email address.</i></p>
+  </py:if>
+  <p><strong>Thanks for creating an account.</strong> Please confirm your email address to activate your account.</p>
+  <p>Unconfirmed email address: <strong>${c.user.email}</strong></p>
+  <p><strong>An email address confirmation request has been sent. Please check your mail.</strong></p>
+  <p><a href="/account/confirm/">Create new confirmation request &raquo;</a></p>
+  </py:otherwise>
+  </py:choose>
+  </div>
+
+  <xi:include href="layout.html" />
+</html>

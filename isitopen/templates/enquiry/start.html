@@ -1,0 +1,81 @@
+<html
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip=""
+  >
+  
+  <py:def function="page_title">Create</py:def>
+
+  <div py:match="content">
+    <py:choose>
+      <py:when test="c.is_step1">
+    <h2>Step 1: Start Your Enquiry</h2>
+    <!--checkpoint:form-for-start-enquiry-->
+    <p><strong>Start by providing information for the enquiry.</strong> Provide an email address for the data holder concerned, then adjust the summary and enquiry texts according to the data package you are enquiring about.</p>
+    <form method="post" action="${h.url_for(controller='enquiry', action='start')}">
+    <py:if test="c.error">
+    <div style="color: red">
+    <p><strong>${c.error}</strong></p>
+    </div>
+    </py:if>
+      <label for="to">To: (email address e.g. enquiries@metoffice.gov.uk)</label>
+      ${h.text('to', size=40, value=c.enquiry_to)} <br />
+
+      <label for="subject">Summary: (e.g. Rainfall statistics for the United Kingdom)</label>
+      ${h.text('subject', size=60, value=c.enquiry_subject)} <br />
+
+      <label for="body">Your Enquiry: (customize this)</label>
+      ${XML(h.textarea('body', content=h.escape(c.enquiry_body), cols=72, rows=25))}
+      <br />
+      <br />
+      ${h.submit('start', value='Start Enquiry &raquo;')}
+    </form>
+      </py:when>
+      <py:when test="c.is_step2">
+    <h2>Step 2: Confirm Your Enquiry</h2>
+    <!--checkpoint:form-for-confirm-enquiry-->
+    <p>
+      <strong>Check your enquiry before sending.</strong> If you would like to change your
+      enquiry, press 'Edit Enquiry'. Otherwise when you are happy, press 
+      'Send Enquiry'. The message will be sent in plain text but this 
+      preview has been 'prettified' using markdown.
+    </p>
+    <form method="post" action="${h.url_for(controller='enquiry', action='start')}">
+      ${h.hidden('to', value=c.enquiry_to)}
+      ${h.hidden('subject', value=c.enquiry_subject)}
+      ${h.hidden('body', value=c.enquiry_body)}
+      <div id="preview" style="border: 2px dashed #d2d2d2; margin: 1em; padding: 1em;">
+      <xi:include href="../message/view_core.html" />
+      ${render_message(c.message)}
+      </div>
+      ${h.submit('restart', value='&laquo; Edit Enquiry')}
+      ${h.submit('confirm', value='Send Enquiry &raquo;')}
+    </form>
+      </py:when>
+      <py:when test="c.is_step3">
+    <h2>Step 3: Wait For Reply</h2>
+    <!--checkpoint:indicator_for_confirmed_enquiry-->
+    <p>Congratulations, your <a href="${h.url_for(controller='enquiry', action='view', id=c.enquiry.id)}">data openness enquiry</a> has been started.
+    You can <a href="${h.url_for(controller='enquiry', action='view', id=c.enquiry.id)}">check on the status</a> of your enquiry.
+    Messages are queued briefly before sending, so your enquiry may not be
+    sent immediately.</p>
+    <p><strong>You will be alerted when the data handler responds to your enquiry.</strong></p>
+    <p>Thank you for using <a href="${h.url_for('home')}"><strong>Is It Open Data?</strong></a> to enquire about the openness of data.</p>
+      </py:when>
+    </py:choose>
+  </div>
+
+  <div py:match="primarysidebar">
+    <div class="box">
+      <h2>Steps for Making Enquiries</h2>
+      <p><strong>Step 1: Start Your Enquiry</strong><br />
+      Start by providing information for the enquiry.</p>
+      <p><strong>Step 2: Confirm Your Enquiry</strong><br />
+      Check the enquiry before sending.</p>
+      <p><strong>Step 3: Wait For Reply</strong><br />
+      You will be alerted when the data handler responds to your enquiry.</p>
+    </div>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>

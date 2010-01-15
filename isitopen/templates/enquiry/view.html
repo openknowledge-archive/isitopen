@@ -8,15 +8,16 @@
   <py:def function="page_title">View</py:def>
 
   <div py:match="content">
-    <h2>Enquiry: ${c.summary}</h2>
-    <ul>
-      <li><strong>Summary: ${c.enquiry.summary}</strong></li>
-      <li><strong>Status: ${c.enquiry.status}</strong></li>
-      <li><strong>Started:</strong> ${c.enquiry.timestamp.isoformat()}</li>
-      <li><strong>ID:</strong> ${c.enquiry.id}</li>
-    </ul>
-    <py:for each="message in c.enquiry.messages">
-      <hr />
+    <h2>${c.enquiry.summary}</h2>
+    <h4>Enquiry Status: ${c.enquiry.status}</h4>
+    <h5><strong>Started:</strong> ${c.enquiry.timestamp.strftime("%c")}</h5>
+    <h5><strong>ID:</strong> ${c.enquiry.id}</h5>
+    <hr />
+    <h4>Message: ${c.summary}</h4>
+      ${render_message(c.enquiry.messages[0])}
+    <py:for each="message in c.enquiry.messages[1:]">
+    <hr />
+    <h4>Response: ${c.summary}</h4>
       ${render_message(message)}
     </py:for>
 

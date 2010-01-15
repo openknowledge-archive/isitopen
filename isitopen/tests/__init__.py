@@ -39,6 +39,11 @@ cmd.run([test_file])
 # cannot import until here because db config not set up until here
 import isitopen.model as model
 model.repo.rebuild_db()
+def create_user(firstname, lastname, email, password, is_confirmed=False):
+    model.User(firstname=firstname, lastname=lastname, email=email, password=password, is_confirmed=is_confirmed)
+    model.Session.commit()
+create_user(u'Mark',u'Smith',u'mark.smith@appropriatesoftware.net',u'mark',True)
+create_user(u'Robert',u'Smith',u'bob.smith@appropriatesoftware.net',u'bob')
 
 
 class TestController(object):
@@ -46,3 +51,5 @@ class TestController(object):
     def __init__(self, *args, **kwargs):
         wsgiapp = loadapp('config:test.ini', relative_to=conf_dir)
         self.app = paste.fixture.TestApp(wsgiapp)
+    import isitopen.model as model
+
