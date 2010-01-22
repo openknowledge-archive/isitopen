@@ -25,7 +25,7 @@
       <br />
       <input type="submit" name="send" value="Log In &raquo;"/>
       <!--checkpoint:option-to-register-account-details-->
-      &nbsp;&nbsp;<a href="${c.pending_action_code and h.url_for('register', code=c.pending_action_code) or h.url_for('register')}"><strong>or Sign Up for a new account &raquo;</strong></a>
+      &nbsp;&nbsp;<strong><a href="${c.pending_action_code and h.url_for('register', code=c.pending_action_code) or h.url_for('register')}">or Sign Up for a new account &raquo;</a></strong>
     </form>
     <p>
       <br />

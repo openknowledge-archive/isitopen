@@ -31,6 +31,16 @@ class TestController(TestController):
         res = self.try_to_follow(res)
         return res
 
+    def click(self, button_text, res):
+        try:
+            res.click(button_text)
+        except Exception, inst:
+            msg = "Couldn't click button text '%s' in page: \n\n%s\n\n" % (
+                button_text, res)
+            raise Exception, msg
+        else:
+            return self.try_to_follow(res)
+
     def try_to_follow(self, res, count=0):
         if count > 10:
             raise Exception, "Terminating after 10 continuous redirects!"
@@ -96,6 +106,9 @@ class TestController(TestController):
     def assert_is_logged_in(self, res):
         self.assert_checkpoint('is-logged-in', res)
 
+    def assert_form_for_register_account_details(self, res):
+        self.assert_checkpoint('form-for-register-account-details', res)
+
     def assert_form_for_login(self, res):
         self.assert_checkpoint('form-for-login', res)
 
@@ -111,6 +124,12 @@ class TestController(TestController):
     def assert_reference_to_pending_action(self, res):
         self.assert_checkpoint('reference-to-pending-action', res)
 
+    def assert_indicator_for_email_confirmation_sent(self, res):
+        self.assert_checkpoint('indicator-for-email-confirmation-sent', res)
+
+    def assert_indicator_for_confirmed_enquiry(self, res):
+        self.assert_checkpoint('indicator-for-confirmed-enquiry', res)
+
     def assert_checkpoint(self, checkvalue, res):
         checkpoint = '<!--checkpoint:%s-->' % checkvalue
         if checkpoint not in res:
@@ -123,6 +142,35 @@ class TestController(TestController):
             pass
         else:
             raise Exception('Checkpoint %s was found in response:\n\n%s.\n\n' % (checkpoint, res))
+
+    def _find_last_pending_action_id(self):
+        pending_action = model.PendingAction.query.all()[0]
+        return pending_action.id 
+
+
+class TestTestController(TestController):
+
+    def test__find_last_pending_action_id(self):
+        import time
+        for i in range(0,5):
+            pending_action = model.PendingAction()
+            model.Session.commit()
+        last_id = self._find_last_pending_action_id()
+        assert pending_action.id == last_id, "Not equal: %s != %s" % (
+            pending_action.id, last_id
+        )
+
+
+class TestStartDataOpennessEnquiry(TestController):
+    """
+    Check enquiry has not been made
+    """
+    def test_196(self):
+        """
+        The system shall present to all users a list of existing data openness enquiries.
+        """
+        res = self.get(controller="enquiry", action="list")
+        assert "Existing Enquiries" in res
 
 
 class TestStartDataOpennessEnquiry(TestController):
@@ -162,22 +210,22 @@ class TestStartDataOpennessEnquiry(TestController):
         """
         The system shall accept (and action pending account activation) submissions from authenticated owners of unactivated accounts using the form for starting data openness enquiries by directing the user to activate their account.
         """
-        # Todo: Currently just blocks.
         res = self.login(credentials=self.other_credentials)
         self.assert_account_not_activated(res)
         res = self.get_form_for_start_enquiry()
-        #self.assert_form_for_confirm_email(res)
+        self.assert_form_for_confirm_email(res)
 
     def test_182(self):
         """
-        The system shall accept from authenticated owners of activated accounts confirmation of the summary of enquiry regarding data openness by sending the enquiry to a data handler and indicating to the user that this has happened.
+        The system shall accept from authenticated owners of activated accounts confirmation of the summary of enquiry regarding data openness by creating a pending message to a data handler with the enquiry and indicating to the user that this has happened.
         """
         res = self.login()
         self.assert_account_is_activated(res)
         res = self.submit_form_for_start_enquiry()
         self.assert_form_for_confirm_enquiry(res)
         res = self.submit_form_for_confirm_enquiry(res)
-        self.assert_checkpoint('indicator_for_confirmed_enquiry', res)
+        # Assert confirmation has been received.
+        self.assert_indicator_for_confirmed_enquiry(res)
         # Assert message created properly.
         login = self.admin_credentials['login']
         message = model.Message.query.filter_by(sender=login).first()
@@ -198,8 +246,8 @@ class TestDispatchDataOpennessEnquiry(TestController):
 
     def test_165(self):
         """
-        The system shall action submissions of the form for starting data openness enquiries by sending an email to the given data controller and storing the enquiry.
-        """
+        The system shall regularly send pending data openness enquiry messages through a secure email account.
+        """ 
         pass
 
 
@@ -219,7 +267,7 @@ class TestRegisterNewUserAccount(TestController):
         """
         self.logout()
         res = self.get(controller='account', action='register')
-        self.assert_checkpoint('form-for-register-account-details', res)
+        self.assert_form_for_register_account_details(res)
 
     def test_174(self):
         """
@@ -231,7 +279,7 @@ class TestRegisterNewUserAccount(TestController):
 
     def test_171(self):
         """
-        The system shall accept submissions from unauthenticated users of the registration form by signing in the user to an unactivated account, by generating an email address confirmation request, and by resuming any referenced pending action.
+        The system shall accept submissions from unauthenticated users of the registration form by signing in the user to an unactivated account, by generating an email address confirmation request, and by indicating to the user that this has happened.
         """
         self.logout()
         registration_data = {
@@ -243,6 +291,7 @@ class TestRegisterNewUserAccount(TestController):
         res = self.submit(form_data=registration_data, controller='account', action='register')
         self.assert_is_logged_in(res)
         self.assert_account_not_activated(res)
+        self.assert_indicator_for_email_confirmation_sent(res)
 
     def test_61(self):
         """
@@ -259,20 +308,43 @@ class TestRegisterNewUserAccount(TestController):
         res = self.submit(form_data=registration_data, controller='account', action='register')
         count_after = len(model.PendingAction.query.all())
         assert count_before + 1 == count_after
-        # Todo: Assert email is actually sent.
+        # Todo: Assert email has actually been sent.
 
     def test_181(self):
         """
         The system shall resume an enquiry regarding data openness by redirecting the user to the enquiry confirmation page (as if the enquiry had just been made).
         """
-        pass
+        self.logout()
+        res = self.submit_form_for_start_enquiry()
+        self.assert_form_for_login(res)
+        sign_up_link_text = 'or Sign Up for a new account \xc2\xbb'
+        res = self.click(sign_up_link_text, res)
+        res = res.click(sign_up_link_text)
+        self.assert_form_for_register_account_details(res)
+        self.assert_reference_to_pending_action(res)
+        registration_data = {
+            'login': 'sally.smith@appropriatesoftware.net',
+            'password': 'sally',
+            'firstname': 'Sally',
+            'lastname': 'Smith',
+        }
+        res = self.submit(form_data=registration_data, res=res)
+        self.assert_is_logged_in(res)
+        self.assert_indicator_for_email_confirmation_sent(res)
+        code = self._find_last_pending_action_id()
+        res = self.get(controller='account', action='confirm', code=code)
+        self.assert_form_for_confirm_enquiry(res)
+        # Check we've got our enquiry back.
+        for value in self.enquiry_data.values():
+            assert value in res, "Value '%s' not in response: %s" % (
+                value, res
+            )
 
 
 class TestLoginToApplicationService(TestController):
     """
     Login to application service.
     """
-
 
     def test_178(self):
         """
@@ -288,13 +360,29 @@ class TestLoginToApplicationService(TestController):
         The system shall accept login form submission from an unauthenticated user offering good credentials by signing in the user and resuming any referenced pending action.
         """
         self.logout()
+        res = self.submit_form_for_start_enquiry() # Start example action.
+        self.assert_form_for_login(res)
+        self.assert_not_logged_in(res)
+        res = self.submit(form_data=self.admin_credentials, res=res, controller="account", action="login")
+        self.assert_is_logged_in(res)
+        self.assert_form_for_confirm_enquiry(res) # Resume action above.
+
+    def test_181(self):
+        """
+        The system shall resume an enquiry regarding data openness by redirecting the user to the enquiry confirmation page (as if the enquiry had just been made).
+        """
+        self.logout()
         res = self.submit_form_for_start_enquiry()
         self.assert_form_for_login(res)
         self.assert_not_logged_in(res)
-        #res = self.get(controller='account', action='login')
         res = self.submit(form_data=self.admin_credentials, res=res, controller="account", action="login")
         self.assert_is_logged_in(res)
         self.assert_form_for_confirm_enquiry(res)
+        # Check we've got our enquiry back.
+        for value in self.enquiry_data.values():
+            assert value in res, "Value '%s' not in response: %s" % (
+                value, res
+            )
 
     def test_169(self):
         """
@@ -312,7 +400,7 @@ class TestLoginToApplicationService(TestController):
         """
         self.logout()
         res = self.get(controller='account', action='login', code='1')
-        self.assert_checkpoint('reference-to-pending-action', res)
+        self.assert_reference_to_pending_action(res)
 
 
 class TestConfirmUserEmailAddress(TestController):
