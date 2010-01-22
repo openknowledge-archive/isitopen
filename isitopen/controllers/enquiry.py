@@ -161,6 +161,30 @@ class EnquiryController(BaseController):
         c.enquiry = model.Enquiry.query.get(id)
         return render('message/sent.html')
 
+    def send_pending(self):
+        import isitopen.lib.mailsync as sync
+        import pprint
+        out = '<pre>'
+
+        out += 'Sending pending\n'
+        results = sync.send_pending()
+        out += '%s\n' % pprint.pformat(results)
+
+        results = sync.sync_sent_mail()
+        out += 'Syncing sent mail\n'
+        out += '%s\n' % pprint.pformat(results)
+
+        results = sync.check_for_responses()
+        out += 'Syncing responses\n'
+        out += '%s\n' % pprint.pformat(results)
+
+        results = sync.send_response_notifications()
+        out += 'Sending response notifications\n'
+        out += '%s\n' % pprint.pformat(results)
+
+        out += '</pre>'
+        return out
+
 
 
 default_from = config['enquiry.from']
