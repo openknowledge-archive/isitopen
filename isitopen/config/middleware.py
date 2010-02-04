@@ -39,7 +39,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     app = PylonsApp()
 
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
-    app = TransLogger(app)
+    #app = TransLogger(app)
     app = AuthenticationMiddleware(app)
 
     import pylons
