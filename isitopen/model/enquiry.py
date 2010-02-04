@@ -28,7 +28,7 @@ user_table = Table('user', metadata,
     Column('id', String(36), default=make_uuid, primary_key=True),
     Column('firstname', UnicodeText),
     Column('lastname', UnicodeText),
-    Column('email', UnicodeText),
+    Column('email', Text),
     Column('password', UnicodeText),
     Column('is_confirmed', Boolean, default=False),
     )
@@ -46,8 +46,7 @@ enquiry_table = Table('enquiry', metadata,
 message_table = Table('message', metadata,
     Column('id', String(36), default=make_uuid, primary_key=True),
     Column('enquiry_id', String(36), ForeignKey('enquiry.id')),
-    Column('sender', UnicodeText()),
-    # would prefer UnicodeText but it seems simple str is needed for emails
+    Column('sender', Text()),
     Column('mimetext', Text()),
     Column('status', UnicodeText),
     Column('timestamp', DateTime, default=datetime.datetime.now),
@@ -55,7 +54,7 @@ message_table = Table('message', metadata,
 
 pending_action_table = Table('pending_action', metadata,
     Column('id', String(36), default=make_uuid, primary_key=True),
-    Column('data', UnicodeText()),
+    Column('data', Text()),
     Column('timestamp', DateTime, default=datetime.datetime.now),
     )
 
@@ -95,13 +94,17 @@ class Message(DomainObject):
         '''
         if not hasattr(self, '_email'):
             if self.mimetext:
-                # REALLY odd.
-                # 1. mimetext was unicode (even though set to str type types.Text())
-                # 2. This makes message_from_string fail to parse properly!!
-                self._email = E.message_from_string(
-                        self.mimetext.encode('utf8', 'ignore'))
+                if type(self.mimetext) == unicode:
+                    # Todo: Log warning.
+                    # REALLY odd.
+                    # 1. mimetext was unicode (even though set to str type types.Text())
+                    # 2. This makes message_from_string fail to parse properly!!
+                    email_message_mimetext = self.mimetext.encode('utf8')
+                else:
+                    email_message_mimetext = self.mimetext
             else:
-                self._email = E.message_from_string('')
+                email_message_mimetext = ''
+            self._email = E.message_from_string(email_message_mimetext)
         return self._email
 
     # def _set_email(self, email_message_obj):
@@ -120,7 +123,7 @@ class Message(DomainObject):
 
     email = property(_get_email)
     to = property(lambda self: self.email['To'])
-    subject = property(lambda self: self.email['Subject'])
+    subject = property(lambda self: self.email['Subject'].decode('utf8'))
     body = property(_body)
 
 

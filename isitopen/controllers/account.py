@@ -1,5 +1,4 @@
 from isitopen.lib.base import *
-from isitopen.lib.mailer import Mailer
 
 class AccountController(BaseController):
 
@@ -35,13 +34,12 @@ class AccountController(BaseController):
 
     def register(self, environ, start_response):
         formvars = self._receive(environ)
-        c.firstname = formvars.get('firstname')
-        c.lastname = formvars.get('lastname')
-        c.login = formvars.get('login')
-        c.password = formvars.get('password')
+        c.firstname = formvars.get('firstname', '').decode('utf8')
+        c.lastname = formvars.get('lastname', '').decode('utf8')
+        c.login = formvars.get('login', '')
+        c.password = formvars.get('password', '').decode('utf8')
         if formvars.get('send'):
             self._validate_registration_submission()
-            
             came_from = h.url_for(controller='account', action='index', code=c.pending_action_code)
             if not c.error:
                 self._create_user(c.firstname, c.lastname, c.login, c.password)
@@ -111,17 +109,16 @@ class AccountController(BaseController):
         confirm_url = h.url_for('confirm-account', code=pending_action.id)
         guide_url = h.url_for('guide')
         site_domain = 'http://127.0.0.1:5000' 
-        confirmation_text = confirmation_template % {
+        body = confirmation_body_template % {
             'firstname': user.firstname,
             'confirm_url': site_domain + confirm_url,
             'guide_url': site_domain + guide_url,
         }
-        message = email.message_from_string(confirmation_text.encode('utf-8'))
-        message['Subject'] = 'Is It Open Data? email address confirmation'
-        message['To'] = user.email 
-        mailer = Mailer.default()
-        mailer.send(message)
-       
+        to = user.email
+        subject = u'Is It Open Data? email address confirmation'
+        email_message = self._make_email_message(body, to=to, subject=subject)
+        self._send_email_message(email_message)
+
     def _confirm_account(self, pending_action):
         (action_name, action_data) = pending_action.retrieve()
         login = action_data['login']
@@ -130,7 +127,7 @@ class AccountController(BaseController):
         model.Session.commit()
 
 
-confirmation_template = """
+confirmation_body_template = u"""
 Hi %(firstname)s,
 
 Your account has been created. To confirm your email address, follow the link below:

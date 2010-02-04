@@ -1,11 +1,4 @@
-import logging
-import email as E
-
-from pylons import config
 from isitopen.lib.base import *
-import isitopen.lib.mailer as mailer
-
-log = logging.getLogger(__name__)
 
 class EnquiryController(BaseController):
 
@@ -45,13 +38,13 @@ class EnquiryController(BaseController):
                 c.message.subject = c.enquiry_subject
                 c.message.body = c.enquiry_body
         elif formvars.get('restart'):
-            # Initialising the enquiry form.
+            # Reinitialising the enquiry form with submitted values.
             self._receive_enquiry(formvars)
             self._validate_enquiry()
             c.is_step1 = True
         elif not self._is_logged_in():
-            # Initialising the enquiry form.
-            self._receive_enquiry(self._defaults())
+            # Initialising the enquiry form with default values.
+            self._receive_enquiry(self._default_formvars())
             c.is_step1 = True
         elif self._is_logged_in() and not self._is_account_activated():
             # Forgotten to confirm account.
@@ -90,46 +83,49 @@ class EnquiryController(BaseController):
             c.enquiry = model.Enquiry.query.get(id)
             c.is_step3 = True
         else:
-            # Just initialising the enquiry form.
-            self._receive_enquiry(self._defaults())
+            # Initialising the enquiry form with default values.
+            self._receive_enquiry(self._default_formvars())
             c.is_step1 = True
         return render('enquiry/start.html')
 
-    def _defaults(self):
-        body_data = {}
+    def _default_formvars(self):
+        to = ''
+        subject = u'Data Openness Enquiry'
         if self._is_logged_in():
-            fullname = '%s %s' % (c.user.firstname, c.user.lastname)
+            fullname = u'%s %s' % (c.user.firstname, c.user.lastname)
         else:
-            fullname = '**Put Your Name Here**'
-        body_data['fullname'] = fullname 
-        defaults = {}
-        defaults['to'] = ''
-        defaults['subject'] = 'Data Openness Enquiry'
-        defaults['body'] = template_2 % body_data
-        return defaults
+            fullname = u'**Put Your Name Here**'
+        body = enquiry_body_template % {'fullname': fullname}
+        formvars = {
+            'to': to,
+            'subject': subject.encode('utf8'),
+            'body': body.encode('utf8'),
+        }
+        return formvars
 
     def _receive_enquiry(self, formvars):
         c.enquiry_to = formvars.get('to')
-        c.enquiry_subject = formvars.get('subject')
-        c.enquiry_body = formvars.get('body')
+        c.enquiry_subject = formvars.get('subject').decode('utf8')
+        c.enquiry_body = formvars.get('body').decode('utf8')
 
     def _validate_enquiry(self):
         c.error = ''
         if not c.enquiry_to:
-            c.error = 'You have not specified to whom the enquiry should be sent.'
+            c.error = u'You have not specified to whom the enquiry should be sent.'
         elif not c.enquiry_subject:
-            c.error = 'The summary of the enquiry is missing.'
+            c.error = u'The summary of the enquiry is missing.'
         elif not c.enquiry_body:
-            c.error = 'The body of the enquiry is missing.'
-        elif c.enquiry_body == self._defaults()['body'].replace('\n','\r\n'):
-            c.error = 'The body of the enquiry has not been changed.'
+            c.error = u'The body of the enquiry is missing.'
+        elif c.enquiry_body == self._default_formvars()['body'].decode('utf8').replace('\n','\r\n'):
+            c.error = u'The body of the enquiry has not been changed.'
         else:
             self._validate_email_address(c.enquiry_to)
 
     def _start_enquiry(self):
-        email = _make_email((c.enquiry_body + enquiry_footer).encode('utf8'),
-            to=c.enquiry_to, subject=c.enquiry_subject
-        )
+        body = c.enquiry_body + enquiry_footer
+        to = c.enquiry_to
+        subject = c.enquiry_subject
+        email_message = self._make_email_message(body, to=to, subject=subject)
         # if response_to existing message add references and in-reply-to
         #original = model.Message.query.get(c.response_to)
         #if original:
@@ -139,12 +135,12 @@ class EnquiryController(BaseController):
         #    refs += ' <%s>' % tmsgid
         #    email['References'] = refs
         c.message = model.Message(
-            mimetext=email.as_string(),
+            mimetext=email_message.as_string(),
             status=model.MessageStatus.not_yet_sent,
             sender=c.user.email
         )
         c.enquiry = model.Enquiry()
-        c.enquiry.summary = unicode(c.message.subject, 'utf8')
+        c.enquiry.summary = c.message.subject
         c.enquiry.owner = c.user
         c.message.enquiry = c.enquiry
         model.Session.commit()
@@ -186,23 +182,8 @@ class EnquiryController(BaseController):
         return out
 
 
-
-default_from = config['enquiry.from']
-def _make_email(text, **headers):
-    msg = E.message_from_string(text)
-    for k,v in headers.items():
-        msg[k.capitalize()] = v
-    if not 'From' in msg:
-        msg['From'] = msg['Reply-To'] = default_from
-    return msg
-
-
-follow_up_email = '''It might also be good to apply a specific 'open data' licence --
-you can find examples of such licenses at: ...
-'''
-
-template_2 = \
-'''Dear Sir or Madam,
+enquiry_body_template = \
+u'''Dear Sir or Madam,
 
 I am **insert pertinent information about yourself, e.g. I am a researcher in field X**.
 
@@ -222,7 +203,7 @@ Regards,
 [2] <http://www.opendefinition.org/licenses/>  
 '''
 
-enquiry_footer = '''
+enquiry_footer = u'''
 --  
 Sent by "Is It Open?" (<http://isitopen.ckan.net/about/>)  
 A service which helps scholars (and others) to request information
