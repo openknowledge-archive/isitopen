@@ -52,13 +52,20 @@ class AccountController(BaseController):
 
     def confirm(self, environ, start_response):
         formvars = self._receive(environ)
-        if formvars.get('code'):
-            code = formvars.get('code')
-            pending_action = model.PendingAction.query.get(code)
+        confirmation_code = formvars.get('code')
+        if confirmation_code:
+            login = ''
+            enquiry_code = ''
+            pending_action = model.PendingAction.query.get(confirmation_code)
             if pending_action:
-                self._confirm_account(pending_action)
-                # Todo: Associate pending actions with account.
-                enquiry_code = pending_action.retrieve()[1]['code']
+                if pending_action.type == model.PendingAction.CONFIRM_ACCOUNT:
+                    confirmation_data = pending_action.retrieve()
+                    login = confirmation_data['login']
+                    enquiry_code = confirmation_data['code']
+                else:
+                    raise Exception, "Wrong action code: %s" % repr(pending_action)
+            if login:
+                self._confirm_account(login)
                 if self._is_logged_in():
                     if enquiry_code:
                         self._redirect_to_start_enquiry(code=enquiry_code)
@@ -73,6 +80,9 @@ class AccountController(BaseController):
                     else:
                         self._redirect_to_login()
                         return
+            else:
+                self._redirect_to_home()
+                return
         elif self._is_logged_in():
             if self._is_account_activated():
                 self._redirect_to_home()
@@ -101,45 +111,18 @@ class AccountController(BaseController):
         return user
 
     def _request_confirmation(self, login, code=''):
-        user = self._find_user(login)
-        import email
-        pending_action = model.PendingAction()
-        pending_action.store('confirm-account', login=login, code=code)
+        type = model.PendingAction.CONFIRM_ACCOUNT
+        pending_action = model.PendingAction(type=type)
+        pending_action.store(login=login, code=code)
         model.Session.commit()
-        confirm_url = h.url_for('confirm-account', code=pending_action.id)
-        guide_url = h.url_for('guide')
-        site_domain = 'http://127.0.0.1:5000' 
-        body = confirmation_body_template % {
-            'firstname': user.firstname,
-            'confirm_url': site_domain + confirm_url,
-            'guide_url': site_domain + guide_url,
-        }
-        to = user.email
-        subject = u'Is It Open Data? email address confirmation'
-        email_message = self._make_email_message(body, to=to, subject=subject)
-        self._send_email_message(email_message)
-
-    def _confirm_account(self, pending_action):
-        (action_name, action_data) = pending_action.retrieve()
-        login = action_data['login']
         user = self._find_user(login)
-        user.is_confirmed = True
-        model.Session.commit()
+        confirmation_code = pending_action.id
+        self._mailer().send_email_confirmation_request(user, confirmation_code)
 
+    def _confirm_account(self, login):
+        user = self._find_user(login)
+        if user and not user.is_confirmed:
+            user.is_confirmed = True
+            model.Session.commit()
 
-confirmation_body_template = u"""
-Hi %(firstname)s,
-
-Your account has been created. To confirm your email address, follow the link below:
-%(confirm_url)s
-(If clicking on the link doesn't work, try copying it into your browser.)
-
-If you did not enter this address, please disregard this message.
-
-Take a look at the guide if you have any questions:
-%(guide_url)s 
-
-Thanks,
-The Is It Open Data? Team
-"""
 

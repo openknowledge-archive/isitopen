@@ -108,7 +108,16 @@ class Fixtures(Command):
         enq_id = enq.id
         mess_id = mess.id
         model.Session.remove()
+        # Warning: The emails and passwords are used as login credentials in the customer tests.
+        self.create_user(u'Mark\xfc',u'Smith\xfc',u'mark.smith@appropriatesoftware.net',u'mark\xfc',True)
+        self.create_user(u'Robert\xfc',u'Smith\xfc',u'bob.smith@appropriatesoftware.net',u'bob\xfc')
         return (enq_id, mess_id)
+
+    @classmethod
+    def create_user(self, firstname, lastname, email, password, is_confirmed=False):
+        from isitopen import model
+        model.User(firstname=firstname, lastname=lastname, email=email, password=password, is_confirmed=is_confirmed)
+        model.Session.commit()
 
     @classmethod
     def remove(self):

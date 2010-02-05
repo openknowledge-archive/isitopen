@@ -19,11 +19,17 @@ def new_markdown(text, **kwargs):
 markdown = new_markdown
 
 def email_body(body):
+    #body = str(body)
+    #if type(body) == str:
+    #    body = body.decode('utf8')
     body = body.replace('\r\n', '\n')
     # fix issue where quoted text immediately after quoted text at start of
     # quoting
     body = body.replace(':\n>', ':\n\n>')
     # in quoted sections seem to get line continuations with =
     body = body.replace('=\n', '')
+    #return ""
+    #return markdown(repr(type(body)).replace("<", "&lt;") + body[:10])
+    # Todo: Fix this, it screws up when unicode is in the enquiry body.
     return markdown(body)
 
