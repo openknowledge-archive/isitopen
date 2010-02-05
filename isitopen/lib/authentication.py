@@ -24,7 +24,7 @@ class ModelPasswordPlugin(object):
         user = self._find_user(login)
         if not user:
             return None
-        if user.password == password:
+        if user.password.encode('utf8') == password:
             return login
         return None
 

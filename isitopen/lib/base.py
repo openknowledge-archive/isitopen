@@ -34,6 +34,7 @@ class BaseController(WSGIController):
         self._receive_remote_user(environ)
         if self._is_logged_in():
             self._read_account_status()
+        self._read_server_name(environ)
         return self._receive_formvars(environ)
 
     def _receive_remote_user(self, environ):
@@ -44,7 +45,7 @@ class BaseController(WSGIController):
         return model.User.query.filter_by(email=login).first()
 
     def _is_logged_in(self):
-        return bool(c.remote_user)
+        return bool(c.user)
 
     def _read_account_status(self):
         if c.user and c.user.is_confirmed:
@@ -54,6 +55,13 @@ class BaseController(WSGIController):
 
     def _is_account_activated(self):
         return bool(c.is_account_activated)
+
+    def _read_server_name(self, environ):
+        server_name = environ['SERVER_NAME']
+        if server_name in ['localhost', '0.0.0.0']:
+            # Needed for development and testing...
+            server_name = '127.0.0.1:5000'
+        c.site_url = 'http://%s' % server_name
 
     def _receive_formvars(self, environ):
         formvars = parse_formvars(environ)
@@ -91,20 +99,8 @@ class BaseController(WSGIController):
         except formalchemy.validators.ValidationError, inst:
             c.error = u'Invalid email address: %s' % inst
 
-    def _make_email_message(self, email_body, **headers):
-        if type(email_body) == unicode:
-            email_body = email_body.encode('utf8')
-        headers['Content-Type'] = 'text/plain; charset="utf-8"'
-        email_message = email.message_from_string(email_body)
-        for name, value in headers.items():
-            if type(value) == unicode:
-                value = value.encode('utf8')
-            email_message[name.capitalize()] = value
-        return email_message
- 
-    def _send_email_message(self, email_message):
-        mailer = Mailer.default()
-        mailer.send(email_message)
+    def _mailer(self):
+        return Mailer(site_url=c.site_url)
 
 # Include the '_' function in the public names
 __all__ = [__name for __name in locals().keys() if not __name.startswith('_') \

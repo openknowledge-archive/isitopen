@@ -55,19 +55,30 @@ class EnquiryController(BaseController):
             # Restoring pending enquiry.
             code = formvars.get('code')
             pending_action = model.PendingAction.query.get(code)
-            (action_name, action_data) = pending_action.retrieve()
-            c.enquiry_to = action_data['enquiry_to']
-            c.enquiry_subject = action_data['enquiry_subject']
-            c.enquiry_body = action_data['enquiry_body']
-            self._validate_enquiry()
-            if not c.error:
-                c.is_step2 = True
-                class MockMessage: pass
-                c.message = MockMessage()
-                c.message.to = c.enquiry_to
-                c.message.subject = c.enquiry_subject
-                c.message.body = c.enquiry_body
+            if pending_action:
+                if pending_action.type == model.PendingAction.START_ENQUIRY:
+                    enquiry_data = pending_action.retrieve()
+                    # Initialise with previously submitted values.
+                    c.enquiry_to = enquiry_data['enquiry_to']
+                    c.enquiry_subject = enquiry_data['enquiry_subject']
+                    c.enquiry_body = enquiry_data['enquiry_body']
+                    self._validate_enquiry()
+                    if not c.error:
+                        # Show confirmation request.
+                        c.is_step2 = True
+                        class MockMessage: pass
+                        c.message = MockMessage()
+                        c.message.to = c.enquiry_to
+                        c.message.subject = c.enquiry_subject
+                        c.message.body = c.enquiry_body
+                    else:
+                        # Show error on form.
+                        c.is_step1 = True
+                else:
+                    raise Exception, "Wrong action type: %s" % repr(pending_action)
             else:
+                # Error, initialise with default values.
+                self._receive_enquiry(self._default_formvars())
                 c.is_step1 = True
         elif formvars.get('confirm'):
             # Confirming enquiry.
@@ -95,7 +106,7 @@ class EnquiryController(BaseController):
             fullname = u'%s %s' % (c.user.firstname, c.user.lastname)
         else:
             fullname = u'**Put Your Name Here**'
-        body = enquiry_body_template % {'fullname': fullname}
+        body = self._mailer().enquiry_body_template % {'fullname': fullname}
         formvars = {
             'to': to,
             'subject': subject.encode('utf8'),
@@ -122,10 +133,10 @@ class EnquiryController(BaseController):
             self._validate_email_address(c.enquiry_to)
 
     def _start_enquiry(self):
-        body = c.enquiry_body + enquiry_footer
+        body = c.enquiry_body + self._mailer().enquiry_footer
         to = c.enquiry_to
         subject = c.enquiry_subject
-        email_message = self._make_email_message(body, to=to, subject=subject)
+        email_message = self._mailer().write(body, to=to, subject=subject)
         # if response_to existing message add references and in-reply-to
         #original = model.Message.query.get(c.response_to)
         #if original:
@@ -146,9 +157,12 @@ class EnquiryController(BaseController):
         model.Session.commit()
 
     def _create_pending_action(self):
-        pending_action = model.PendingAction()
-        pending_action.store(name='start-enquiry', enquiry_to=c.enquiry_to,
-            enquiry_subject=c.enquiry_subject, enquiry_body=c.enquiry_body
+        type = model.PendingAction.START_ENQUIRY
+        pending_action = model.PendingAction(type=type)
+        pending_action.store(
+            enquiry_to=c.enquiry_to,
+            enquiry_subject=c.enquiry_subject,
+            enquiry_body=c.enquiry_body,
         )
         model.Session.commit()
         return pending_action
@@ -157,7 +171,8 @@ class EnquiryController(BaseController):
         c.enquiry = model.Enquiry.query.get(id)
         return render('message/sent.html')
 
-    def send_pending(self):
+    def send_pending(self, environ, start_response):
+        formvars = self._receive(environ)
         import isitopen.lib.mailsync as sync
         import pprint
         out = '<pre>'
@@ -174,7 +189,7 @@ class EnquiryController(BaseController):
         out += 'Syncing responses\n'
         out += '%s\n' % pprint.pformat(results)
 
-        results = sync.send_response_notifications()
+        results = sync.send_response_notifications(self._mailer())
         out += 'Sending response notifications\n'
         out += '%s\n' % pprint.pformat(results)
 
@@ -182,30 +197,3 @@ class EnquiryController(BaseController):
         return out
 
 
-enquiry_body_template = \
-u'''Dear Sir or Madam,
-
-I am **insert pertinent information about yourself, e.g. I am a researcher in field X**.
-
-I am writing to seek clarification of the 'openness' [1] of this data:
-
-**insert details and perhaps an example link here**.  
-
-I wasn't able to find an explicit statement that the data was open such as a reference to an open knowledge or data license [2] so I'm writing to find out what the exact situation is. In particular we would like to know whether the material can be made available under an open license of some kind.
-
-Thank you very much for your time and I look forward to receiving your response.
-
-Regards,
-
-%(fullname)s
-
-[1] <http://www.opendefinition.org/1.0/>  
-[2] <http://www.opendefinition.org/licenses/>  
-'''
-
-enquiry_footer = u'''
---  
-Sent by "Is It Open?" (<http://isitopen.ckan.net/about/>)  
-A service which helps scholars (and others) to request information
-about the status and licensing of information.
-'''

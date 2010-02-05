@@ -99,7 +99,7 @@
       <div id="top-bar">
         <p>
         <py:choose>
-          <py:when test="c.remote_user">
+          <py:when test="c.user">
           <!--checkpoint:is-logged-in-->
             <py:choose>
               <py:when test="c.is_account_activated">

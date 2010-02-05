@@ -8,6 +8,7 @@ from pylons import config
 
 from isitopen.tests import *
 import isitopen.lib.mailsync as ms
+from isitopen.lib.mailer import Mailer
 
 class TestMailSync:
     
@@ -58,13 +59,6 @@ class TestMailSync:
         # assert now_synced.mimetext == self.msg1
         assert now_synced.mimetext[:20] == self.msg1[:20]
 
-    def test_2__make_response_email(self):
-        enq = model.Enquiry.query.get(self.enq_id)
-        out = ms._make_response_email(enq)
-        # assert out
-        assert '[isitopen]' in out['subject']
-        assert enq.id in out['subject']
-    
     def test_3_check_for_responses(self):
         e = model.Enquiry.query.first()
         startnum = model.Message.query.count()
@@ -113,4 +107,5 @@ class TestMailerRelated:
         # FIXME .. currently no fixtures pending.
 
     def test_send_response_notifications(self):
-        out = ms.send_response_notifications()
+        mailer = Mailer()
+        out = ms.send_response_notifications(mailer)

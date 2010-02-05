@@ -46,15 +46,16 @@ enquiry_table = Table('enquiry', metadata,
 message_table = Table('message', metadata,
     Column('id', String(36), default=make_uuid, primary_key=True),
     Column('enquiry_id', String(36), ForeignKey('enquiry.id')),
-    Column('sender', Text()),
-    Column('mimetext', Text()),
+    Column('sender', Text),
+    Column('mimetext', Text),
     Column('status', UnicodeText),
     Column('timestamp', DateTime, default=datetime.datetime.now),
     )
 
 pending_action_table = Table('pending_action', metadata,
     Column('id', String(36), default=make_uuid, primary_key=True),
-    Column('data', Text()),
+    Column('type', Text),
+    Column('data', Text),
     Column('timestamp', DateTime, default=datetime.datetime.now),
     )
 
@@ -78,7 +79,7 @@ class DomainObject(object):
             if col.name not in self._exclude_from___str__:
                 repr += u' %s=%s' % (col.name, getattr(self, col.name))
         repr += u'}}'
-        return repr
+        return repr.encode('utf8')
 
     def __repr__(self):
         return self.__str__()
@@ -95,10 +96,10 @@ class Message(DomainObject):
         if not hasattr(self, '_email'):
             if self.mimetext:
                 if type(self.mimetext) == unicode:
-                    # Todo: Log warning.
                     # REALLY odd.
                     # 1. mimetext was unicode (even though set to str type types.Text())
                     # 2. This makes message_from_string fail to parse properly!!
+                    # Todo: Log warning.
                     email_message_mimetext = self.mimetext.encode('utf8')
                 else:
                     email_message_mimetext = self.mimetext
@@ -137,17 +138,16 @@ class Enquiry(DomainObject):
 
 
 class PendingAction(DomainObject):
-   
-    def store(self, name, **kwds):
-        kwds['__name__'] = name
+
+    CONFIRM_ACCOUNT = 'confirm-account'
+    START_ENQUIRY = 'start-enquiry'
+
+    def store(self, **kwds):
         self.data = json.dumps(kwds)
 
     def retrieve(self):
-        kwds = json.loads(self.data)
-        name = kwds.pop('__name__')
-        return (name, kwds)
+        return json.loads(self.data)
 
-             
 
 mapper(User, user_table,
     order_by=user_table.c.id)
