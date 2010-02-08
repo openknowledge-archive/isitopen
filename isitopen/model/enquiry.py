@@ -6,65 +6,6 @@ from meta import *
 from types import json
 
 import uuid
-def make_uuid():
-    return str(uuid.uuid4())
-
-class EnquiryStatus(object):
-    resolved_open = u'Resolved (Open)'
-    resolved_closed = u'Resolved (Closed)'
-    unresolved = u'Unresolved'
-
-class MessageStatus(object):
-    not_yet_sent = u'Not Yet Sent'
-    sent_not_synced = u'Sent But Not Synced'
-    sent = u'Sent'
-    # a response but no notification sent to enquiry owner
-    response_no_notification = u'Response But No Notification'
-    # notification done
-    response = u'Response'
-
-
-user_table = Table('user', metadata,
-    Column('id', String(36), default=make_uuid, primary_key=True),
-    Column('firstname', UnicodeText),
-    Column('lastname', UnicodeText),
-    Column('email', Text),
-    Column('password', UnicodeText),
-    Column('is_confirmed', Boolean, default=False),
-    )
-
-enquiry_table = Table('enquiry', metadata,
-    Column('id', String(36), default=make_uuid, primary_key=True),
-    Column('summary', UnicodeText),
-    Column('status', UnicodeText, default=EnquiryStatus.unresolved),
-    Column('timestamp', DateTime, default=datetime.datetime.now),
-    Column('last_updated', DateTime, default=datetime.datetime.now),
-    Column('owner_id', String(36), ForeignKey('user.id')),
-    Column('extras', JsonType),
-    )
-
-message_table = Table('message', metadata,
-    Column('id', String(36), default=make_uuid, primary_key=True),
-    Column('enquiry_id', String(36), ForeignKey('enquiry.id')),
-    Column('sender', Text),
-    Column('mimetext', Text),
-    Column('status', UnicodeText),
-    Column('timestamp', DateTime, default=datetime.datetime.now),
-    )
-
-pending_action_table = Table('pending_action', metadata,
-    Column('id', String(36), default=make_uuid, primary_key=True),
-    Column('type', Text),
-    Column('data', Text),
-    Column('timestamp', DateTime, default=datetime.datetime.now),
-    )
-
-# sqlalchemy migrate version table
-import sqlalchemy.exceptions
-try:
-    version_table = Table('migrate_version', metadata, autoload=True)
-except sqlalchemy.exceptions.NoSuchTableError:
-    pass
 
 class DomainObject(object):
     def __init__(self, **kwargs):
@@ -88,7 +29,16 @@ class User(DomainObject):
     pass
 
 class Message(DomainObject):
+
+    # Status strings.
+    NOT_SENT = u'Not Yet Sent'
+    JUST_SENT = u'Sent But Not Synced'
+    SENT_REREAD = u'Sent'
+    JUST_RESPONSE = u'Response But No Notification'
+    RESPONSE_NOTIFIED = u'Response'
+
     _exclude_from___str__ = [ 'mimetext' ]
+
     def _get_email(self):
         '''
         @return email.Message object
@@ -129,6 +79,24 @@ class Message(DomainObject):
 
 
 class Enquiry(DomainObject):
+
+    # Status strings.
+    STARTED = u'Unresolved'
+    RESOLVED_OPEN = u'Resolved (Open)'
+    RESOLVED_CLOSED = u'Resolved (Closed)'
+
+    @classmethod
+    def start_new(self, owner, to, summary, fulltext):
+        enquiry = self(owner=owner, summary=summary)
+        import isitopen.lib.mailer
+        mailer = isitopen.lib.mailer.Mailer()
+        email_message = mailer.write(fulltext, to=to, subject=summary)
+        mimetext=email_message.as_string()
+        message = Message(mimetext=mimetext, status=Message.NOT_SENT,
+            sender=owner.email, enquiry=enquiry)
+        Session.commit()
+        return enquiry
+
     def _get_to(self):
         if self.messages:
             return self.messages[0].to
@@ -139,6 +107,7 @@ class Enquiry(DomainObject):
 
 class PendingAction(DomainObject):
 
+    # Actions type strings.
     CONFIRM_ACCOUNT = 'confirm-account'
     START_ENQUIRY = 'start-enquiry'
 
@@ -147,6 +116,52 @@ class PendingAction(DomainObject):
 
     def retrieve(self):
         return json.loads(self.data)
+
+
+def make_uuid():
+    return str(uuid.uuid4())
+
+user_table = Table('user', metadata,
+    Column('id', String(36), default=make_uuid, primary_key=True),
+    Column('firstname', UnicodeText),
+    Column('lastname', UnicodeText),
+    Column('email', Text),
+    Column('password', UnicodeText),
+    Column('is_confirmed', Boolean, default=False),
+    )
+
+enquiry_table = Table('enquiry', metadata,
+    Column('id', String(36), default=make_uuid, primary_key=True),
+    Column('summary', UnicodeText),
+    Column('status', UnicodeText, default=Enquiry.STARTED),
+    Column('timestamp', DateTime, default=datetime.datetime.now),
+    Column('last_updated', DateTime, default=datetime.datetime.now),
+    Column('owner_id', String(36), ForeignKey('user.id')),
+    Column('extras', JsonType),
+    )
+
+message_table = Table('message', metadata,
+    Column('id', String(36), default=make_uuid, primary_key=True),
+    Column('enquiry_id', String(36), ForeignKey('enquiry.id')),
+    Column('sender', Text),
+    Column('mimetext', Text),
+    Column('status', UnicodeText),
+    Column('timestamp', DateTime, default=datetime.datetime.now),
+    )
+
+pending_action_table = Table('pending_action', metadata,
+    Column('id', String(36), default=make_uuid, primary_key=True),
+    Column('type', Text),
+    Column('data', Text),
+    Column('timestamp', DateTime, default=datetime.datetime.now),
+    )
+
+# sqlalchemy migrate version table
+import sqlalchemy.exceptions
+try:
+    version_table = Table('migrate_version', metadata, autoload=True)
+except sqlalchemy.exceptions.NoSuchTableError:
+    pass
 
 
 mapper(User, user_table,

@@ -1,4 +1,5 @@
 from isitopen.lib.base import *
+import pprint
 
 class EnquiryController(BaseController):
 
@@ -133,28 +134,40 @@ class EnquiryController(BaseController):
             self._validate_email_address(c.enquiry_to)
 
     def _start_enquiry(self):
-        body = c.enquiry_body + self._mailer().enquiry_footer
-        to = c.enquiry_to
-        subject = c.enquiry_subject
-        email_message = self._mailer().write(body, to=to, subject=subject)
-        # if response_to existing message add references and in-reply-to
-        #original = model.Message.query.get(c.response_to)
-        #if original:
-        #    tmsgid = original.email['Message-Id']
-        #    email['In-Reply-To'] = tmsgid
-        #    refs = original.email.get('References', '')
-        #    refs += ' <%s>' % tmsgid
-        #    email['References'] = refs
-        c.message = model.Message(
-            mimetext=email_message.as_string(),
-            status=model.MessageStatus.not_yet_sent,
-            sender=c.user.email
+        c.enquiry = model.Enquiry.start_new(
+            owner=c.user, 
+            to=c.enquiry_to,
+            summary=c.enquiry_subject,
+            fulltext=c.enquiry_body + self._mailer().enquiry_footer
         )
-        c.enquiry = model.Enquiry()
-        c.enquiry.summary = c.message.subject
-        c.enquiry.owner = c.user
-        c.message.enquiry = c.enquiry
-        model.Session.commit()
+        c.message = c.enquiry.messages[0]
+
+#    def _start_enquiry(self):
+#        c.enquiry = model.Enquiry(
+#            summary=c.enquiry_subject,
+#            owner=c.user,
+#        )
+#        # Todo: Create the Mimetext later, store raw data ron object.
+#        email_message = self._mailer().write(
+#            c.enquiry_body + self._mailer().enquiry_footer
+#            to=c.enquiry_to
+#            subject=c.enquiry_subject
+#        )
+#        # if response_to existing message add references and in-reply-to
+#        #original = model.Message.query.get(c.response_to)
+#        #if original:
+#        #    tmsgid = original.email['Message-Id']
+#        #    email['In-Reply-To'] = tmsgid
+#        #    refs = original.email.get('References', '')
+#        #    refs += ' <%s>' % tmsgid
+#        #    email['References'] = refs
+#        c.message = model.Message(
+#            mimetext=email_message.as_string(),
+#            status=model.Message.NOT_SENT,
+#            sender=c.user.email,
+#            enquiry=c.enquiry
+#        )
+#        model.Session.commit()
 
     def _create_pending_action(self):
         type = model.PendingAction.START_ENQUIRY
@@ -172,28 +185,33 @@ class EnquiryController(BaseController):
         return render('message/sent.html')
 
     def send_pending(self, environ, start_response):
-        formvars = self._receive(environ)
-        import isitopen.lib.mailsync as sync
-        import pprint
-        out = '<pre>'
+        # Deprecated in favour of:
+        self.flush(environ, start_response)
 
-        out += 'Sending pending\n'
-        results = sync.send_pending()
-        out += '%s\n' % pprint.pformat(results)
+    # Todo: Move this to the message controller?
+    def flush(self, environ, start_response):
+        """Send unsent and receive unread email messages."""
+        self._receive(environ)
+        if self._is_admin_logged_in():
+            mailer = self._mailer()
+            out = '<pre>'
 
-        results = sync.sync_sent_mail()
-        out += 'Syncing sent mail\n'
-        out += '%s\n' % pprint.pformat(results)
+            out += 'Pushing unsent mail\n'
+            results = mailer.send_unsent()
+            out += '%s\n' % pprint.pformat(results)
 
-        results = sync.check_for_responses()
-        out += 'Syncing responses\n'
-        out += '%s\n' % pprint.pformat(results)
+            results = mailer.reread_sent()
+            out += 'Pulling sent mail\n'
+            out += '%s\n' % pprint.pformat(results)
 
-        results = sync.send_response_notifications(self._mailer())
-        out += 'Sending response notifications\n'
-        out += '%s\n' % pprint.pformat(results)
+            results = mailer.pull_unread()
+            out += 'Syncing responses\n'
+            out += '%s\n' % pprint.pformat(results)
 
-        out += '</pre>'
-        return out
+            results = mailer.send_response_notifications()
+            out += 'Sending response notifications\n'
+            out += '%s\n' % pprint.pformat(results)
 
+            out += '</pre>'
+            return out
 

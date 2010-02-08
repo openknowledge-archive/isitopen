@@ -47,6 +47,18 @@ class BaseController(WSGIController):
     def _is_logged_in(self):
         return bool(c.user)
 
+    def _is_admin_logged_in(self):
+        # Todo: Get admin_emails from config?
+        admin_emails = [
+            'john.bywater@appropriatesoftware.net',
+            'mark.smith@appropriatesoftware.net',
+        ]
+        if not self._is_logged_in():
+            return False
+        if c.user.email in admin_emails:
+            return True
+        return False
+
     def _read_account_status(self):
         if c.user and c.user.is_confirmed:
             c.is_account_activated = True

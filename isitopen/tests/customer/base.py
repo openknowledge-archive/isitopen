@@ -12,7 +12,7 @@ class TestController(TestController):
 
     @classmethod
     def setup_class(self):
-        Fixtures.create()
+        self.enq_id, self.msg_id = Fixtures.create()
 
     @classmethod
     def teardown_class(self):

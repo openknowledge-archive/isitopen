@@ -9,7 +9,8 @@ class TestBrowseDataOpennessEnquiries(TestController):
         The system shall present to all users a list of existing data openness enquiries.
         """
         res = self.get(controller="enquiry", action="list")
-        assert "Existing Enquiries" in res
+        self.assert_checkpoint('indicator-for-enquiry-list', res)
+        assert self.enq_id in res
 
 
 class TestStartDataOpennessEnquiry(TestController):
@@ -76,18 +77,4 @@ class TestStartDataOpennessEnquiry(TestController):
         assert 'Sent by' in message.mimetext
         assert self.enquiry_data['subject'] == message.enquiry.summary
         assert login == message.enquiry.owner.email
-
-
-class TestDispatchDataOpennessEnquiry(TestController):
-    """
-    Send enquiry regarding data openness to data handler.
-    """
-
-    def test_165(self):
-        """
-        The system shall regularly send pending data openness enquiry messages through a secure email account.
-        """ 
-        pass
-
-
 
