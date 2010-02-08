@@ -10,14 +10,14 @@ class TestEnquiryController(TestController):
         # should rebuild as create stuff
         model.repo.rebuild_db()
 
-    def test_1_view(self):
+    def test_view(self):
         offset = url_for(controller='enquiry', action='view',
                 id=self.enq_id)
         res = self.app.get(offset)
         assert 'Is It Open Data?' in res, str(res)
         assert 'Status:' in res, str(res)
 
-    def test_2_list(self):
+    def test_list(self):
         offset = url_for(controller='enquiry', action='list')
         res = self.app.get(offset)
         assert self.enq_id  in res

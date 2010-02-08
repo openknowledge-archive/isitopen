@@ -58,7 +58,7 @@ class MessageController(BaseController):
             email_msg['References'] = refs
 
         message = model.Message(mimetext=email_msg.as_string(),
-                status=model.MessageStatus.not_yet_sent,
+                status=model.Message.NOT_SENT,
                 sender=c.sender)
 
         model.Session.commit()

@@ -96,13 +96,13 @@ class Fixtures(Command):
         mess = model.Message(enquiry=enq)
         mess.sender = self.sender
         mess.mimetext = self.email.as_string()
-        mess.status = model.MessageStatus.sent
+        mess.status = model.Message.SENT_REREAD
 
         self.email2['To'] = self.user_email
         self.email2['Subject'] = u'testing email response'
         self.email2['From'] = self.to
         mess2 = model.Message(enquiry=enq, mimetext=self.email2.as_string(),
-                status=model.MessageStatus.response)
+                status=model.Message.JUST_RESPONSE)
 
         model.Session.commit()
         enq_id = enq.id
