@@ -51,7 +51,9 @@ class TestLoginToApplicationService(TestController):
         res = self.get(controller='account', action='login')
         self.assert_not_logged_in(res)
         self.assert_checkpoint('option-to-register-account-details', res)
+        # Todo: Test the link works.
         self.assert_checkpoint('option-to-recover-account-details', res)
+        # Todo: Test the link works.
 
     def test_173(self):
         """

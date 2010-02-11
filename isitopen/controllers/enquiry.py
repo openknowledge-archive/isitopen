@@ -4,7 +4,7 @@ import pprint
 class EnquiryController(BaseController):
 
     def index(self, environ, start_response):
-        return self.list(environ, start_response)
+        self._redirect_to_enquiry_list()
 
     def list(self, environ, start_response):
         formvars = self._receive(environ)
@@ -17,6 +17,8 @@ class EnquiryController(BaseController):
         if enq is None:
             abort(404)
         c.enquiry = enq
+        c.can_resolve_enquiry = self._can_resolve_enquiry()
+        c.can_follow_up_enquiry = self._can_follow_up_enquiry()
         return render('enquiry/view.html')
 
     def start(self, environ, start_response, id=None):
@@ -100,6 +102,68 @@ class EnquiryController(BaseController):
             c.is_step1 = True
         return render('enquiry/start.html')
 
+    def followup(self, environ, start_response, id=None):
+        formvars = self._receive(environ)
+        c.enquiry = model.Enquiry.query.get(id)
+        if not self._can_follow_up_enquiry():
+            self._redirect_to_enquiry(id=id)
+            return
+        if formvars.get('confirm'):
+            c.is_step3 = True
+            self._receive_follow_up(formvars)
+            self._follow_up_enquiry()
+        elif formvars.get('followup'):
+            c.is_step2 = True
+            self._receive_follow_up(formvars)
+            class MockMessage: pass
+            c.message = MockMessage()
+            c.message.to = c.follow_up_to
+            c.message.subject = c.follow_up_subject
+            c.message.body = c.follow_up_body
+        else:
+            c.follow_up_subject = c.enquiry.summary
+            c.is_step1 = True
+        return render('enquiry/followup.html')
+
+    def resolve(self, environ, start_response, id=None):
+        formvars = self._receive(environ)
+        c.enquiry = model.Enquiry.query.get(id)
+        if self._can_resolve_enquiry():
+            resolution = formvars['resolution'] or ''
+            resolution = resolution.decode('utf8')
+            closed_statuses = [
+                model.Enquiry.STARTED,
+                model.Enquiry.RESOLVED_OPEN,
+                model.Enquiry.RESOLVED_CLOSED,
+                model.Enquiry.RESOLVED_NOT_KNOWN,
+            ]
+            if resolution not in closed_statuses:
+                raise Exception, "Resolution '%s' not valid Enquiry status." % resolution
+            c.enquiry.status = resolution
+            model.Session.commit()
+            self._redirect_to_enquiry(id=c.enquiry.id)
+        else:
+            self._redirect_home()
+            return
+
+    def _can_follow_up_enquiry(self):
+        return self._can_update_enquiry()
+
+    def _can_resolve_enquiry(self):
+        return self._can_update_enquiry()
+
+    def _can_update_enquiry(self):
+        if not c.enquiry:
+            return False
+        elif not self._is_logged_in():
+            return False
+        elif c.user.email == c.enquiry.owner.email:
+            return True
+        elif self._is_admin_logged_in():
+            return True
+        else:
+            return False
+
     def _default_formvars(self):
         to = ''
         subject = u'Data Openness Enquiry'
@@ -120,6 +184,11 @@ class EnquiryController(BaseController):
         c.enquiry_subject = formvars.get('subject').decode('utf8')
         c.enquiry_body = formvars.get('body').decode('utf8')
 
+    def _receive_follow_up(self, formvars):
+        c.follow_up_to = formvars.get('to')
+        c.follow_up_subject = formvars.get('subject').decode('utf8')
+        c.follow_up_body = formvars.get('body').decode('utf8')
+
     def _validate_enquiry(self):
         c.error = ''
         if not c.enquiry_to:
@@ -134,13 +203,29 @@ class EnquiryController(BaseController):
             self._validate_email_address(c.enquiry_to)
 
     def _start_enquiry(self):
+        to = c.enquiry_to
+        subject = c.enquiry_subject
+        body = c.enquiry_body + self._mailer().enquiry_footer
+        email_message = self._mailer().write(body, to=to, subject=subject)
         c.enquiry = model.Enquiry.start_new(
             owner=c.user, 
-            to=c.enquiry_to,
             summary=c.enquiry_subject,
-            fulltext=c.enquiry_body + self._mailer().enquiry_footer
+            email_message=email_message,
         )
         c.message = c.enquiry.messages[0]
+
+    def _follow_up_enquiry(self):
+        to = c.follow_up_to
+        subject = c.follow_up_subject
+        body = c.follow_up_body + self._mailer().enquiry_footer
+        email_message = self._mailer().write(body, to=to, subject=subject)
+        c.message = model.Message(
+            mimetext=email_message.as_string().decode('utf8'),
+            status=model.Message.NOT_SENT,
+            sender=c.enquiry.owner.email,
+            enquiry=c.enquiry,
+        )
+        model.Session.commit()
 
 #    def _start_enquiry(self):
 #        c.enquiry = model.Enquiry(

@@ -27,6 +27,7 @@ def make_map():
     map.connect('browse', '/enquiry/list/', controller='enquiry', action='list')
     map.connect('register', '/account/register/', controller='account', action='register')
     map.connect('login-handler', '/account/login/handler/')
+    map.connect('logout-handler', '/account/logout/')
     map.connect('confirm-account', '/account/confirm/', controller='account', action='confirm')
     # Map the /admin url to FA's AdminController
     maps.admin_map(map, controller='admin', url='/admin')

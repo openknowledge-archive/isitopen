@@ -1,22 +1,28 @@
 from isitopen.tests import *
+from nose.tools import assert_equal
 
 class TestController(TestController):
 
     enquiry_data = {
-        'to': u'data-handler@appropriatesoftware.net',
+        'to': 'data.handler@appropriatesoftware.net',
         'body': u'afdjdakfdakjfad\xfc',
         'subject': u'any old thing\xfc',
     }
+    tester_credentials = {'login': 'testing@isitopen.ckan.net', 'password': u'pass\xfc'}
     admin_credentials = {'login': 'mark.smith@appropriatesoftware.net', 'password': u'mark\xfc'}
     other_credentials = {'login': 'bob.smith@appropriatesoftware.net', 'password': u'bob\xfc'}
 
-    @classmethod
-    def setup_class(self):
+    #@classmethod
+    #def setup_class(self):
+    #@classmethod
+    def setup(self):
         self.enq_id, self.msg_id = Fixtures.create()
 
-    @classmethod
-    def teardown_class(self):
+    #@classmethod
+    def teardown(self):
         Fixtures.remove()
+        del(self.enq_id)
+        del(self.msg_id)
 
     def get(self, *args, **kwds):
         offset = url_for(*args, **kwds)
@@ -81,6 +87,7 @@ class TestController(TestController):
                 self.cookies[name] = value
 
     def login(self, res=None, credentials=None):
+        self.logout()
         if credentials == None:
             credentials = self.admin_credentials
         res = self.submit(form_data=credentials, res=res, controller="account", action="login")
@@ -88,7 +95,7 @@ class TestController(TestController):
         return res
 
     def logout(self):
-        res = self.get(controller="account", action="logout")
+        res = self.get('logout-handler')
         self.assert_not_logged_in(res)
         return res
 
@@ -116,11 +123,14 @@ class TestController(TestController):
     def assert_is_logged_in(self, res):
         self.assert_checkpoint('is-logged-in', res)
 
+    def assert_form_for_login(self, res):
+        self.assert_checkpoint('form-for-login', res)
+
     def assert_form_for_register_account_details(self, res):
         self.assert_checkpoint('form-for-register-account-details', res)
 
-    def assert_form_for_login(self, res):
-        self.assert_checkpoint('form-for-login', res)
+    def assert_form_for_confirm_email(self, res):
+        self.assert_checkpoint('form-for-confirm-email', res)
 
     def assert_form_for_start_enquiry(self, res):
         self.assert_checkpoint('form-for-start-enquiry', res)
@@ -128,8 +138,11 @@ class TestController(TestController):
     def assert_form_for_confirm_enquiry(self, res):
         self.assert_checkpoint('form-for-confirm-enquiry', res)
 
-    def assert_form_for_confirm_email(self, res):
-        self.assert_checkpoint('form-for-confirm-email', res)
+    def assert_form_for_follow_up_enquiry(self, res):
+        self.assert_checkpoint('form-for-follow-up-enquiry', res)
+
+    def assert_form_for_confirm_follow_up(self, res):
+        self.assert_checkpoint('form-for-confirm-follow-up', res)
 
     def assert_reference_to_pending_action(self, res):
         self.assert_checkpoint('reference-to-pending-action', res)
@@ -139,6 +152,9 @@ class TestController(TestController):
 
     def assert_indicator_for_confirmed_enquiry(self, res):
         self.assert_checkpoint('indicator-for-confirmed-enquiry', res)
+
+    def assert_indicator_for_confirmed_follow_up(self, res):
+        self.assert_checkpoint('indicator-for-confirmed-follow-up', res)
 
     def assert_checkpoint(self, checkvalue, res):
         checkpoint = '<!--checkpoint:%s-->' % checkvalue
@@ -151,7 +167,7 @@ class TestController(TestController):
         except:
             pass
         else:
-            raise Exception('Checkpoint %s was found in response:\n\n%s.\n\n' % (checkpoint, res))
+            raise Exception("Checkpoint '<!--checkpoint:%s-->' was found in response:\n\n%s.\n\n" % (check, res))
 
     def _find_last_pending_action_id(self):
         # Pretend email has been sent, and link is being followed.

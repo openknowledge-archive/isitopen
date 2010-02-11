@@ -40,7 +40,7 @@ def AuthenticationMiddleware(app):
     form = RedirectingFormPlugin(
         login_form_url=h.url_for(controller='account', action='login'),
         login_handler_path=h.url_for('login-handler'),
-        logout_handler_path=h.url_for(controller='account', action='logout'),
+        logout_handler_path=h.url_for('logout-handler'),
         rememberer_name='auth_tkt',
     )
 
