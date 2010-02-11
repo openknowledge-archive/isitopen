@@ -80,29 +80,35 @@ class BaseController(WSGIController):
         c.pending_action_code = formvars.get('code', None)
         return formvars
 
+    def _redirect_to(self, *args, **kwds):
+        h.redirect_to(*args, **kwds)
+
     def _redirect_to_home(self):
         if self._is_logged_in():
-            h.redirect_to(controller='account', action='index')
+            self._redirect_to(controller='account', action='index')
         else:
-            h.redirect_to(controller='home', action='index')
+            self._redirect_to(controller='home', action='index')
  
     def _redirect_to_login(self, **kwds):
-        h.redirect_to(controller='account', action='login', **kwds)
+        self._redirect_to(controller='account', action='login', **kwds)
 
     def _redirect_to_login_handler(self, **kwds):
-        h.redirect_to('login-handler', **kwds)
+        self._redirect_to('login-handler', **kwds)
 
     def _redirect_to_confirm_account(self, **kwds):
-        h.redirect_to('confirm-account', **kwds)
+        self._redirect_to('confirm-account', **kwds)
+
+    def _redirect_to_enquiry_list(self, **kwds):
+        self._redirect_to(controller='enquiry', action='list', **kwds)
 
     def _redirect_to_enquiry(self, **kwds):
-        h.redirect_to(controller='enquiry', action='view', **kwds)
+        self._redirect_to(controller='enquiry', action='view', **kwds)
 
     def _redirect_to_start_enquiry(self, **kwds):
-        h.redirect_to(controller='enquiry', action='start', **kwds)
+        self._redirect_to(controller='enquiry', action='start', **kwds)
 
     def _redirect_to_wait_enquiry(self, **kwds):
-        h.redirect_to(controller='enquiry', action='wait', **kwds)
+        self._redirect_to(controller='enquiry', action='wait', **kwds)
 
     def _validate_email_address(self, email_address):
         import formalchemy.validators
@@ -113,6 +119,9 @@ class BaseController(WSGIController):
 
     def _mailer(self):
         return Mailer(site_url=c.site_url)
+
+#    def logout(self):
+#        raise Exception, "No logout action on '%s' controller." % self.__class__
 
 # Include the '_' function in the public names
 __all__ = [__name for __name in locals().keys() if not __name.startswith('_') \

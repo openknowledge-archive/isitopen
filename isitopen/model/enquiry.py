@@ -46,10 +46,6 @@ class Message(DomainObject):
         if not hasattr(self, '_email'):
             if self.mimetext:
                 if type(self.mimetext) == unicode:
-                    # REALLY odd.
-                    # 1. mimetext was unicode (even though set to str type types.Text())
-                    # 2. This makes message_from_string fail to parse properly!!
-                    # Todo: Log warning.
                     email_message_mimetext = self.mimetext.encode('utf8')
                 else:
                     email_message_mimetext = self.mimetext
@@ -70,13 +66,12 @@ class Message(DomainObject):
         else:
             body = self.email.get_payload(decode=True)
         body = body.replace('\r\n', '\n')
-        return body
+        return body.decode('utf8')
 
     email = property(_get_email)
     to = property(lambda self: self.email['To'])
     subject = property(lambda self: self.email['Subject'].decode('utf8'))
     body = property(_body)
-
 
 class Enquiry(DomainObject):
 
@@ -84,16 +79,20 @@ class Enquiry(DomainObject):
     STARTED = u'Unresolved'
     RESOLVED_OPEN = u'Resolved (Open)'
     RESOLVED_CLOSED = u'Resolved (Closed)'
+    RESOLVED_NOT_KNOWN = u'Resolved (Not Known)'
 
     @classmethod
-    def start_new(self, owner, to, summary, fulltext):
-        enquiry = self(owner=owner, summary=summary)
-        import isitopen.lib.mailer
-        mailer = isitopen.lib.mailer.Mailer()
-        email_message = mailer.write(fulltext, to=to, subject=summary)
-        mimetext=email_message.as_string()
-        message = Message(mimetext=mimetext, status=Message.NOT_SENT,
-            sender=owner.email, enquiry=enquiry)
+    def start_new(self, owner, summary, email_message):
+        enquiry = self(
+            owner=owner,
+            summary=summary,
+        )
+        message = Message(
+            mimetext=email_message.as_string().decode('utf8'),
+            status=Message.NOT_SENT,
+            sender=owner.email,
+            enquiry=enquiry,
+        )
         Session.commit()
         return enquiry
 
@@ -144,7 +143,7 @@ message_table = Table('message', metadata,
     Column('id', String(36), default=make_uuid, primary_key=True),
     Column('enquiry_id', String(36), ForeignKey('enquiry.id')),
     Column('sender', Text),
-    Column('mimetext', Text),
+    Column('mimetext', UnicodeText),
     Column('status', UnicodeText),
     Column('timestamp', DateTime, default=datetime.datetime.now),
     )

@@ -25,7 +25,7 @@ class TestModel(object):
         assert mess.subject == subj, mess.subject
         assert mess.to == Fixtures.to, mess.to
         assert mess.sender == Fixtures.sender, mess.sender
-        assert mess.status == model.Message.SEND_REREAD
+        assert mess.status == model.Message.SENT_REREAD
         assert mess.email['Message-Id'] is not None, mess.mimetext
         assert mess.body == Fixtures.body, mess.body
 

@@ -22,8 +22,9 @@ class Finder(object):
             # may be more efficient to query gmail for this ...
             if msgid:
                 msgid_field = 'Message-ID: %s' % msgid
+                like_string = u'%' + msgid_field + '%'
                 msg = model.Message.query.filter(
-                    model.Message.mimetext.ilike('%' + msgid_field + '%')
+                    model.Message.mimetext.ilike(like_string)
                     ).first()
                 if msg:
                     return msg.enquiry

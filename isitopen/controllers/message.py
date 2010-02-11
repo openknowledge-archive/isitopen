@@ -1,17 +1,47 @@
-import logging
-import email as E
-
-from pylons import config
 from isitopen.lib.base import *
-import isitopen.lib.mailer as mailer
-
-log = logging.getLogger(__name__)
+import pprint
 
 class MessageController(BaseController):
 
     def index(self, environ, start_response):
+        """No purpose at this time."""
+        self._redirect_to_home()
+
+    def send_unsent(self, environ, start_response):
+        """Send unsent email messages."""
         self._receive(environ)
-        return render('message/index.html')
+        if not self._is_admin_logged_in():
+            self._redirect_to_home()
+            return
+        mailer = self._mailer()
+        send_results = mailer.send_unsent()
+        reread_results = mailer.reread_sent()
+        out = '<!--checkpoint:send-unsent-->'
+        out += '<pre>'
+        out += 'Pushing unsent mail\n'
+        out += '%s\n' % pprint.pformat(send_results)
+        out += 'Re-reading sent mail\n'
+        out += '%s\n' % pprint.pformat(reread_results)
+        out += '</pre>'
+        return out
+
+    def receive_unread(self, environ, start_response):
+        """Read and handle unseen email messages."""
+        self._receive(environ)
+        if not self._is_admin_logged_in():
+            self._redirect_to_home()
+            return
+        mailer = self._mailer()
+        pull_results = mailer.pull_unread()
+        notification_results = mailer.send_response_notifications()
+        out = '<!--checkpoint:receive_unread-->'
+        out += '<pre>'
+        out += 'Syncing responses\n'
+        out += '%s\n' % pprint.pformat(pull_results)
+        out += 'Sending response notifications\n'
+        out += '%s\n' % pprint.pformat(notification_results)
+        out += '</pre>'
+        return out
 
     def _defaults(self):
         original = model.Message.query.get(c.response_to)
@@ -57,7 +87,8 @@ class MessageController(BaseController):
             refs += ' <%s>' % tmsgid
             email_msg['References'] = refs
 
-        message = model.Message(mimetext=email_msg.as_string(),
+        message = model.Message(
+                mimetext=email_msg.as_string().decode('utf8'),
                 status=model.Message.NOT_SENT,
                 sender=c.sender)
 

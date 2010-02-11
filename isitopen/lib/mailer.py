@@ -1,6 +1,6 @@
 import smtplib
 import email
-from isitopen.lib.gmail import Gmail 
+from isitopen.lib.gmail import IMAP 
 import isitopen.lib.helpers as h
 import isitopen.model as model
 import logging
@@ -9,6 +9,9 @@ log = logging.getLogger(__name__)
 
 
 class Mailer(object):
+    """
+    Writes, sends and receives IsItOpen system email (models "Thunderbird").
+    """
 
     email_confirmation_template = u"""
 Hi %(firstname)s,
@@ -48,6 +51,7 @@ Regards,
 """
 
     enquiry_footer = u"""
+
 --  
 Sent by "Is It Open Data?" (<http://isitopen.ckan.net/about/>)  
 A service which helps scholars (and others) to request information
@@ -76,28 +80,40 @@ The Is It Open Data? Team
         self.site_url = site_url
         if not self.site_url:
             self.site_url = config.get('site_url', 'http://127.0.0.1:5000')
-        self.host = config['enquiry.smtp_host']
-        if not self.host:
+        self.smtp_host = config['enquiry.smtp_host']
+        if not self.smtp_host:
             errmsg = "Missing 'enquiry.smtp_host' in config."
             raise Exception, errmsg
-        self.port = config.get('enquiry.smtp_port', 587)
-        self.user = config['enquiry.smtp_user']
-        self.pwd = config['enquiry.smtp_pwd']
+        self.smtp_port = config.get('enquiry.smtp_port', 587)
+        self.smtp_user = config['enquiry.smtp_user']
+        self.smtp_pwd = config['enquiry.smtp_pwd']
         self.smtp = None
 
     def init_smtp(self):
         """Create and initialise SMTP connection."""
         if self.smtp == None:
-            self.smtp = smtplib.SMTP(self.host, self.port)
+            self.smtp = smtplib.SMTP(self.smtp_host, self.smtp_port)
             # not required in python >= 2.6 as part of starttls
             self.smtp.ehlo()
             self.smtp.starttls()
             # not required in python >= 2.6 as part of starttls
             self.smtp.ehlo()
-            self.smtp.login(self.user, self.pwd)
+            self.smtp.login(self.smtp_user, self.smtp_pwd)
             return True
         return False
         
+    def write(self, body, **headers):
+        """Create and return new email message object."""
+        if type(body) == unicode:
+            body = body.encode('utf8')
+        headers['Content-Type'] = 'text/plain; charset="utf-8"'
+        message = email.message_from_string(body)
+        for name, value in headers.items():
+            if type(value) == unicode:
+                value = value.encode('utf8')
+            message[name.capitalize()] = value
+        return message
+
     def send(self, email_message):
         """Dispatch email message object via SMTP."""
         from_addr = email_message['From']
@@ -115,23 +131,6 @@ The Is It Open Data? Team
             self.smtp.close()
             self.smtp = None
         
-    def write(self, body, **headers):
-        """Create and return new email message object."""
-        if type(body) == unicode:
-            body = body.encode('utf8')
-        headers['Content-Type'] = 'text/plain; charset="utf-8"'
-        message = email.message_from_string(body)
-        for name, value in headers.items():
-            if type(value) == unicode:
-                value = value.encode('utf8')
-            message[name.capitalize()] = value
-        return message
-
-    def send_email_confirmation_request(self, user, code):
-        """Create and dispatch confirmation request."""
-        message = self.write_email_confirmation_request(user, code)
-        self.send(message)
-
     def write_email_confirmation_request(self, user, code):
         """Write user account email confirmation request."""
         to = user.email
@@ -146,81 +145,96 @@ The Is It Open Data? Team
         body = self.email_confirmation_template % template_vars
         return self.write(body, to=to, subject=subject)
 
+    def send_email_confirmation_request(self, user, code):
+        """Create and dispatch confirmation request."""
+        message = self.write_email_confirmation_request(user, code)
+        self.send(message)
+
     def send_unsent(self):
         """Dispatch unsent messages in model."""
-        pending = model.Message.query.filter_by(
+        messages = model.Message.query.filter_by(
             status=model.Message.NOT_SENT).all()
         results = []
-        for message in pending:
+        for message in messages:
+            mimetext = message.mimetext.encode('utf8')
+            email_message = email.message_from_string(mimetext)
+            email_message[self.ISITOPEN_HEADER_ID] = message.id
+            if message.sender:
+                # use bcc to ensure recipient replies to isitopen not sender
+                email_message['Bcc'] = str(message.sender)
             try:
-                e = message.email
-                e[self.ISITOPEN_HEADER_ID] = message.id
-                if message.sender:
-                    # use bcc to ensure recipient replies to isitopen not sender
-                    e['Bcc'] = message.sender
-                    
-                self.send(message.email)
-                message.status = model.Message.JUST_SENT
-                model.Session.commit()
-                
-                results.append([message.id, message.status])
+                self.send(email_message)
             except Exception, inst:
                 results.append('ERROR: %s' % inst)
+            else:
+                message.status = model.Message.JUST_SENT
+                model.Session.commit()
+                results.append([message.id, message.status])
         return results
 
     def reread_sent(self):
-        """Refresh message model (SMTP adds headers)."""
-        tosync = model.Message.query.filter_by(
+        """Refresh message objects (SMTP adds Message-ID header)."""
+        messages = model.Message.query.filter_by(
             status=model.Message.JUST_SENT
         ).all()
         results = []
-        g = Gmail.default()
-        for message in tosync:
-            try:
-                emails = g.messages_for_mailbox(g.sent)
-                for emailobj in emails.values():
-                    if emailobj[self.ISITOPEN_HEADER_ID] == message.id:
-                        message.mimetext = emailobj.as_string()
-                        message.status = model.Message.SENT_REREAD
-                        model.Session.commit()
+        imap = IMAP()
+        if not len(messages):
+            return results
+        justsent = {}
+        for message in messages:
+            justsent[message.id] = message
+        mailbox_ids = imap.get_mailbox_ids(imap.SENT_MAIL)
+        for mailbox_id in mailbox_ids:
+            mailbox_message = imap.get_mailbox_message(mailbox_id)
+            email_message = email.message_from_string(mailbox_message)
+            header_id = email_message[self.ISITOPEN_HEADER_ID]
+            if header_id in justsent:
+                message = justsent.pop(header_id)
+                message.mimetext = email_message.as_string().decode('utf8')
+                message.status = model.Message.SENT_REREAD
+                model.Session.commit()
                 results.append([message.id, message.status])
-            except Exception, inst:
-                results.append([message.id, 'ERROR: %s' % inst])
+            if len(justsent) == 0:
+                break
         return results
 
-    def pull_unread(self, mailbox=None):
+    def pull_unread(self, mailbox_name=None):
         """Read received messages into model."""
         import isitopen.lib.finder
         finder = isitopen.lib.finder.Finder()
-        g = Gmail.default()
+        imap = IMAP()
         results = []
-        msgs_dict = g.unread(mailbox)
-        # log.debug('check_for_responses: no. of items = %s' % len(msgs_dict))
-        for mboxid, message in msgs_dict.items():
-            # log.debug('check_for_responses: %s, %s, %s' % (mboxid, message['from'],
-            #    message['subject']) )
-            # ignore bounces ....
-            if 'From' in message and 'mailer-daemon@googlemail.com' in message['From']:
-                results.append([message['Message-Id'], 'Skip: looks like bounce'])
+        # Identify new email messages.
+        mailbox_ids = imap.get_unread_mailbox_ids(mailbox_name)
+        for mailbox_id in mailbox_ids:
+            # Fetch message.
+            mailbox_message = imap.get_mailbox_message(mailbox_id)
+            # Parse email.
+            email_message = email.message_from_string(mailbox_message)
+            email_from = email_message['From']
+            email_message_id = email_message['Message-Id']
+            # Ignore bounce.
+            if 'mailer-daemon@googlemail.com' in email_from:
+                results.append([email_message_id, 'Skip: looks like bounce'])
+                imap.mark_read(mailbox_id)
                 continue
+            enquiry = finder.enquiry_for_message(email_message)
+            if not enquiry:
+                results.append([email_message_id, 'Skip: found no related enquiry'])
+                continue
+            message = model.Message(
+                status=model.Message.JUST_RESPONSE,
+                enquiry=enquiry,
+                mimetext=email_message.as_string().decode('utf8')
+            )
+            model.Session.commit()
             try:
-                # TODO: extract timestamp etc
-                enquiry = finder.enquiry_for_message(message)
-                if not enquiry:
-                    results.append([message['Message-Id'], 'Skip: found no related enquiry'])
-                    continue
-
-                m = model.Message(
-                    status=model.Message.JUST_RESPONSE,
-                    enquiry=enquiry,
-                    mimetext = message.as_string()
-                    )
-                model.Session.commit()
-                results.append([message['Message-Id'], 'Synced', m.id])
-                g.mark_read(mboxid)
-                # g.gmail_label(message, 'enquiry/' + m.enquiry.id) # get message from imap via MIME Message-Id, copy to "enquiry/<enq_id>"
+                imap.mark_read(mailbox_id)
             except Exception, inst:
-                results.append([message['Message-Id'], 'ERROR: %s' % inst])
+                results.append([email_message_id, 'ERROR: %s' % inst])
+            else:
+                results.append([email_message_id, message.status, message.id])
         return results
 
     def send_response_notifications(self):

@@ -87,7 +87,10 @@ class Fixtures(Command):
     @classmethod
     def create(self):
         from isitopen import model
-        user = model.User(email=self.user_email)
+        # Warning: The emails and passwords are used as login credentials in the customer tests.
+        self.create_user(u'Mark\xfc',u'Smith\xfc',u'mark.smith@appropriatesoftware.net',u'mark\xfc',True)
+        self.create_user(u'Robert\xfc',u'Smith\xfc',u'bob.smith@appropriatesoftware.net',u'bob\xfc')
+        user = self.create_user(u'IsItOpen\xfc',u'Tester\xfc',self.user_email,u'pass\xfc',True)
         enq = model.Enquiry(owner=user, summary=self.summary)
         enq.extras = { 'ckan-package' :  u'xyz' } 
         self.email['To'] = self.to
@@ -95,29 +98,27 @@ class Fixtures(Command):
         self.email['Message-Id'] = '<%s@gmail.com>' % model.make_uuid()
         mess = model.Message(enquiry=enq)
         mess.sender = self.sender
-        mess.mimetext = self.email.as_string()
+        mess.mimetext = self.email.as_string().decode('utf8')
         mess.status = model.Message.SENT_REREAD
 
         self.email2['To'] = self.user_email
         self.email2['Subject'] = u'testing email response'
         self.email2['From'] = self.to
-        mess2 = model.Message(enquiry=enq, mimetext=self.email2.as_string(),
+        mess2 = model.Message(enquiry=enq, mimetext=self.email2.as_string().decode('utf8'),
                 status=model.Message.JUST_RESPONSE)
 
         model.Session.commit()
         enq_id = enq.id
         mess_id = mess.id
         model.Session.remove()
-        # Warning: The emails and passwords are used as login credentials in the customer tests.
-        self.create_user(u'Mark\xfc',u'Smith\xfc',u'mark.smith@appropriatesoftware.net',u'mark\xfc',True)
-        self.create_user(u'Robert\xfc',u'Smith\xfc',u'bob.smith@appropriatesoftware.net',u'bob\xfc')
         return (enq_id, mess_id)
 
     @classmethod
     def create_user(self, firstname, lastname, email, password, is_confirmed=False):
         from isitopen import model
-        model.User(firstname=firstname, lastname=lastname, email=email, password=password, is_confirmed=is_confirmed)
+        user = model.User(firstname=firstname, lastname=lastname, email=email, password=password, is_confirmed=is_confirmed)
         model.Session.commit()
+        return user
 
     @classmethod
     def remove(self):
