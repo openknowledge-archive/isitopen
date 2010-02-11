@@ -10,9 +10,10 @@ class MessageController(BaseController):
     def send_unsent(self, environ, start_response):
         """Send unsent email messages."""
         self._receive(environ)
-        if not self._is_admin_logged_in():
-            self._redirect_to_home()
-            return
+        # no sensitive info here so no need to be admin
+        # if not self._is_admin_logged_in():
+        #    self._redirect_to_home()
+        #    return
         mailer = self._mailer()
         send_results = mailer.send_unsent()
         reread_results = mailer.reread_sent()
@@ -28,9 +29,10 @@ class MessageController(BaseController):
     def receive_unread(self, environ, start_response):
         """Read and handle unseen email messages."""
         self._receive(environ)
-        if not self._is_admin_logged_in():
-            self._redirect_to_home()
-            return
+        # no sensitive info here so no need to be admin
+        # if not self._is_admin_logged_in():
+        #     self._redirect_to_home()
+        #     return
         mailer = self._mailer()
         pull_results = mailer.pull_unread()
         notification_results = mailer.send_response_notifications()

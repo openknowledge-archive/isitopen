@@ -70,7 +70,7 @@ class TestStartDataOpennessEnquiry(TestController):
         login = self.admin_credentials['login']
         message = model.Message.query.filter_by(sender=login).first()
         assert message, str(model.Message.query.all())
-        print message.mimetext
+        print message.mimetext.encode('utf8')
         assert self.enquiry_data['to'] == message.to
         assert self.enquiry_data['subject'] == message.subject
         assert self.enquiry_data['body'] in message.mimetext
