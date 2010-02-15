@@ -107,8 +107,8 @@ class BaseController(WSGIController):
     def _redirect_to_start_enquiry(self, **kwds):
         self._redirect_to(controller='enquiry', action='start', **kwds)
 
-    def _redirect_to_wait_enquiry(self, **kwds):
-        self._redirect_to(controller='enquiry', action='wait', **kwds)
+    def _redirect_to_follow_up_enquiry(self, **kwds):
+        self._redirect_to(controller='enquiry', action='followup', **kwds)
 
     def _validate_email_address(self, email_address):
         import formalchemy.validators

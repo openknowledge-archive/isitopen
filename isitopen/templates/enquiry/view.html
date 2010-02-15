@@ -43,21 +43,18 @@
       ${render_message(c.enquiry.messages[0])}
     <py:for each="message in c.enquiry.messages[1:]">
     <hr />
-    <h4>Response: ${c.summary}</h4>
+    <h4>Message: ${c.summary}</h4>
       ${render_message(message)}
     </py:for>
 
     <py:if test="c.can_follow_up_enquiry">
     <!--checkpoint:option-to-follow-up-enquiry-->  
-    
-    <py:if test="c.enquiry.messages">
-      <py:with vars="lastmsg=c.enquiry.messages[-1]">
+      <py:if test="c.enquiry.messages">
     <a class="send-response" href="${h.url_for(controller='enquiry',
       action='followup', id=c.enquiry.id
       )}">
-      Write a response &raquo;</a>
-      </py:with>
-    </py:if>
+      Follow Up &raquo;</a>
+      </py:if>
     </py:if>
 	</div>
 
