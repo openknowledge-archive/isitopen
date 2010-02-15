@@ -1,0 +1,12 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+  
+  <py:def function="page_title">Message - Index</py:def>
+
+  <body py:match="content">
+    <h2>Message - Index</h2>
+    <p>To create messages make an ${h.link_to('enquiry', h.url_for(controller='enquiry', action='start'))}.</p>
+	</body>
+
+  <xi:include href="../layout.html" />
+</html>

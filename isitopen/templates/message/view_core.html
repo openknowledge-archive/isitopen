@@ -1,0 +1,26 @@
+<div
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip=""
+  >
+
+  <py:def function="render_message(message)">
+  <div class="message">
+    <div class="headers">
+      <p><strong>To:</strong> ${message.to}</p>
+      <p><strong>Subject:</strong> <em>${message.subject}</em></p>
+      <py:if test="hasattr(message, 'timestamp')">
+        <p><strong>Date:</strong> ${message.timestamp.strftime('%c')}</p>
+      </py:if>
+      <py:if test="hasattr(message, 'status')">
+        <p><strong>Status:</strong> ${message.status}</p>
+      </py:if>
+    </div>
+    <div>
+      ${HTML(h.email_body(message.body))}
+    </div>
+  </div>
+  </py:def>
+
+</div>
+

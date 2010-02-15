@@ -1,0 +1,12 @@
+syntax: glob
+*.ini
+isitopen.egg-info/*
+*.pyc
+*.db
+*.tmproj
+.DS_Store
+# pylons cache
+data/*
+
+syntax: regexp
+^build$
