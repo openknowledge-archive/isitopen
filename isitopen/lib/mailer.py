@@ -88,6 +88,8 @@ The Is It Open Data? Team
         self.smtp_user = config['enquiry.smtp_user']
         self.smtp_pwd = config['enquiry.smtp_pwd']
         self.smtp = None
+        self.enquiry_from_addr = config['enquiry.from']
+        self.no_reply_addr = config['enquiry.noreply']
 
     def init_smtp(self):
         """Create and initialise SMTP connection."""
@@ -106,6 +108,8 @@ The Is It Open Data? Team
         """Create and return new email message object."""
         if type(body) == unicode:
             body = body.encode('utf8')
+        if not 'From' in headers and self.no_reply_addr:
+            headers['From'] = self.no_reply_addr
         headers['Content-Type'] = 'text/plain; charset="utf-8"'
         message = email.message_from_string(body)
         for name, value in headers.items():
@@ -116,7 +120,8 @@ The Is It Open Data? Team
 
     def send(self, email_message):
         """Dispatch email message object via SMTP."""
-        from_addr = email_message['From']
+        if not email_message['Reply-to'] and email_message['From']:
+            email_message['Reply-to'] = email_message['From']
         to_addrs = []
         for header in ['To', 'Cc', 'Bcc']:
             if email_message[header]:
@@ -124,8 +129,10 @@ The Is It Open Data? Team
         del email_message['Bcc'] # Remove any Bcc header.
         hangup = self.init_smtp()
         msg = email_message.as_string()
+        from_addr = email_message['From']
         # Todo: Protect this call (it can raise an exception), and examine
         # return value, see http://docs.python.org/library/smtplib.html.
+        #raise Exception, (from_addr, msg)
         self.smtp.sendmail(from_addr, to_addrs, msg)
         if hangup:
             self.smtp.close()
@@ -143,7 +150,7 @@ The Is It Open Data? Team
             'guide_url': self.site_url + guide_url,
         }
         body = self.email_confirmation_template % template_vars
-        return self.write(body, to=to, subject=subject)
+        return self.write(body, To=to, Subject=subject)
 
     def send_email_confirmation_request(self, user, code):
         """Create and dispatch confirmation request."""
@@ -274,5 +281,5 @@ The Is It Open Data? Team
             'enquiry_id': enquiry.id,
         }
         body = self.response_notification_template % template_vars
-        return self.write(body, to=to, subject=subject)
+        return self.write(body, To=to, Subject=subject)
 

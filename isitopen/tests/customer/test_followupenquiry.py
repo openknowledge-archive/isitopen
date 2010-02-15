@@ -3,6 +3,7 @@ from isitopen.tests.customer.base import *
 class TestFollowUpDataOpennessEnquiry(TestController):
 
     follow_up_data = {
+        'to': u'data.controller@appropriatesoftware.net',
         'subject': u'Some follow up',
         'body': u'Dear sir, further to my enquiry...',
     }  # Todo: Follow up values.
@@ -46,6 +47,19 @@ class TestFollowUpDataOpennessEnquiry(TestController):
         self.login(credentials=self.admin_credentials) # Is admin.
         res = self.get(controller='enquiry', action='followup', id=self.enq_id)
         self.assert_form_for_follow_up_enquiry(res)
+        follow_up_form = res.forms[0]
+        # Read form field values.
+        to = follow_up_form['to'].value
+        subject = follow_up_form['subject'].value
+        body = follow_up_form['body'].value
+        assert to
+        assert subject
+        assert body
+        enquiry = model.Enquiry.query.get(self.enq_id)
+        original = enquiry.messages[0]
+        assert (original.to in to), "Can't see '%s' in to '%s'." % (original.to, to)
+        assert (original.subject in subject), "Can't see '%s' in subject '%s'." % (original.subject, subject)
+        assert (" wrote:" in body), "Can't see ' wrote:' in body '%s'." % body
        
     def test_189(self):
         """
@@ -56,6 +70,19 @@ class TestFollowUpDataOpennessEnquiry(TestController):
         self.assert_form_for_follow_up_enquiry(res)
         res = self.submit(res=res, form_data=self.follow_up_data, button_name='followup')
         self.assert_form_for_confirm_follow_up(res)
+        enquiry = model.Enquiry.query.get(self.enq_id)
+        follow_up_form = res.forms[0]
+        print follow_up_form.fields['to'][0].value
+        # Read hidden form field values.
+        to = follow_up_form.fields['to'][0].value
+        subject = follow_up_form.fields['subject'][0].value
+        body = follow_up_form.fields['body'][0].value
+        assert to
+        assert subject
+        assert body
+        assert (self.follow_up_data['to'] in to), "Can't see '%s' in to '%s'." % (self.follow_up_data['to'], to)
+        assert (self.follow_up_data['subject'] in subject), "Can't see '%s' in subject '%s'." % (self.follow_up_data['subject'], subject)
+        assert (self.follow_up_data['body'] in body), "Can't see '%s' in subject '%s'." % (self.follow_up_data['body'], body)
         # Todo: Test for admin, other, and unauthenticated users.
  
     def test_190(self):
