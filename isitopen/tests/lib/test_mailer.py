@@ -21,13 +21,13 @@ class TestMailer(object):
         Fixtures.remove()
 
     def test_write(self):
-        message = self.mailer.write(self.body, to=self.to, subject=self.subject)
+        message = self.mailer.write(self.body, To=self.to, Subject=self.subject)
         assert message['To'] == self.to
         assert message['Subject'].decode('utf8') == self.subject
         assert self.body in message.as_string().decode('utf8')
 
-    def test_send(self):
-        message = self.mailer.write(self.body, to=self.to, subject=self.subject)
+    def test_write_and_send(self):
+        message = self.mailer.write(self.body, To=self.to, Subject=self.subject)
         self.mailer.send(message)
         # Todo: Assert the sent message is sent (see Todo in mailer.py).
         # Todo: Assert the sent message is received.
@@ -72,7 +72,7 @@ class TestMailer(object):
         to = "data.handler@appropriatesoftware.net"
         summary = u"This is an enquiry subject\xfc"
         body = u"This is an enquiry\xfc"
-        email_message = self.mailer.write(body, to=to, subject=summary)
+        email_message = self.mailer.write(body, To=to, Subject=summary)
         enquiry = model.Enquiry.start_new(user, summary, email_message)
         assert len(enquiry.messages) == 1
         message = enquiry.messages[0]

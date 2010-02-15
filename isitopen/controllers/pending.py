@@ -23,7 +23,7 @@ class PendingController(BaseController):
         if not pending_action:
             abort(404)
         data = pending_action.retrieve()
-        if pending_action.type == model.PendingAction.START_ENQUIRY':
+        if pending_action.type == model.PendingAction.START_ENQUIRY:
             self._redirect_to_start_enquiry(code=code)
         else:
             raise Exception, "Action type not supported: %s" % action_name
