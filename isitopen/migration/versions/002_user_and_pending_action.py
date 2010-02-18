@@ -21,6 +21,7 @@ user_table = Table('user', metadata, autoload=True)
 user_columns = [
     Column('firstname', UnicodeText),
     Column('lastname', UnicodeText),
+    Column('password', UnicodeText),
     Column('is_confirmed', Boolean, default=False),
     ]
 
@@ -28,6 +29,7 @@ def upgrade():
     pending_action_table.create()
     for col in user_columns:
         col.create(user_table)
+    user_table.c['username'].drop()
 
 def downgrade():
     raise NotImplementedError()
