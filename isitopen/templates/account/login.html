@@ -16,7 +16,7 @@
       <py:if test="c.pending_action_code">
       <!--checkpoint:reference-to-pending-action-->
       ${h.hidden('code', c.pending_action_code)}
-      <p><i>Your enquiry has been saved and will be resumed after logging in.</i></p>
+      <p><em>Your enquiry has been saved and will be resumed after you have logged in (or <a href="${c.pending_action_code and h.url_for('register', code=c.pending_action_code) or h.url_for('register')}">signed up</a> &ndash; if you don't already have an account).</em></p>
       </py:if>
       <label for="login">Your Email:</label>
       ${h.text('login', size=50)} <br />
