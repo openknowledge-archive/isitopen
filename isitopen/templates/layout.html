@@ -10,8 +10,6 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" href="http://m.okfn.org/kforge/css/master.css" type="text/css" media="screen, print" title="Master stylesheet" charset="utf-8" />
   <link rel="shortcut icon" href="http://m.okfn.org/gfx/logo/favicon.ico" type="image/x-icon" />
-  <!--
-  -->
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
   <script type="text/javascript" src="http://m.okfn.org/kforge/scripts/kforge.js"></script>
 
@@ -19,6 +17,10 @@
     ${page_specific_css()}
   </py:if>
   <style type="text/css">
+    #top {
+      margin:0.3em 0 0;
+    }
+
     #subnav {
       background: transparent;
       height: 0px;
@@ -84,12 +86,6 @@
 </head>
 
 <body>
-	<div>
-	<p style="width: 100%; background-color: #F9B4B4; font-size: 1.1em;
-		text-align: center; padding: 0.2em;">
-		We're currently in 'alpha' and things may not quite work as they should. If
-		they don't <a href="${h.url_for(controller='about',
-			anchor='get-in-touch')}">let us know</a></p> </div>
 <div id="airlock">
   <!--[if IE]>
     <hr class="holder" />
@@ -98,6 +94,9 @@
     <div id="top-inner">
       <div id="top-bar">
         <p>
+        <img style="margin-bottom: -4px;" src="http://m.okfn.org/images/logo/okf_logo_white_and_green_tiny.png" /> An <a href="http://www.okfn.org/">Open Knowledge Foundation Project</a>
+        |
+
         <py:choose>
           <py:when test="c.user">
           <!--checkpoint:is-logged-in-->
@@ -126,7 +125,7 @@
       
       <h1>
         <a href="${h.url_for('home')}"
-          title="Home">Is It Open Data?</a><sup>Alpha</sup>
+          title="Home">Is It Open Data?</a>
       </h1>
     
     </div><!-- /top-inner -->
