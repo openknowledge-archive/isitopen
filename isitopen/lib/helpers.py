@@ -3,6 +3,7 @@
 Consists of functions to typically be used within templates, but also
 available to Controllers. This module is available to both as 'h'.
 """
+import genshi
 from webhelpers.html import escape, HTML, literal, url_escape
 from webhelpers.html.tags import *
 
@@ -28,8 +29,22 @@ def email_body(body):
     body = body.replace(':\n>', ':\n\n>')
     # in quoted sections seem to get line continuations with =
     body = body.replace('=\n', '')
+    # incredibly ugly hack to deal with <isitopen@okfn.org> in message body
+    # (does not get handled by markdown for some reason ...)
+    import re
+    body = re.sub('<isitopen.okfn.org\s*>', '&lt;isitopen.ofkn.org&gt;', body)
+    # body = body.replace('<isitopen.okfn.org>', '&lt;isitopen.ofkn.org&gt;')
     #return ""
     #return markdown(repr(type(body)).replace("<", "&lt;") + body[:10])
     # Todo: Fix this, it screws up when unicode is in the enquiry body.
-    return markdown(body)
+    try:
+        out = genshi.HTML(markdown(body))
+    except:
+        out = '<p><strong>We had problems prettifying the email you are trying to display -- probably due to broken HTML in it!</strong></p>\n\n'
+        try:
+            out += unicode(genshi.escape(body))
+        except:
+            pass
+        out = genshi.HTML(out)
+    return out
 
