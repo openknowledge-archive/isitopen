@@ -30,6 +30,8 @@ setup(
         # for mail tests
         'processing',
         'repoze.who',
+        # for web app deployment
+        'PasteDeploy',
         ],
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
