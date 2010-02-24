@@ -25,7 +25,7 @@ def test_email_body():
 
 def test_obfuscate_email():
     inaddr = 'xyz@okfn.org'
-    outaddr = u'&#120;&#121;&#122;&#64;&#111;&#107;&#102;&#46;&#46;&#46;&#46;&#46;'
+    outaddr = u'&#120;&#121;&#122;&#64;&#111;&#107;&#46;&#46;&#46;&#46;'
     out = unicode(h.obfuscate_email(inaddr))
     assert out == outaddr, out
 
