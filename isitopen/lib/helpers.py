@@ -3,10 +3,11 @@
 Consists of functions to typically be used within templates, but also
 available to Controllers. This module is available to both as 'h'.
 """
+import re
+
 import genshi
 from webhelpers.html import escape, HTML, literal, url_escape
 from webhelpers.html.tags import *
-
 from webhelpers.markdown import markdown as old_markdown
 from routes import url_for
 from routes import redirect_to
@@ -47,4 +48,17 @@ def email_body(body):
             pass
         out = genshi.HTML(out)
     return out
+
+def obfuscate_email(email_address):
+    '''Obfuscate an email address for web display (hex encode and delete last 5
+    chars).
+
+    Borrowed and simplified from webhelpers.html.tools.mail_to
+    '''
+    # replace last 5 characters
+    email_address_obfuscated = email_address[:-5] + '.....'
+    email_address_obfuscated = HTML.literal(''.join(
+        ['&#%d;' % ord(x) for x in email_address_obfuscated]))
+
+    return email_address_obfuscated
 
