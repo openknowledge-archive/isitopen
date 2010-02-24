@@ -50,13 +50,13 @@ def email_body(body):
     return out
 
 def obfuscate_email(email_address):
-    '''Obfuscate an email address for web display (hex encode and delete last 5
+    '''Obfuscate an email address for web display (hex encode and delete last 6
     chars).
 
     Borrowed and simplified from webhelpers.html.tools.mail_to
     '''
     # replace last 5 characters
-    email_address_obfuscated = email_address[:-5] + '.....'
+    email_address_obfuscated = email_address[:-6] + '....'
     email_address_obfuscated = HTML.literal(''.join(
         ['&#%d;' % ord(x) for x in email_address_obfuscated]))
 
