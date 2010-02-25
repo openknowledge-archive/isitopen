@@ -53,9 +53,14 @@ Regards,
     enquiry_footer = u"""
 
 --  
-Sent by "Is It Open Data?" (<http://isitopen.ckan.net/about/>)  
+Sent by "Is It Open Data?" <http://isitopendata.org/>
 A service which helps scholars (and others) to request information
-about the status and licensing of information.
+about the status and licensing of data and content.
+
+Disclaimer: This message and any reply that you make will be
+published on the internet for anyone to access and copy. For
+more information see:
+    <http://isitopendata.org/about/>
 """
 
     response_notification_template = u"""
