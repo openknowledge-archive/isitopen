@@ -9,7 +9,6 @@ from pylons.controllers.util import abort, etag_cache, redirect_to
 from pylons.decorators import jsonify, validate
 from pylons.i18n import _, ungettext, N_
 from pylons.templating import render
-from paste.request import parse_formvars
 import isitopen.lib.helpers as h
 import isitopen.model as model
 from isitopen.lib.mailer import Mailer
@@ -29,16 +28,16 @@ class BaseController(WSGIController):
         finally:
             model.Session.remove()
 
-    def _receive(self, environ):
+    def _receive(self):
         """Read the WSGI environ."""
-        self._receive_remote_user(environ)
+        self._receive_remote_user()
         if self._is_logged_in():
             self._read_account_status()
-        self._read_server_name(environ)
-        return self._receive_formvars(environ)
+        self._read_server_name()
+        self._receive_formvars()
 
-    def _receive_remote_user(self, environ):
-        c.remote_user = environ.get('REMOTE_USER')
+    def _receive_remote_user(self):
+        c.remote_user = request.environ.get('REMOTE_USER')
         c.user = self._find_user(c.remote_user)
 
     def _find_user(self, login):
@@ -68,17 +67,15 @@ class BaseController(WSGIController):
     def _is_account_activated(self):
         return bool(c.is_account_activated)
 
-    def _read_server_name(self, environ):
-        server_name = environ['SERVER_NAME']
+    def _read_server_name(self):
+        server_name = request.environ['SERVER_NAME']
         if server_name in ['localhost', '0.0.0.0']:
             # Needed for development and testing...
             server_name = '127.0.0.1:5000'
         c.site_url = 'http://%s' % server_name
 
-    def _receive_formvars(self, environ):
-        formvars = parse_formvars(environ)
-        c.pending_action_code = formvars.get('code', None)
-        return formvars
+    def _receive_formvars(self):
+        c.pending_action_code = request.params.get('code', None)
 
     def _redirect_to(self, *args, **kwds):
         h.redirect_to(*args, **kwds)

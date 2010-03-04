@@ -2,43 +2,43 @@ from isitopen.lib.base import *
 
 class AccountController(BaseController):
 
-    def login(self, environ, start_response):
+    def login(self):
         # Todo: Change to always set came_from value - otherwise
         # authentication middleware will redirect here indefinitely,
         # because by default it returns to HTTP_REFERER.
         # Todo: Try again to set login handler path to /account/login/.
-        formvars = self._receive(environ)
+        self._receive()
         if c.pending_action_code:
             c.came_from = h.url_for(controller='enquiry', action='start', code=c.pending_action_code)
         else:
-            c.came_from = formvars.get('came_from')
+            c.came_from = request.params.get('came_from')
         if self._is_logged_in():
             self._redirect_to_home()
         return render('account/login.html')
 
-    def index(self, environ, start_response):
-        formvars = self._receive(environ)
+    def index(self):
+        self._receive()
         if self._is_logged_in():
             return render('account/index.html')
         else:
             self._redirect_to_login()
             return 'Server response, you will be redirected.'
 
-    def recover(self, environ, start_response):
-        self._receive(environ)
+    def recover(self):
+        self._receive()
         if self._is_logged_in():
             self._redirect_to_home()
             return 'Server response, you will be redirected.'
         else:
             return render('account/recover.html')
 
-    def register(self, environ, start_response):
-        formvars = self._receive(environ)
-        c.firstname = formvars.get('firstname', '').decode('utf8')
-        c.lastname = formvars.get('lastname', '').decode('utf8')
-        c.login = formvars.get('login', '')
-        c.password = formvars.get('password', '').decode('utf8')
-        if formvars.get('send'):
+    def register(self):
+        self._receive()
+        c.firstname = request.params.get('firstname', '')
+        c.lastname = request.params.get('lastname', '')
+        c.login = request.params.get('login', '')
+        c.password = request.params.get('password', '')
+        if request.params.get('send'):
             self._validate_registration_submission()
             came_from = h.url_for(controller='account', action='index', code=c.pending_action_code)
             if not c.error:
@@ -50,9 +50,9 @@ class AccountController(BaseController):
                 )
         return render('account/register.html')
 
-    def confirm(self, environ, start_response):
-        formvars = self._receive(environ)
-        confirmation_code = formvars.get('code')
+    def confirm(self):
+        self._receive()
+        confirmation_code = request.params.get('code')
         if confirmation_code:
             login = ''
             enquiry_code = ''
@@ -87,7 +87,7 @@ class AccountController(BaseController):
             if self._is_account_activated():
                 self._redirect_to_home()
                 return
-            elif formvars.get('send'):
+            elif request.params.get('send'):
                 self._request_confirmation(c.user.email)
                 c.just_sent_new_request = True
         else:
