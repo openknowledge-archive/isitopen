@@ -8,9 +8,9 @@ log = logging.getLogger(__name__)
 
 class PendingController(BaseController):
 
-    def index(self, environ, start_response):
-        formvars = self._receive(environ)
-        code = formvars.get('code')
+    def index(self):
+        self._receive()
+        code = request.params.get('code')
         if not code:
             abort(404)
         if not self._is_logged_in():
