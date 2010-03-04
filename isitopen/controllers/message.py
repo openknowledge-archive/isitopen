@@ -3,13 +3,13 @@ import pprint
 
 class MessageController(BaseController):
 
-    def index(self, environ, start_response):
+    def index(self):
         """No purpose at this time."""
         self._redirect_to_home()
 
-    def send_unsent(self, environ, start_response):
+    def send_unsent(self):
         """Send unsent email messages."""
-        self._receive(environ)
+        self._receive()
         # no sensitive info here so no need to be admin
         #if not self._is_admin_logged_in():
         #    self._redirect_to_home()
@@ -26,9 +26,9 @@ class MessageController(BaseController):
         out += '</pre>'
         return out
 
-    def receive_unread(self, environ, start_response):
+    def receive_unread(self):
         """Read and handle unseen email messages."""
-        self._receive(environ)
+        self._receive()
         # no sensitive info here so no need to be admin
         #if not self._is_admin_logged_in():
         #    self._redirect_to_home()
