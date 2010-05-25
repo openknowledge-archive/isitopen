@@ -22,10 +22,42 @@ Then you are ready to go. Run the application with (for example):
 		paster serve config.ini
 
 
+Research
+========
+
+Threading algorithms:
+
+http://www.amk.ca/python/code/jwz/
+
+http://www.jwz.org/doc/threading.html
+
+## Gmail
+
+Gmail and imap: http://mail.google.com/support/bin/answer.py?answer=77657
+
+Gmail threading: http://xkahn.zoned.net/software/evolution/threads/
+
+## other useful imap stuff
+
+http://stackoverflow.com/questions/179026/how-do-i-perform-an-imap-search-in-python-using-gmail-and-imaplib
+
+http://stackoverflow.com/questions/938769/gmail-imap-search-by-date-and-time
+
+
 Changelog
 =========
 
-v0.3 2009-10-??
+v0.4 2010-02-22
+---------------
+
+A big release and system is now v1.0b (all key required features are implemented).
+
+  * User accounts with login and registration
+  * Enquiry interrupt and resume for login/registration
+  * Enquiry resolution
+  * Obfuscate email addresses in public WUI (ticket:257)
+
+v0.3 2009-10-20
 ---------------
 
   * Improve response and threading support (including notifications)
