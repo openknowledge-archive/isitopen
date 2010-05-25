@@ -33,8 +33,8 @@ def email_body(body):
     # incredibly ugly hack to deal with <isitopen@okfn.org> in message body
     # (does not get handled by markdown for some reason ...)
     import re
-    body = re.sub('<isitopen.okfn.org\s*>', '&lt;isitopen.ofkn.org&gt;', body)
-    # body = body.replace('<isitopen.okfn.org>', '&lt;isitopen.ofkn.org&gt;')
+    body = re.sub('<isitopen.okfn.org\s*>', '&lt;isitopen.okfn.org&gt;', body)
+    # body = body.replace('<isitopen.okfn.org>', '&lt;isitopen.okfn.org&gt;')
     #return ""
     #return markdown(repr(type(body)).replace("<", "&lt;") + body[:10])
     # Todo: Fix this, it screws up when unicode is in the enquiry body.
