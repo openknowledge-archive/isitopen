@@ -1,2 +1,3 @@
 recursive-include isitopen/public *
 recursive-include isitopen/templates *
+recursive-include isitopen/tests/testdata *

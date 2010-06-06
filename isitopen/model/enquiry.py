@@ -1,11 +1,12 @@
 import datetime
 import email as E
+import uuid
 
 from types import JsonType
 from meta import *
 from types import json
 
-import uuid
+from isitopen.lib.misc import get_body
 
 class DomainObject(object):
     def __init__(self, **kwargs):
@@ -59,12 +60,7 @@ class Message(DomainObject):
     #    self.save_email()
 
     def _body(self):
-        if self.email.is_multipart():
-            # take first message
-            # TODO: could be more sophisticated (e.g. use html if it exists)
-            body = self.email.get_payload(0).get_payload(decode=True)
-        else:
-            body = self.email.get_payload(decode=True)
+        body = get_body(self.email)
         body = body.replace('\r\n', '\n')
         return body.decode('utf8')
 
