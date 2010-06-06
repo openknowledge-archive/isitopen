@@ -62,7 +62,7 @@ class Message(DomainObject):
     def _body(self):
         body = get_body(self.email)
         body = body.replace('\r\n', '\n')
-        return body.decode('utf8')
+        return body
 
     email = property(_get_email)
     to = property(lambda self: self.email['To'])
