@@ -8,8 +8,8 @@ class MessageController(BaseController):
         self._redirect_to_home()
 
     def send_pending(self):
-        out1 = self.send_unsent(environ, start_response)
-        out2 = self.receive_unread(environ, start_response)
+        out1 = self.send_unsent()
+        out2 = self.receive_unread()
         return out1 + '\n\n' + out2
 
     def send_unsent(self):
