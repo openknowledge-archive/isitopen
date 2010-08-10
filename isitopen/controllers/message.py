@@ -7,7 +7,7 @@ class MessageController(BaseController):
         """No purpose at this time."""
         self._redirect_to_home()
 
-    def send_pending(self, environ, start_response):
+    def send_pending(self):
         out1 = self.send_unsent(environ, start_response)
         out2 = self.receive_unread(environ, start_response)
         return out1 + '\n\n' + out2
