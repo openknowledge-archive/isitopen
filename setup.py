@@ -37,9 +37,10 @@ setup(
     include_package_data=True,
     test_suite='nose.collector',
     package_data={'isitopen': ['i18n/*/LC_MESSAGES/*.mo']},
-    #message_extractors = {'isitopen': [
-    #        ('**.py', 'python', None),
-    #        ('public/**', 'ignore', None)]},
+    message_extractors = {'isitopen': [
+            ('**.py', 'python', None),
+            ('templates/**.html', 'genshi', None),
+            ('public/**', 'ignore', None)]},
     paster_plugins=[
         'Pylons',
         'WebHelpers',
