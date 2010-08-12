@@ -1,11 +1,15 @@
 """Pylons environment configuration"""
 import os
 
+import pylons
 from pylons import config
 
 import isitopen.lib.app_globals as app_globals
 import isitopen.lib.helpers
 from isitopen.config.routing import make_map
+from pylons.i18n.translation import ugettext
+from genshi.template import TemplateLoader
+from genshi.filters.i18n import Translator
 
 from sqlalchemy import engine_from_config
 
@@ -36,7 +40,14 @@ def load_environment(global_conf, app_conf):
 
     engine = engine_from_config(config, 'sqlalchemy.')
     config['pylons.g'].sa_engine = engine
-
+    
+    # Translator (i18n)
+    translator = Translator(ugettext)
+    def template_loaded(template):
+        template.filters.insert(0, translator)
+        #translator.setup(template)
+    
+    
     # redo template setup to use genshi.search_path
     # This requires path notation in calls to render rather than dotted notation
     # e.g. render('index.html') not render('index') etc
@@ -45,4 +56,5 @@ def load_environment(global_conf, app_conf):
     config.add_template_engine('genshi', None)
     tmpl_options = config['buffet.template_options']
     tmpl_options['genshi.search_path'] = paths['templates'][0]
-
+    tmpl_options["genshi.loader_callback"] = template_loaded
+    
