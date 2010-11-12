@@ -1,0 +1,29 @@
+<html
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  py:strip="">
+  
+  <py:def function="page_title">Confirm Account</py:def>
+
+  <div py:match="content">
+    <py:choose>
+      <py:when test="c.just_sent_new_request">
+    <h2>Confirmation Request </h2>
+    <p i18n:msg="">A new confirmation request has been sent to the address you registered.</p>
+    <p><strong>Please check your mail and activate your account.</strong></p>
+      </py:when>
+      <py:otherwise>
+    <h2>Please Confirm Your Email</h2>
+    <p i18n:msg="">Your account has been created, but not yet activated. When you registered, a confirmation request was sent to the address you registered. <strong>Please check your email and confirm your address.</strong></p>
+    <p i18n:msg="">If you would like to generate a new confirmation request, press 'New Confirmation Request'.</p>
+    <!--checkpoint:form-for-confirm-email-->
+    <form method="post">
+      <input type="submit" name="send" value="New Confirmation Request&raquo;"/>
+    </form>
+      </py:otherwise>
+    </py:choose>
+  </div>
+
+  <xi:include href="layout.html" />
+</html>

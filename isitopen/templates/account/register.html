@@ -1,0 +1,50 @@
+<html
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  py:strip="">
+  
+  <py:def function="page_title">Register</py:def>
+
+  <div py:match="content">
+
+    <h2>Sign Up</h2>
+    <py:choose>
+    <py:when test="c.error">
+      <div style="color: red">
+        <p><strong>${c.error}</strong></p>
+      </div>
+    </py:when>
+    <py:otherwise>
+      <p i18n:msg=""><strong>It's free and anyone can join.</strong></p>
+    </py:otherwise>
+    </py:choose>
+
+      <form method="post">
+      <!--checkpoint:form-for-register-account-details-->
+      <py:if test="c.pending_action_code">
+        <!--checkpoint:reference-to-pending-action-->
+        ${h.hidden('code', c.pending_action_code)}
+        <p><i>Your enquiry has been saved and will be resumed after registration and email confirmation.</i></p>
+      </py:if>
+
+      <label for="firstname">First Name:</label>
+      ${h.text('firstname', size=50, value=c.firstname)} <br />
+
+      <label for="lastname">Last Name:</label>
+      ${h.text('lastname', size=50, value=c.lastname)} <br />
+
+      <label for="login">Your Email: (will not be revealed to others)</label>
+      ${h.text('login', size=50, value=c.login)} <br />
+
+      <label for="password">New Password:</label>
+      ${h.password('password', size=50, value=c.password)} <br />
+
+      <br />
+      ${h.submit('send', value='Register &raquo;')}
+      </form>
+
+	</div>
+
+  <xi:include href="layout.html" />
+</html>

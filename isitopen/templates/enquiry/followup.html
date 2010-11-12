@@ -1,0 +1,72 @@
+<html
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  py:strip=""
+  >
+  
+  <py:def function="page_title">Follow Up</py:def>
+
+  <div py:match="content">
+    <py:choose>
+      <py:when test="c.is_step1">
+    <h2>Step 4: Follow Up Your Enquiry</h2>
+    <!--checkpoint:form-for-follow-up-enquiry-->
+    <p i18n:msg=""><strong>Start by providing information for the follow up.</strong> Provide an email address for the data holder concerned, then adjust the summary and body text.</p>
+    <p i18n:msg=""><a href="${h.url_for(controller='enquiry', action='view')}">Back to enquiry &raquo;</a></p>
+    <form method="post" action="${h.url_for(controller='enquiry', action='followup')}">
+    <py:if test="c.error">
+    <div style="color: red">
+    <p><strong>${c.error}</strong></p>
+    </div>
+    </py:if>
+      <label for="to">To: (email address e.g. ${c.follow_up_to_example})</label>
+      ${h.text('to', size=40, value=c.follow_up_to)} <br />
+
+      <label for="subject">Summary: (e.g. ${c.follow_up_subject_example})</label>
+      ${h.text('subject', size=60, value=c.follow_up_subject)} <br />
+
+      <label for="body">Your Follow Up: (write something appropriate)</label>
+      ${XML(h.textarea('body', content=h.escape(c.follow_up_body), cols=72, rows=25))}
+      <br />
+      <br />
+      ${h.submit('followup', value='Follow Up &raquo;')}
+    </form>
+      </py:when>
+      <py:when test="c.is_step2">
+    <h2>Step 5: Confirm Your Follow Up</h2>
+    <!--checkpoint:form-for-confirm-follow-up-->
+    <p i18n:msg="">
+      <strong>Check your follow up before sending.</strong> If you would like to change your
+      follow up, press 'Edit Follow Up'. Otherwise when you are happy, press 
+      'Send Follow Up'. The message will be sent in plain text but this 
+      preview has been 'prettified' using markdown.
+    </p>
+    <form method="post" action="${h.url_for(controller='enquiry', action='followup')}">
+      ${h.hidden('to', value=c.follow_up_to)}
+      ${h.hidden('subject', value=c.follow_up_subject)}
+      ${h.hidden('body', value=c.follow_up_body)}
+      <div id="preview" style="border: 2px dashed #d2d2d2; margin: 1em; padding: 1em;">
+      <xi:include href="../message/view_core.html" />
+      ${render_message(c.message)}
+      </div>
+      ${h.submit('edit', value='&laquo; Edit Follow Up')}
+      ${h.submit('confirm', value='Send Follow Up &raquo;')}
+    </form>
+      </py:when>
+      <py:when test="c.is_step3">
+    <h2>Step 6: Wait For Reply</h2>
+    <!--checkpoint:indicator-for-confirmed-follow-up-->
+    <p i18n:msg="">Congratulations for following up your enquiry.
+    Messages are queued briefly before sending, so your follow up may not be
+    sent immediately.</p>
+    <p i18n:msg=""><a href="${h.url_for(controller='enquiry', action='view')}">Back to enquiry &raquo;</a></p>
+    <p i18n:msg=""><strong>You will be alerted when the data handler responds to your follow up.</strong></p>
+    <p i18n:msg="">Thank you for using <a href="${h.url_for('home')}"><strong>Is It Open Data?</strong></a> to enquire about the openness of data.</p>
+      </py:when>
+    </py:choose>
+  </div>
+
+
+  <xi:include href="../layout.html" />
+</html>

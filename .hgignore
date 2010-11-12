@@ -1,0 +1,13 @@
+syntax: glob
+sandbox/*
+*.ini
+*.egg-info/*
+*.pyc
+*.db
+*.tmproj
+.DS_Store
+# pylons cache
+data/*
+
+syntax: regexp
+^build$
