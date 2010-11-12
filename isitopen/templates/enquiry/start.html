@@ -1,6 +1,7 @@
 <html
   xmlns:py="http://genshi.edgewall.org/"
   xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
   py:strip=""
   >
   
@@ -11,7 +12,7 @@
       <py:when test="c.is_step1">
     <h2>Step 1: Start Your Enquiry</h2>
     <!--checkpoint:form-for-start-enquiry-->
-    <p><strong>Start by providing information for the enquiry.</strong> Provide an email address for the data holder concerned, then adjust the summary and enquiry texts according to the data package you are enquiring about.</p>
+    <p i18n:msg=""><strong>Start by providing information for the enquiry.</strong> Provide an email address for the data holder concerned, then adjust the summary and enquiry texts according to the data package you are enquiring about.</p>
     <form method="post" action="${h.url_for(controller='enquiry', action='start')}">
     <py:if test="c.error">
     <div style="color: red">
@@ -35,7 +36,7 @@
       <py:when test="c.is_step2">
     <h2>Step 2: Confirm Your Enquiry</h2>
     <!--checkpoint:form-for-confirm-enquiry-->
-    <p>
+    <p i18n:msg="">
       <strong>Check your enquiry before sending.</strong> If you would like to change your
       enquiry, press 'Edit Enquiry'. Otherwise when you are happy, press 
       'Send Enquiry'. The message will be sent in plain text but this 
@@ -56,13 +57,13 @@
       <py:when test="c.is_step3">
     <h2>Step 3: Wait For Reply</h2>
     <!--checkpoint:indicator-for-confirmed-enquiry-->
-    <p>Congratulations, your <a href="${h.url_for(controller='enquiry', action='view', id=c.enquiry.id)}">data openness enquiry</a> has been started.
+    <p i18n:msg="">Congratulations, your <a href="${h.url_for(controller='enquiry', action='view', id=c.enquiry.id)}">data openness enquiry</a> has been started.
     You can <a href="${h.url_for(controller='enquiry', action='view', id=c.enquiry.id)}">check on the status</a> of your enquiry.
     Messages are queued briefly before sending, so your enquiry may not be
     sent immediately.</p>
-    <p><strong>You will be alerted when the data handler responds to your enquiry.</strong></p>
-    <p>Thank you for using <a href="${h.url_for('home')}"><strong>Is It Open Data?</strong></a> to enquire about the openness of data.</p>
-    <p><a href="${h.url_for(controller='enquiry', action='view')}">Go to enquiry &raquo;</a></p>
+    <p i18n:msg=""><strong>You will be alerted when the data handler responds to your enquiry.</strong></p>
+    <p i18n:msg="">Thank you for using <a href="${h.url_for('home')}"><strong>Is It Open Data?</strong></a> to enquire about the openness of data.</p>
+    <p i18n:msg=""><a href="${h.url_for(controller='enquiry', action='view')}">Go to enquiry &raquo;</a></p>
       </py:when>
     </py:choose>
   </div>
@@ -70,11 +71,11 @@
   <div py:match="primarysidebar">
     <div class="box">
       <h2>Steps for Making Enquiries</h2>
-      <p><strong>Step 1: Start Your Enquiry</strong><br />
+      <p i18n:msg=""><strong>Step 1: Start Your Enquiry</strong><br />
       Start by providing information for the enquiry.</p>
-      <p><strong>Step 2: Confirm Your Enquiry</strong><br />
+      <p i18n:msg=""><strong>Step 2: Confirm Your Enquiry</strong><br />
       Check the enquiry before sending.</p>
-      <p><strong>Step 3: Wait For Reply</strong><br />
+      <p i18n:msg=""><strong>Step 3: Wait For Reply</strong><br />
       You will be alerted when the data handler responds to your enquiry.</p>
     </div>
   </div>

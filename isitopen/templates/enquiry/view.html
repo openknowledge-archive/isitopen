@@ -1,6 +1,7 @@
 <html
   xmlns:py="http://genshi.edgewall.org/"
   xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
   py:strip=""
   >
   <xi:include href="../message/view_core.html" />
@@ -16,8 +17,8 @@
       <py:if test="c.can_resolve_enquiry">
     <!--checkpoint:form-for-resolve-enquiry--> 
     <form method="post" action="${h.url_for(controller='enquiry', action='resolve')}">
-    <p>
-      <b>Is the data open?</b> The openness of the data is:<br />
+    <p i18n:msg="unknown,closer,open">
+      <strong>Is the data open?</strong> The openness of the data is:<br />
       <input type="radio" name="resolution" value="Resolved (Not Known)" checked="checked" /> Not Known
       <input type="radio" name="resolution" value="Resolved (Closed)" />Closed
       <input type="radio" name="resolution" value="Resolved (Open)" />Open
@@ -30,8 +31,8 @@
       <py:if test="c.can_resolve_enquiry">
     <!--checkpoint:form-for-reopen-enquiry--> 
     <form method="post" action="${h.url_for(controller='enquiry', action='resolve')}">
-    <p>
-      <b>This enquiry has been resolved.</b><br />
+    <p i18n:msg="resolution">
+      <strong>This enquiry has been resolved.</strong><br />
       <input type="hidden" name="resolution" value="Unresolved" />
       ${h.submit('send', value='Unresolve Enquiry &raquo;')}
     </p>

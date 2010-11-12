@@ -2,6 +2,7 @@
 <html
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:py="http://genshi.edgewall.org/" 
+  xmlns:i18n="http://genshi.edgewall.org/i18n/"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   >
 
@@ -94,7 +95,7 @@
     <div id="top-inner">
       <div id="top-bar">
         <p>
-        <img style="margin-bottom: -4px;" src="http://m.okfn.org/images/logo/okf_logo_white_and_green_tiny.png" /> An <a href="http://www.okfn.org/">Open Knowledge Foundation Project</a>
+        <img style="margin-bottom: -4px;" src="http://m.okfn.org/images/logo/okf_logo_white_and_green_tiny.png" /> <span  i18n:msg="">An <a href="http://www.okfn.org/">Open Knowledge Foundation Project</a></span>
         |
 
         <py:choose>
@@ -154,9 +155,9 @@
   <div id="primary" class="sidebar">
     <div class="box">
       <h2>Using This Service</h2>
-      <p>For information on using this service check out the
+      <p i18n:msg="">For information on using this service check out the
       ${XML(h.link_to('guide', h.url_for('guide')))}.</p>
-			<p>Have feedback (questions, bugs, etc)? Email us
+			<p i18n:msg="">Have feedback (questions, bugs, etc)? Email us
 			at <a
 				href="mailto:info@okfn.org@subject=Is It Open
 				Service">info@okfn.org</a>.
@@ -178,21 +179,21 @@
     </content>
     
     <div id="footer">
-      <p>
+      <p i18n:msg="">
         <a href="http://validator.w3.org/check/referer" title="Valid XHTML 1.1">XHTML</a>
         | <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a>
         | <a href="http://www.okfn.org/ckan/">Project Home Page</a>
         | <a href="mailto:info@okfn.org">Contact Us</a>
       </p>
-      <p>
+      <p i18n:msg="">
         <img style="margin-bottom: -5px;" src="http://m.okfn.org/images/logo/okf_logo_white_and_green_tiny.png" /> An <a href="http://www.okfn.org/">Open Knowledge Foundation</a> Project
       </p>
-      <p>
+      <p i18n:msg="license">
         (c) Open Knowledge Foundation
 				| All material available under <a href="${h.url_for('about',
 					anchor='license')}">open licenses</a>
 			</p>
-			<p>
+			<p i18n:msg="">
         <a href="http://www.opendefinition.org/1.0/"><img
             style="border: none; margin-bottom: -4px;"
             src="http://m.okfn.org/images/ok_buttons/ok_90x15_blue.png"

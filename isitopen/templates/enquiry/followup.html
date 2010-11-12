@@ -1,6 +1,7 @@
 <html
   xmlns:py="http://genshi.edgewall.org/"
   xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
   py:strip=""
   >
   
@@ -11,8 +12,8 @@
       <py:when test="c.is_step1">
     <h2>Step 4: Follow Up Your Enquiry</h2>
     <!--checkpoint:form-for-follow-up-enquiry-->
-    <p><strong>Start by providing information for the follow up.</strong> Provide an email address for the data holder concerned, then adjust the summary and body text.</p>
-    <p><a href="${h.url_for(controller='enquiry', action='view')}">Back to enquiry &raquo;</a></p>
+    <p i18n:msg=""><strong>Start by providing information for the follow up.</strong> Provide an email address for the data holder concerned, then adjust the summary and body text.</p>
+    <p i18n:msg=""><a href="${h.url_for(controller='enquiry', action='view')}">Back to enquiry &raquo;</a></p>
     <form method="post" action="${h.url_for(controller='enquiry', action='followup')}">
     <py:if test="c.error">
     <div style="color: red">
@@ -35,7 +36,7 @@
       <py:when test="c.is_step2">
     <h2>Step 5: Confirm Your Follow Up</h2>
     <!--checkpoint:form-for-confirm-follow-up-->
-    <p>
+    <p i18n:msg="">
       <strong>Check your follow up before sending.</strong> If you would like to change your
       follow up, press 'Edit Follow Up'. Otherwise when you are happy, press 
       'Send Follow Up'. The message will be sent in plain text but this 
@@ -56,12 +57,12 @@
       <py:when test="c.is_step3">
     <h2>Step 6: Wait For Reply</h2>
     <!--checkpoint:indicator-for-confirmed-follow-up-->
-    <p>Congratulations for following up your enquiry.
+    <p i18n:msg="">Congratulations for following up your enquiry.
     Messages are queued briefly before sending, so your follow up may not be
     sent immediately.</p>
-    <p><a href="${h.url_for(controller='enquiry', action='view')}">Back to enquiry &raquo;</a></p>
-    <p><strong>You will be alerted when the data handler responds to your follow up.</strong></p>
-    <p>Thank you for using <a href="${h.url_for('home')}"><strong>Is It Open Data?</strong></a> to enquire about the openness of data.</p>
+    <p i18n:msg=""><a href="${h.url_for(controller='enquiry', action='view')}">Back to enquiry &raquo;</a></p>
+    <p i18n:msg=""><strong>You will be alerted when the data handler responds to your follow up.</strong></p>
+    <p i18n:msg="">Thank you for using <a href="${h.url_for('home')}"><strong>Is It Open Data?</strong></a> to enquire about the openness of data.</p>
       </py:when>
     </py:choose>
   </div>

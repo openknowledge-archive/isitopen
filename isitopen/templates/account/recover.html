@@ -1,13 +1,14 @@
 <html
   xmlns:py="http://genshi.edgewall.org/"
   xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
   py:strip="">
   
   <py:def function="page_title">Recover</py:def>
 
   <div py:match="content">
     <h2>Account Recovery</h2>
-    <i>You would enter your email, but this feature has not yet been implemented.</i>
+    <p i18n:msg=""><em>You would enter your email, but this feature has not yet been implemented.</em></p>
     <!--checkpoint:form-for-recover-account-->
     <!--form method="post">
       <input type="submit" name="send" value="Send New Confirmation &raquo;"/>
