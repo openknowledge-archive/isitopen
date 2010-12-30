@@ -1,0 +1,29 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+  
+  <py:def function="page_title">Enquiry - Sent</py:def>
+
+  <div py:match="content">
+    <py:if test="c.error">
+    <div style="color: red">
+    <h2>There was a Problem with Your Enquiry</h2>
+    <p><strong>${c.error}</strong></p>
+    <p>Hit the back button to go back and modify your message</p>
+    </div>
+    </py:if>
+
+    <py:if test="not c.error">
+    <!--checkpoint:form-for-confirm-enquiry-->
+    <h2>Your Enquiry Has Been Saved and Will Be Sent Soon</h2>
+    <p>We queue the enquiries briefly before sending so your enquiry may not be
+    sent immediately.</p>
+    <p>You can check on the status of your enquiry at:</p>
+    <h3>
+      <a href="${h.url_for(controller='enquiry', action='view', id=c.enquiry.id)}">
+        ${h.url_for(action='view', id=c.enquiry.id)}</a>
+    </h3>
+    </py:if>
+	</div>
+
+  <xi:include href="../layout.html" />
+</html>

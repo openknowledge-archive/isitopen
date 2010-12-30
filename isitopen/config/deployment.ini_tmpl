@@ -1,0 +1,81 @@
+#
+# isitopen - Pylons configuration
+#
+# The %(here)s variable will be replaced with the parent directory of this file
+#
+[DEFAULT]
+debug = true
+email_to = you@yourdomain.com
+smtp_server = localhost
+error_email_from = paste@localhost
+
+[server:main]
+use = egg:Paste#http
+host = 0.0.0.0
+port = 5000
+
+[app:main]
+use = egg:isitopen
+full_stack = true
+cache_dir = %(here)s/data
+beaker.session.key = isitopen
+beaker.session.secret = ${app_instance_secret}
+app_instance_uuid = ${app_instance_uuid}
+
+## ------------------------------------------
+## USER PROVIDED CONFIGURATION
+
+# set your sqlalchemy database uri here
+sqlalchemy.url = sqlite:///%(here)s/sqlite_isitopen.db
+
+# from address of enquiry request email messages
+enquiry.from = Is It Open Enquiry Service <your@email>
+# from address of response notifications and email confirmation requests
+enquiry.noreply = Is It Open Enquiry Service <noreply@email>
+
+# enquiry service uses a gmail account for email related functions
+enquiry.imap_host = imap.gmail.com
+enquiry.imap_user = 
+enquiry.imap_pwd = 
+
+enquiry.smtp_host = smtp.gmail.com
+# will default to 587 if not set
+# enquiry.smtp_port = 587
+enquiry.smtp_user = %(enquiry.imap_user)s
+enquiry.smtp_pwd = %(enquiry.imap_pwd)s
+
+# WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
+# Debug mode will enable the interactive debugging tool, allowing ANYONE to
+# execute malicious code after an exception is raised.
+set debug = false
+
+
+# If you'd like to fine-tune the individual locations of the cache data dirs
+# for the Cache data, or the Session saves, un-comment the desired settings
+# here:
+#beaker.cache.data_dir = %(here)s/data/cache
+#beaker.session.data_dir = %(here)s/data/sessions
+
+
+# Logging configuration
+[loggers]
+keys = root
+
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = INFO
+handlers = console
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(asctime)s %(levelname)-5.5s [%(name)s] %(message)s

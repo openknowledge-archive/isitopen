@@ -1,0 +1,63 @@
+<html
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip=""
+  >
+  <xi:include href="../message/view_core.html" />
+  
+  <py:def function="page_title">View</py:def>
+
+  <div py:match="content">
+    <h2>${c.enquiry.summary}</h2>
+    <h4>Enquiry Status: ${c.enquiry.status}</h4>
+    <h5><strong>Started:</strong> ${c.enquiry.timestamp.strftime("%c")}</h5>
+    <h5><strong>ID:</strong> ${c.enquiry.id}</h5>
+    <py:if test="'Resolved' not in c.enquiry.status">
+      <py:if test="c.can_resolve_enquiry">
+    <!--checkpoint:form-for-resolve-enquiry--> 
+    <form method="post" action="${h.url_for(controller='enquiry', action='resolve')}">
+    <p>
+      <b>Is the data open?</b> The openness of the data is:<br />
+      <input type="radio" name="resolution" value="Resolved (Not Known)" checked="checked" /> Not Known
+      <input type="radio" name="resolution" value="Resolved (Closed)" />Closed
+      <input type="radio" name="resolution" value="Resolved (Open)" />Open
+      ${h.submit('send', value='Resolve Enquiry &raquo;')}
+    </p>
+    </form>
+      </py:if>
+    </py:if>
+    <py:if test="'Resolved' in c.enquiry.status">
+      <py:if test="c.can_resolve_enquiry">
+    <!--checkpoint:form-for-reopen-enquiry--> 
+    <form method="post" action="${h.url_for(controller='enquiry', action='resolve')}">
+    <p>
+      <b>This enquiry has been resolved.</b><br />
+      <input type="hidden" name="resolution" value="Unresolved" />
+      ${h.submit('send', value='Unresolve Enquiry &raquo;')}
+    </p>
+    </form>
+      </py:if>
+    </py:if>
+    <hr />
+    <h4>Message: ${c.summary}</h4>
+      ${render_message(c.enquiry.messages[0])}
+    <py:for each="message in c.enquiry.messages[1:]">
+    <hr />
+    <h4>Message: ${c.summary}</h4>
+      ${render_message(message)}
+    </py:for>
+
+    <py:if test="c.can_follow_up_enquiry">
+    <!--checkpoint:option-to-follow-up-enquiry-->  
+      <py:if test="c.enquiry.messages">
+    <a class="send-response" href="${h.url_for(controller='enquiry',
+      action='followup', id=c.enquiry.id
+      )}">
+      Follow Up &raquo;</a>
+      </py:if>
+    </py:if>
+	</div>
+
+  <xi:include href="../layout.html" />
+</html>
+

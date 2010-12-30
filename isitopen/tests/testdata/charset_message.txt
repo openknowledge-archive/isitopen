@@ -1,0 +1,90 @@
+Delivered-To: invalid email @gmail.com
+Received: by 10.216.153.203 with SMTP id f53cs29422wek;
+        Tue, 25 May 2010 08:41:50 -0700 (PDT)
+Received: by 10.227.128.71 with SMTP id j7mr7185855wbs.160.1274802109593;
+        Tue, 25 May 2010 08:41:49 -0700 (PDT)
+Return-Path: <anonymous@user.nowwhere>
+Received: from eu1.okfn.org (okfn.vm.bytemark.co.uk [89.16.174.136])
+        by mx.google.com with ESMTP id w36si16022474wbv.93.2010.05.25.08.41.49; 
+        Tue, 25 May 2010 08:41:49 -0700 (PDT)
+Message-Id: <8ABA41D0-3589-4F9C-829F-5CB7CF108C74@cyganiak.de>
+From: Anonymous <anonymous@user.nowwhere>
+To: Is It Open Enquiry Service <isitopen@okfn.org>
+In-Reply-To: <4bf9580a.05a4100a.16ff.34c3@mx.google.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed; delsp=yes
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Apple Message framework v936)
+Subject: Re: Data Openness Enquiry
+Date: Tue, 25 May 2010 16:41:13 +0100
+References: <4bf9580a.05a4100a.16ff.34c3@mx.google.com>
+X-Mailer: Apple Mail (2.936)
+
+\r
+On 23 May 2010, at 17:30, Is It Open Enquiry Service wrote:\r
+> [Testing out our 'Is It Open?' service to clarify DBLP data =20\r
+> openness! ;-)]\r
+>\r
+> Dear Richard,\r
+>\r
+> I am writing to seek clarification of the 'openness' [1] of the DBLP =20=\r
+\r
+> data:\r
+>\r
+>  http://www4.wiwiss.fu-berlin.de/dblp/\r
+\r
+This service is based on data obtained from the Michael Ley's DBLP =20\r
+project:\r
+http://www.informatik.uni-trier.de/~ley/db/\r
+\r
+The copyright of the data remains with Michael Ley. We believe that we =20=\r
+\r
+are allowed to offer this service based on the following statement on =20=\r
+\r
+the DBLP website:\r
+\r
+"Copyright =A9 1993-2009 by Michael Ley ( Universit=E4t Trier, =\r
+Informatik, ley@uni-trier.de=20\r
+). Copying of the "DBLP" bibliography collection is permitted provided =20=\r
+\r
+that the copies are not made or distributed for direct commercial =20\r
+advantage and credit for the source is given. To copy or republish =20\r
+ otherwise requires specific permission."\r
+\r
+Best,\r
+Richard\r
+\r
+\r
+\r
+>\r
+> I wasn't able to find an explicit statement that the data was open =20\r
+> such as a reference to an open knowledge or data license [2] so I'm =20=\r
+\r
+> writing to find out what the exact situation is. In particular we =20\r
+> would like to know whether the material can be made available under =20=\r
+\r
+> an open license of some kind.\r
+>\r
+> Thank you very much for your time and I look forward to receiving =20\r
+> your response.\r
+>\r
+> Regards,\r
+>\r
+> Jonathan\r
+>\r
+> [1] <http://www.opendefinition.org/1.0/>\r
+> [2] <http://www.opendefinition.org/licenses/>\r
+>\r
+>\r
+> -- =20\r
+> Sent by "Is It Open Data?" <http://isitopendata.org/>\r
+> A service which helps scholars (and others) to request information\r
+> about the status and licensing of data and content.\r
+>\r
+> Disclaimer: This message and any reply that you make will be\r
+> published on the internet for anyone to access and copy. For\r
+> more information see:\r
+>    <http://isitopendata.org/about/>\r
+\r
+
+
+
