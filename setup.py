@@ -23,7 +23,7 @@ setup(
     install_requires=[
         'Pylons>=0.9.7,<0.9.8',
         'SQLAlchemy>=0.5,<0.5.99',
-        'Genshi>=0.4,<0.6',
+        'Genshi>=0.6',
         'FormAlchemy>=1.0',
         # last version to work with SQLA < 0.5
         'sqlalchemy-migrate>=0.5,<0.5.99',
