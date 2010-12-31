@@ -29,7 +29,7 @@ setup(
         'sqlalchemy-migrate>=0.5,<0.5.99',
         # for mail tests
         'processing',
-        'repoze.who',
+        'repoze.who<1.99',
         # for web app deployment
         'PasteDeploy',
         ],
