@@ -1,6 +1,7 @@
 syntax: glob
+sandbox/*
 *.ini
-isitopen.egg-info/*
+*.egg-info/*
 *.pyc
 *.db
 *.tmproj
