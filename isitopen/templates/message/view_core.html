@@ -6,6 +6,7 @@
 
   <py:def function="render_message(message)">
   <div class="message">
+    <py:if test="message">
     <div class="headers">
       <p><strong>To:</strong> ${h.obfuscate_email(message.to)}</p>
       <p><strong>Subject:</strong> <em>${message.subject}</em></p>
@@ -19,6 +20,10 @@
     <div>
       ${h.email_body(message.body)}
     </div>
+    </py:if>
+    <py:if test="not message">
+    <p>Message could not be rendered.</p>
+    </py:if>
   </div>
   </py:def>
 

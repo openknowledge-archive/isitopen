@@ -55,6 +55,8 @@ def obfuscate_email(email_address):
 
     Borrowed and simplified from webhelpers.html.tools.mail_to
     '''
+    if not email_address:
+        return ''
     # replace last 5 characters
     email_address_obfuscated = email_address[:-6] + '....'
     email_address_obfuscated = HTML.literal(''.join(
