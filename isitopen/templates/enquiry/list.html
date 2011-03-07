@@ -8,9 +8,30 @@
   <div py:match="content">
     <!--checkpoint:indicator-for-enquiry-list-->
     <h2>Existing Enquiries</h2>
-		<ul>
-			<li py:for="enq in c.enquiries">
-			<a href="${h.url_for(controller='enquiry', action='view', id=enq.id)}"><em>${enq.summary}</em></a> - [${enq.to[:-6] + '...'}]
+		<ul class="enquiry-list">
+			<li py:for="enq in c.enquiries" class="enquiry-summary">
+        <ul>
+          <li class="title">
+            <span class="enquiry-status">
+              ${h.enquiry_status_icon(enq)}
+            </span>
+            <a href="${h.url_for(controller='enquiry', action='view', id=enq.id)}">${enq.summary}</a>
+            <span title="Number of messages in the thread" class="message-count">(${len(enq.messages)})</span>
+          </li>
+          <li class="to">
+            <strong>To: ${h.js_obfuscate(enq.to)}</strong>
+          </li>
+          <li class="opened">
+            Last activity ${h.date.time_ago_in_words(enq.messages[-1].timestamp, granularity='day')} ago
+            (Opened ${h.date.time_ago_in_words(enq.timestamp, granularity='day')} ago) 
+          </li>
+          <li class="owner">
+          Owned by ${h.user_link(enq.owner)}
+          </li>
+          <li class="snippet">
+            ${h.snippet(enq.body, 250)}
+          </li>
+        </ul>
 			</li>
 		</ul>
 
