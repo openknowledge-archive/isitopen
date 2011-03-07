@@ -100,6 +100,13 @@ class Enquiry(DomainObject):
             return None
     to = property(_get_to)
 
+    def _get_body(self):
+        if self.messages:
+            return self.messages[0].body
+        else:
+            return None
+    body = property(_get_body)
+
 
 class PendingAction(DomainObject):
 
