@@ -22,6 +22,8 @@ setup(
     url='http://isitopen.ckan.net/',
     install_requires=[
         'Pylons>=0.9.7,<0.9.8',
+        # TODO: minor issues with routes >= 1.12
+        'Routes<=1.11.99',
         'SQLAlchemy>=0.5,<0.5.99',
         'Genshi>=0.6',
         'FormAlchemy>=1.0',
