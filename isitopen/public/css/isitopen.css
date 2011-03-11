@@ -1,0 +1,108 @@
+#top {
+  margin:0.3em 0 0;
+}
+
+#subnav {
+  background: transparent;
+  height: 0px;
+  padding: 0;
+  margin-bottom: -10px;
+}
+
+ul.big-buttons {
+  list-style-type: none;
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+
+ul.big-buttons li {
+  display: inline;
+  font-size: 1.1em;
+  margin-left: 10px;
+}
+
+ul.big-buttons li a, a.send-response {
+  border: 2px solid #aaa;
+  background-color: #eee;
+  padding: 0.5em;
+  text-decoration: none;
+  width: 180px;
+}
+
+ul.big-buttons li a:hover {
+  background-color: #F5E4DC;
+}
+
+div.message {
+  margin-left: 2em;
+}
+
+div.message div.headers {
+  margin-bottom: 1.5em;
+}
+
+div.message div.headers p {
+  margin: 0;
+  padding: 0;
+}
+input[type=submit], input[type=submit]:active {
+  font-size: 1.1em;
+  background-color:#EEEEEE;
+  border:2px solid #AAAAAA;
+  padding:0.3em;
+  text-decoration:none;
+}    
+input[type=submit] {
+  color: #BB2222;
+}
+input[type=submit]:active {
+  color: #FF2222;
+}
+input[type=submit]:hover {
+  background-color: #F5E4DC;
+  cursor: pointer; /* hand-shaped cursor */
+}
+
+
+/*******************************************
+  * Enquiry list
+  ******************************************/
+
+ul.enquiry-list, .enquiry-summary ul {
+  list-style-type: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+ul.enquiry-list > li {
+  border-bottom: 1px solid #ECECEC;
+}
+
+.enquiry-summary .title {
+  font-size: 120%;
+}
+
+.enquiry-summary .title a {
+  text-decoration: none;
+}
+
+.enquiry-summary .message-count {
+  font-size: 85%;
+}
+
+.enquiry-summary .opened {
+  font-size: 75%;
+}
+
+.enquiry-summary .owner {
+  font-style: italic;
+}
+
+.enquiry-summary .snippet {
+  font-size: 90%;
+  padding-top: 10px;
+}
+
+img.icon {
+  margin-bottom: -2px;
+}
