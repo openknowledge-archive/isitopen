@@ -65,8 +65,9 @@ class Message(DomainObject):
         return body
 
     email = property(_get_email)
-    to = property(lambda self: self.email['To'])
-    subject = property(lambda self: self.email['Subject'].decode('utf8'))
+    to = property(lambda self: self.email['To'] if self.email['To'] else '')
+    subject = property(lambda self: self.email['Subject'].decode('utf8') if
+            self.email['Subject'] else '')
     body = property(_body)
 
 class Enquiry(DomainObject):
@@ -98,6 +99,13 @@ class Enquiry(DomainObject):
         else:
             return None
     to = property(_get_to)
+
+    def _get_body(self):
+        if self.messages:
+            return self.messages[0].body
+        else:
+            return None
+    body = property(_get_body)
 
 
 class PendingAction(DomainObject):

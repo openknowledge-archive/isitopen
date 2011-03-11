@@ -8,6 +8,8 @@ import re
 import genshi
 from webhelpers.html import escape, HTML, literal, url_escape
 from webhelpers.html.tags import *
+from webhelpers import date
+from webhelpers.html.tools import js_obfuscate
 from webhelpers.markdown import markdown as old_markdown
 from routes import url_for
 from routes import redirect_to
@@ -55,10 +57,47 @@ def obfuscate_email(email_address):
 
     Borrowed and simplified from webhelpers.html.tools.mail_to
     '''
+    if not email_address:
+        return ''
     # replace last 5 characters
     email_address_obfuscated = email_address[:-6] + '....'
     email_address_obfuscated = HTML.literal(''.join(
         ['&#%d;' % ord(x) for x in email_address_obfuscated]))
 
     return email_address_obfuscated
+
+def icon(name, alt=None):
+    if alt is None:
+        alt = name
+    return literal('<img src="%s" class="icon" alt="%s" title="%s" /> ' %
+            (icon_url(name), alt, alt))
+
+def icon_url(name):
+    return url_for('/images/icons/%s.png' % name)
+
+def enquiry_status_icon(enq):
+    if enq.status == enq.RESOLVED_OPEN:
+        return icon('tick', alt='Enquiry Resolved - Data is Open')
+    elif enq.status == enq.RESOLVED_CLOSED:
+        return icon('cancel', alt='Enquiry Resolved - Data is Closed')
+    elif enq.status == enq.RESOLVED_NOT_KNOWN:
+        return icon('exclamation', alt='Enquiry Resolved - Data Status Unknown')
+    else:
+        return icon('clock', alt='Enquiry in Progress')
+
+def user_link(user):
+    out = icon('user') + ' '
+    if user and (user.firstname or user.lastname):
+        out = out + literal(user.firstname + ' ' + user.lastname)
+    else:
+        out += literal('Anonymous')
+    return out
+
+def snippet(text, numchars=190):
+    if not text:
+        return ''
+    elif len(text) < numchars:
+        return text
+    else:
+        return text[:numchars] + '...'
 
