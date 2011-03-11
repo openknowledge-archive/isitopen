@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: isitopen 0.4a\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2010-08-12 15:37+0200\n"
-"PO-Revision-Date: 2010-11-12 20:13+0200\n"
+"PO-Revision-Date: 2011-03-11 17:13+0000\n"
 "Last-Translator: Friedrich Lindenberg <friedrich@pudo.org>\n"
 "Language-Team: de <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 0.9.4\n"
+"Generated-By: Babel 0.9.5\n"
 
 #: isitopen/templates/guide.html:7
 msgid "Guide"
@@ -28,16 +28,7 @@ msgstr ""
 #: isitopen/templates/guide.html:11
 msgid ""
 "We aim to make it easy for people – like you\n"
-"    – to make enquires of data holders, about the"
-msgstr ""
-
-#: isitopen/templates/guide.html:13
-msgid "openness"
-msgstr ""
-
-#: isitopen/templates/guide.html:13
-msgid ""
-"of\n"
+"    – to make enquires of data holders, about the [1:openness] of\n"
 "\t\tthe data they hold — and to record publicly the results of those\n"
 "\t\tefforts. We're especially focused on scientific data but anyone can "
 "use\n"
@@ -45,18 +36,9 @@ msgid ""
 msgstr ""
 
 #: isitopen/templates/guide.html:18
-msgid "We're inspired by"
-msgstr ""
-
-#: isitopen/templates/guide.html:18
 msgid ""
-"What Do They\n"
-"      Know?"
-msgstr ""
-
-#: isitopen/templates/guide.html:19
-msgid ""
-", a site which allow citizens to make requests to find out\n"
+"We're inspired by [1:What Do They\n"
+"      Know?], a site which allow citizens to make requests to find out\n"
 "    information to which they have a right. It works by identifying the "
 "right\n"
 "    place to ask, assisting users make requests and publicly displaying "
@@ -69,19 +51,9 @@ msgid "Who's Behind This?"
 msgstr "Wer steckt dahinter?"
 
 #: isitopen/templates/guide.html:25
-msgid "This is a project set up by the"
-msgstr ""
-
-#: isitopen/templates/guide.html:25
-msgid "Working Group on Open Data in Science"
-msgstr ""
-
-#: isitopen/templates/guide.html:25
-msgid "at the"
-msgstr ""
-
-#: isitopen/templates/guide.html:25 isitopen/templates/layout.html:189
-msgid "Open Knowledge Foundation"
+msgid ""
+"This is a project set up by the [1:Working Group on Open Data in Science]"
+" at the [2:Open Knowledge Foundation]."
 msgstr ""
 
 #: isitopen/templates/guide.html:27
@@ -91,23 +63,9 @@ msgstr ""
 #: isitopen/templates/guide.html:28
 msgid ""
 "Have a question, found a bug or just want to tell us what you think?\n"
-"    Email us at"
-msgstr ""
-
-#: isitopen/templates/guide.html:31
-msgid "info@okfn.org."
-msgstr ""
-
-#: isitopen/templates/guide.html:31
-msgid ""
-". Want to get involved in running and\n"
-"      developing the project: join the"
-msgstr ""
-
-#: isitopen/templates/guide.html:33
-msgid ""
-"mailing\n"
-"\t\t\t\tlist"
+"    Email us at [1:info@okfn.org.]. Want to get involved in running and\n"
+"      developing the project: join the [2:mailing\n"
+"\t\t\t\tlist]."
 msgstr ""
 
 #: isitopen/templates/guide.html:37
@@ -132,16 +90,8 @@ msgstr ""
 msgid ""
 "We will not disclose emails of users of this service unless required to\n"
 "    by law (or you ask us to disclose your address). For more information"
-" see"
-msgstr ""
-
-#: isitopen/templates/guide.html:47
-msgid "http://www.okfn.org/privacy-policy"
-msgstr ""
-
-#: isitopen/templates/guide.html:47
-msgid ""
-".\n"
+" see\n"
+"    [1:http://www.okfn.org/privacy-policy].\n"
 "    Details of 'data handlers' to whom requests are addressed will "
 "generally be\n"
 "    published though we do (partially) obfuscate email addresses."
@@ -154,25 +104,11 @@ msgstr ""
 #: isitopen/templates/guide.html:52
 msgid ""
 "Yes! All the code and content (excluding requests) on this site is\n"
-"    openly licensed under, respectively, the"
-msgstr ""
-
-#: isitopen/templates/guide.html:54
-msgid ""
-"GNU Affero GPL\n"
-"\t\t\tv3.0"
-msgstr ""
-
-#: isitopen/templates/guide.html:55
-msgid ""
-"and a Creative Commons Attribution-Sharealike v3. The code can\n"
-"\t\tbe obtained from our"
-msgstr ""
-
-#: isitopen/templates/guide.html:57
-msgid ""
-"mercurial\n"
-"\t\t\t\trepository"
+"    openly licensed under, respectively, the [1:GNU Affero GPL\n"
+"\t\t\tv3.0] and a Creative Commons Attribution-Sharealike v3. The code "
+"can\n"
+"\t\tbe obtained from our [2:mercurial\n"
+"\t\t\t\trepository]."
 msgstr ""
 
 #: isitopen/templates/guide.html:61
@@ -184,16 +120,8 @@ msgid ""
 "Open data is data that can used, reused and redistributed without "
 "restriction other than (perhaps) the requirement to attribution or share-"
 "alike. A full\n"
-"    definition of openness is available at"
-msgstr ""
-
-#: isitopen/templates/guide.html:64
-msgid "http://www.opendefinition.org/1.0"
-msgstr ""
-
-#: isitopen/templates/guide.html:64
-msgid ""
-".\n"
+"    definition of openness is available at "
+"[1:http://www.opendefinition.org/1.0].\n"
 "    Data is closed if, for example, it requires additional permission or "
 "payment for its\n"
 "    reuse."
@@ -307,16 +235,10 @@ msgid ""
 "state\n"
 "    that they reserve rights to all data, alternatively they may clearly "
 "apply\n"
-"    an open knowledge license to their data (see"
-msgstr ""
-
-#: isitopen/templates/guide.html:113
-msgid "http://www.opendefinition.org/licenses/"
-msgstr ""
-
-#: isitopen/templates/guide.html:113
-msgid ""
-"for a list of such licenses). If the situation is ambiguous or unclear\n"
+"    an open knowledge license to their data (see\n"
+"    [1:http://www.opendefinition.org/licenses/]\n"
+"    for a list of such licenses). If the situation is ambiguous or "
+"unclear\n"
 "    somebody may have requested clarification in the past (please check "
 "the\n"
 "    archive or previous requests before sending a new one). If not, an "
@@ -324,8 +246,8 @@ msgid ""
 "    can be made through the website."
 msgstr ""
 
-#: isitopen/templates/index.html:7 isitopen/templates/layout.html:128
-#: isitopen/templates/layout.html:136 isitopen/templates/account/index.html:7
+#: isitopen/templates/index.html:7 isitopen/templates/layout.html:61
+#: isitopen/templates/layout.html:69 isitopen/templates/account/index.html:7
 #: isitopen/templates/enquiry/choose.html:6
 #: isitopen/templates/enquiry/list.html:7
 #: isitopen/templates/message/preview.html:5
@@ -333,16 +255,8 @@ msgid "Home"
 msgstr "Start"
 
 #: isitopen/templates/index.html:10
-msgid "We've made it easy for"
-msgstr ""
-
-#: isitopen/templates/index.html:10
-msgid "you"
-msgstr ""
-
-#: isitopen/templates/index.html:10
 msgid ""
-"to make\n"
+"We've made it easy for [1:you] to make\n"
 "    enquiries to data holders about the openness of\n"
 "    the material they hold — and to record publicly the results of\n"
 "    those efforts."
@@ -375,11 +289,7 @@ msgid "Mauna Loa CO2"
 msgstr ""
 
 #: isitopen/templates/index.html:29
-msgid "Our future depends on Open Data ("
-msgstr ""
-
-#: isitopen/templates/index.html:29
-msgid "source"
+msgid "Our future depends on Open Data ([1:source])"
 msgstr ""
 
 #: isitopen/templates/index.html:33
@@ -395,11 +305,7 @@ msgid ""
 "In practice it is often unclear whether data is openly available i.e "
 "accessible and freely re-usable without additional permission. In some "
 "cases, access to data may be restricted by the addition of specific terms"
-" and conditions."
-msgstr ""
-
-#: isitopen/templates/index.html:36
-msgid "Read More ..."
+" and conditions. [1:Read More ...]"
 msgstr ""
 
 #: isitopen/templates/layout.html:10
@@ -410,133 +316,124 @@ msgstr ""
 msgid "Master stylesheet"
 msgstr ""
 
-#: isitopen/templates/layout.html:98 isitopen/templates/layout.html:189
-msgid "An"
-msgstr "Ein"
-
-#: isitopen/templates/layout.html:98
-msgid "Open Knowledge Foundation Project"
+#: isitopen/templates/layout.html:31
+#, fuzzy
+msgid "An [1:Open Knowledge Foundation Project]"
 msgstr "Projekt der Open Knowledge Foundation"
 
-#: isitopen/templates/layout.html:110
+#: isitopen/templates/layout.html:43
 msgid "Account not activated »"
 msgstr ""
 
-#: isitopen/templates/layout.html:116
+#: isitopen/templates/layout.html:49
 msgid "Logout"
 msgstr ""
 
-#: isitopen/templates/layout.html:120
-#: isitopen/templates/account/register.html:7
+#: isitopen/templates/layout.html:53 isitopen/templates/account/register.html:7
 msgid "Register"
 msgstr "Registrieren"
 
-#: isitopen/templates/layout.html:120
+#: isitopen/templates/layout.html:53
 msgid "or"
 msgstr "oder"
 
-#: isitopen/templates/layout.html:121
+#: isitopen/templates/layout.html:54
 msgid "Login"
 msgstr "Anmelden"
 
-#: isitopen/templates/layout.html:129
+#: isitopen/templates/layout.html:62
 msgid "Is It Open Data?"
 msgstr ""
 
-#: isitopen/templates/layout.html:129
+#: isitopen/templates/layout.html:62
 msgid "Beta"
 msgstr ""
 
-#: isitopen/templates/layout.html:134
+#: isitopen/templates/layout.html:67
 msgid "Sections:"
 msgstr ""
 
-#: isitopen/templates/layout.html:137
+#: isitopen/templates/layout.html:70
 msgid "Make Enquiry"
 msgstr ""
 
-#: isitopen/templates/layout.html:138
+#: isitopen/templates/layout.html:71
 msgid "Browse Existing"
 msgstr ""
 
-#: isitopen/templates/layout.html:139
+#: isitopen/templates/layout.html:72
 msgid "About"
 msgstr ""
 
-#: isitopen/templates/layout.html:141
+#: isitopen/templates/layout.html:74
 msgid "In this section:"
 msgstr ""
 
-#: isitopen/templates/layout.html:153
+#: isitopen/templates/layout.html:86
 msgid "Skip to page content"
 msgstr ""
 
-#: isitopen/templates/layout.html:153
+#: isitopen/templates/layout.html:86
 msgid "[ Skip to main content ]"
 msgstr ""
 
-#: isitopen/templates/layout.html:157
+#: isitopen/templates/layout.html:90
 msgid "Using This Service"
 msgstr ""
 
-#: isitopen/templates/layout.html:158
-msgid "For information on using this service check out the"
+#: isitopen/templates/layout.html:91
+#, python-format
+msgid ""
+"For information on using this service check out the\n"
+"      %(guide)s."
 msgstr ""
 
-#: isitopen/templates/layout.html:160
+#: isitopen/templates/layout.html:93
 msgid ""
 "Have feedback (questions, bugs, etc)? Email us\n"
-"\t\t\tat"
+"\t\t\tat [1:info@okfn.org]."
 msgstr ""
 
-#: isitopen/templates/layout.html:163
-msgid "info@okfn.org"
-msgstr ""
-
-#: isitopen/templates/layout.html:178
+#: isitopen/templates/layout.html:111
 msgid "Master content template placeholder … please replace me."
 msgstr ""
 
-#: isitopen/templates/layout.html:183
+#: isitopen/templates/layout.html:116
 msgid "Valid XHTML 1.1"
 msgstr ""
 
-#: isitopen/templates/layout.html:183
-msgid "XHTML"
+#: isitopen/templates/layout.html:115
+msgid ""
+"[1:XHTML]\n"
+"        | [2:CSS]\n"
+"        | [3:Project Home Page]\n"
+"        | [4:Contact Us]"
 msgstr ""
 
-#: isitopen/templates/layout.html:184
-msgid "CSS"
-msgstr ""
+#: isitopen/templates/layout.html:121
+#, fuzzy
+msgid "[1:] An [2:Open Knowledge Foundation] Project"
+msgstr "Projekt der Open Knowledge Foundation"
 
-#: isitopen/templates/layout.html:185
-msgid "Project Home Page"
-msgstr ""
-
-#: isitopen/templates/layout.html:186
-msgid "Contact Us"
-msgstr ""
-
-#: isitopen/templates/layout.html:189
-msgid "Project"
-msgstr ""
-
-#: isitopen/templates/layout.html:191
+#: isitopen/templates/layout.html:124
 msgid ""
 "(c) Open Knowledge Foundation\n"
-"\t\t\t\t| All material available under"
+"\t\t\t\t| All material available under [1:open licenses]"
 msgstr ""
 
-#: isitopen/templates/layout.html:194
-msgid "open licenses"
-msgstr ""
-
-#: isitopen/templates/layout.html:197
+#: isitopen/templates/layout.html:130
 msgid "This Content and Data is Open"
 msgstr ""
 
-#: isitopen/templates/layout.html:202
+#: isitopen/templates/layout.html:135
 msgid "This is an Open Software Service"
+msgstr ""
+
+#: isitopen/templates/layout.html:129
+msgid ""
+"[1:[2:]]\n"
+"\t\t\t  |\n"
+"\t\t\t\t[3:[4:]]"
 msgstr ""
 
 #: isitopen/templates/account/confirm.html:7
@@ -769,7 +666,7 @@ msgid "[1:You will be alerted when the data handler responds to your follow up.]
 msgstr ""
 
 #: isitopen/templates/enquiry/followup.html:65
-#: isitopen/templates/enquiry/start.html:64
+#: isitopen/templates/enquiry/start.html:65
 msgid ""
 "Thank you for using [1:[2:Is It Open Data?]] to enquire about the "
 "openness of data."
@@ -777,6 +674,32 @@ msgstr ""
 
 #: isitopen/templates/enquiry/list.html:11
 msgid "Existing Enquiries"
+msgstr ""
+
+#: isitopen/templates/enquiry/list.html:20
+msgid "Number of messages in the thread"
+msgstr ""
+
+#: isitopen/templates/enquiry/list.html:23
+msgid "To:"
+msgstr ""
+
+#: isitopen/templates/enquiry/list.html:25
+msgid "Last activity"
+msgstr ""
+
+#: isitopen/templates/enquiry/list.html:26
+msgid ""
+"ago\n"
+"            (Opened"
+msgstr ""
+
+#: isitopen/templates/enquiry/list.html:27
+msgid "ago)"
+msgstr ""
+
+#: isitopen/templates/enquiry/list.html:29
+msgid "Owned by"
 msgstr ""
 
 #: isitopen/templates/enquiry/sent.html:5
@@ -838,11 +761,15 @@ msgstr ""
 msgid "Your Enquiry: (customize this)"
 msgstr ""
 
-#: isitopen/templates/enquiry/start.html:36
+#: isitopen/templates/enquiry/start.html:32
+msgid "(You'll have a chance to review before it is sent)"
+msgstr ""
+
+#: isitopen/templates/enquiry/start.html:37
 msgid "Step 2: Confirm Your Enquiry"
 msgstr ""
 
-#: isitopen/templates/enquiry/start.html:38
+#: isitopen/templates/enquiry/start.html:39
 msgid ""
 "[1:Check your enquiry before sending.] If you would like to change your\n"
 "      enquiry, press 'Edit Enquiry'. Otherwise when you are happy, press"
@@ -851,11 +778,11 @@ msgid ""
 "      preview has been 'prettified' using markdown."
 msgstr ""
 
-#: isitopen/templates/enquiry/start.html:57
+#: isitopen/templates/enquiry/start.html:58
 msgid "Step 3: Wait For Reply"
 msgstr ""
 
-#: isitopen/templates/enquiry/start.html:59
+#: isitopen/templates/enquiry/start.html:60
 msgid ""
 "Congratulations, your [1:data openness enquiry] has been started.\n"
 "    You can [2:check on the status] of your enquiry.\n"
@@ -864,31 +791,31 @@ msgid ""
 "    sent immediately."
 msgstr ""
 
-#: isitopen/templates/enquiry/start.html:63
+#: isitopen/templates/enquiry/start.html:64
 msgid "[1:You will be alerted when the data handler responds to your enquiry.]"
 msgstr ""
 
-#: isitopen/templates/enquiry/start.html:65
+#: isitopen/templates/enquiry/start.html:66
 msgid "[1:Go to enquiry »]"
 msgstr ""
 
-#: isitopen/templates/enquiry/start.html:72
+#: isitopen/templates/enquiry/start.html:73
 msgid "Steps for Making Enquiries"
 msgstr ""
 
-#: isitopen/templates/enquiry/start.html:73
+#: isitopen/templates/enquiry/start.html:74
 msgid ""
 "[1:Step 1: Start Your Enquiry][2:]\n"
 "      Start by providing information for the enquiry."
 msgstr ""
 
-#: isitopen/templates/enquiry/start.html:75
+#: isitopen/templates/enquiry/start.html:76
 msgid ""
 "[1:Step 2: Confirm Your Enquiry][2:]\n"
 "      Check the enquiry before sending."
 msgstr ""
 
-#: isitopen/templates/enquiry/start.html:77
+#: isitopen/templates/enquiry/start.html:78
 msgid ""
 "[1:Step 3: Wait For Reply][2:]\n"
 "      You will be alerted when the data handler responds to your enquiry."
@@ -947,23 +874,59 @@ msgstr ""
 msgid "To create messages make an %(enquiry_link)s."
 msgstr ""
 
-#: isitopen/templates/message/view_core.html:11
+#: isitopen/templates/message/view_core.html:12
 #, python-format
 msgid "[1:To:] %(to)s"
 msgstr ""
 
-#: isitopen/templates/message/view_core.html:12
+#: isitopen/templates/message/view_core.html:13
 #, python-format
 msgid "[1:Subject:] [2:%(subject)s]"
 msgstr ""
 
-#: isitopen/templates/message/view_core.html:14
+#: isitopen/templates/message/view_core.html:15
 #, python-format
 msgid "[1:Date:] %(date)s"
 msgstr ""
 
-#: isitopen/templates/message/view_core.html:17
+#: isitopen/templates/message/view_core.html:18
 #, python-format
 msgid "[1:Status:] %(status)s"
 msgstr ""
+
+#: isitopen/templates/message/view_core.html:26
+msgid "Message could not be rendered."
+msgstr ""
+
+#~ msgid "We've made it easy for"
+#~ msgstr ""
+
+#~ msgid "you"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "to make\n"
+#~ "    enquiries to data holders about the openness of\n"
+#~ "    the material they hold — and to record publicly the results of\n"
+#~ "    those efforts."
+#~ msgstr ""
+
+#~ msgid "Our future depends on Open Data ("
+#~ msgstr ""
+
+#~ msgid "source"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "In practice it is often unclear "
+#~ "whether data is openly available i.e "
+#~ "accessible and freely re-usable without"
+#~ " additional permission. In some cases, "
+#~ "access to data may be restricted "
+#~ "by the addition of specific terms "
+#~ "and conditions."
+#~ msgstr ""
+
+#~ msgid "Read More ..."
+#~ msgstr ""
 

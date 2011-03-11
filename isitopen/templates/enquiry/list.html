@@ -19,14 +19,14 @@
             <a href="${h.url_for(controller='enquiry', action='view', id=enq.id)}">${enq.summary}</a>
             <span title="Number of messages in the thread" class="message-count">(${len(enq.messages)})</span>
           </li>
-          <li class="to">
+          <li class="to" i18n:msg="enqto">
             <strong>To: ${h.js_obfuscate(enq.to)}</strong>
           </li>
-          <li class="opened">
+          <li class="opened" i18n:msg="lastactivity,lastopen">
             Last activity ${h.date.time_ago_in_words(enq.messages[-1].timestamp, granularity='day')} ago
             (Opened ${h.date.time_ago_in_words(enq.timestamp, granularity='day')} ago) 
           </li>
-          <li class="owner">
+          <li class="owner" i18n:msg="enqowner">
           Owned by ${h.user_link(enq.owner)}
           </li>
           <li class="snippet">
