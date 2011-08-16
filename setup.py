@@ -21,6 +21,7 @@ setup(
     author_email='',
     url='http://isitopen.ckan.net/',
     install_requires=[
+        'WebOb<=1.0.1',
         'Pylons>=0.9.7,<0.9.8',
         # TODO: minor issues with routes >= 1.12
         'Routes<=1.11.99',
@@ -30,7 +31,7 @@ setup(
         # last version to work with SQLA < 0.5
         'sqlalchemy-migrate>=0.5,<0.5.99',
         # for mail tests
-        'processing',
+        # 'processing',
         'repoze.who<1.99',
         # for web app deployment
         'PasteDeploy',
